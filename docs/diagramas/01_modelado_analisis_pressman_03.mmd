@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> REGISTRADA
+    REGISTRADA --> CANCELADA: emisor cancela antes de recibir
+    REGISTRADA --> EN_CUSTODIA: operador recibe y registra ubicación y pago
+    EN_CUSTODIA --> RETIRO_EN_CURSO: verificación válida
+    RETIRO_EN_CURSO --> RETIRADA: entrega física confirmada
+    RETIRO_EN_CURSO --> EN_CUSTODIA: no entregado y anulación controlada
+    EN_CUSTODIA --> DEVOLUCION_EN_CURSO: devolución aprobada
+    DEVOLUCION_EN_CURSO --> DEVUELTA: devolución física confirmada
+    DEVOLUCION_EN_CURSO --> EN_CUSTODIA: no entregado y anulación controlada
+    RETIRADA --> [*]
+    DEVUELTA --> [*]
+    CANCELADA --> [*]

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1540" viewBox="0 0 1600 1540" role="img">
+<title>Suite estructural: consulta, cuentas, custodias y supervisión</title><desc>Propuesta estática con datos ficticios. Custodia asistida, sin hardware externo.</desc>
+<style>text{font-family:DejaVu Sans,sans-serif} .bold{font-weight:700}</style>
+<rect x="0" y="0" width="1600" height="1540" rx="0" fill="#F3F3F3" stroke="none"/>
+<rect x="0" y="0" width="1600" height="108" rx="0" fill="#202020" stroke="none"/>
+<text x="40" y="46" font-size="27" fill="#FFFFFF" class="bold">BUZON Xpress</text>
+<text x="40" y="82" font-size="17" fill="#FFFFFF">Suite estructural: consulta, cuentas, custodias y supervisión</text>
+<text x="40" y="1514" font-size="13" fill="#444444">DISEÑO ESTÁTICO · DATOS DE EJEMPLO · ATENCIÓN POR PERSONAL · SIN DISPOSITIVOS EXTERNOS</text>
+<rect x="40" y="140" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="176" font-size="20" fill="#172033" class="bold">UI-02 · Consulta pública</text>
+<text x="62" y="206" font-size="14" fill="#555555">Sin nombre, teléfono, código o ubicación interna.</text>
+<rect x="820" y="140" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="842" y="176" font-size="20" fill="#172033" class="bold">UI-05 · Mis custodias</text>
+<text x="842" y="206" font-size="14" fill="#555555">Participación: deposité / recibiré.</text>
+<rect x="40" y="580" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="616" font-size="20" fill="#172033" class="bold">UI-06 · Registrar objeto</text>
+<text x="62" y="646" font-size="14" fill="#555555">La capacidad se confirma al recibir.</text>
+<rect x="820" y="580" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="842" y="616" font-size="20" fill="#172033" class="bold">UI-07 · Detalle privado</text>
+<text x="842" y="646" font-size="14" fill="#555555">Visible solo a participantes y personal autorizado.</text>
+<rect x="40" y="1020" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="1056" font-size="20" fill="#172033" class="bold">UI-09 · Incidencias</text>
+<text x="62" y="1086" font-size="14" fill="#555555">Revisión separada de solicitud y aprobación.</text>
+<rect x="820" y="1020" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="842" y="1056" font-size="20" fill="#172033" class="bold">UI-10/11 · Supervisión</text>
+<text x="842" y="1086" font-size="14" fill="#555555">Datos ficticios para explicar la estructura.</text>
+<text x="65" y="250" font-size="14" fill="#444444" class="bold">Referencia pública</text>
+<rect x="65" y="260" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="287" font-size="14" fill="#555555">Referencia opaca de ejemplo</text>
+<rect x="65" y="325" width="230" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="79" y="353" font-size="15" fill="#FFFFFF" class="bold">Consultar estado</text>
+<text x="65" y="419" font-size="22" fill="#172033" class="bold">RECIBIDA · Punto de ejemplo</text>
+<text x="65" y="459" font-size="16" fill="#172033">Consulta horario y accede a tu cuenta para detalles.</text>
+<text x="845" y="252" font-size="20" fill="#172033" class="bold">[Deposité]             [Recibiré]</text>
+<rect x="845" y="280" width="685" height="90" rx="12" fill="#F7F7F7" stroke="#CBD2DF"/>
+<text x="865" y="318" font-size="20" fill="#172033" class="bold">Custodia de ejemplo · EN CUSTODIA</text>
+<text x="865" y="349" font-size="16" fill="#172033">Punto y plazo contratado · Ver detalle</text>
+<rect x="845" y="395" width="685" height="90" rx="12" fill="#F7F7F7" stroke="#CBD2DF"/>
+<text x="865" y="431" font-size="20" fill="#172033" class="bold">Custodia de ejemplo · REGISTRADA</text>
+<text x="865" y="462" font-size="16" fill="#172033">Pendiente de recepción; sin ubicación asignada.</text>
+<text x="65" y="690" font-size="14" fill="#444444" class="bold">Destinatario</text>
+<rect x="65" y="700" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="727" font-size="14" fill="#555555">Contacto exacto de cuenta comprobada</text>
+<text x="65" y="768" font-size="14" fill="#444444" class="bold">Descripción y tamaño</text>
+<rect x="65" y="778" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="805" font-size="14" fill="#555555">Bulto de prueba · PEQUEÑO</text>
+<text x="65" y="867" font-size="17" fill="#172033">Punto y condiciones antes de confirmar.</text>
+<rect x="65" y="903" width="260" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="79" y="931" font-size="15" fill="#FFFFFF" class="bold">Revisar y registrar</text>
+<text x="845" y="693" font-size="23" fill="#172033" class="bold">EN CUSTODIA · Plazo visible</text>
+<text x="845" y="738" font-size="18" fill="#172033">Código de retiro: solo el destinatario puede generarlo. Se</text>
+<text x="845" y="764.64" font-size="18" fill="#172033">muestra una vez y tiene vigencia.</text>
+<rect x="845" y="835" width="260" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="859" y="863" font-size="15" fill="#FFFFFF" class="bold">Generar código</text>
+<text x="845" y="920" font-size="17" fill="#172033">Historial: recepción, avisos y comprobantes.</text>
+<text x="65" y="1130" font-size="20" fill="#172033" class="bold">Custodia · Hechos · Responsable</text>
+<text x="65" y="1179" font-size="18" fill="#172033">Solicitud: pendiente. Otra persona autorizada revisa la</text>
+<text x="65" y="1205.64" font-size="18" fill="#172033">evidencia antes de decidir.</text>
+<rect x="65" y="1280" width="290" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="79" y="1308" font-size="15" fill="#FFFFFF" class="bold">Registrar solicitud</text>
+<text x="65" y="1358" font-size="17" fill="#172033">Sin decisión: mantener objeto y bloqueo.</text>
+<text x="845" y="1130" font-size="20" fill="#172033" class="bold">Punto | Periodo | Calidad de datos</text>
+<text x="845" y="1182" font-size="18" fill="#172033">Inventario: ubicaciones y custodias activas.</text>
+<text x="845" y="1230" font-size="18" fill="#172033">Indicadores: numerador y denominador.</text>
+<text x="845" y="1278" font-size="18" fill="#172033">Eventos: actor, fecha y correlación.</text>
+<rect x="845" y="1332" width="270" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="859" y="1360" font-size="15" fill="#FFFFFF" class="bold">Consultar evidencia</text>
+</svg>

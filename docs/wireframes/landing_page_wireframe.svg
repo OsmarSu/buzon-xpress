@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1310" viewBox="0 0 1440 1310" role="img">
+<title>Portada: propuesta, horario y recorrido asistido</title><desc>Propuesta estática con datos ficticios. Custodia asistida, sin hardware externo.</desc>
+<style>text{font-family:DejaVu Sans,sans-serif} .bold{font-weight:700}</style>
+<rect x="0" y="0" width="1440" height="1310" rx="0" fill="#F4F6FA" stroke="none"/>
+<rect x="0" y="0" width="1440" height="108" rx="0" fill="#0B368C" stroke="none"/>
+<text x="40" y="46" font-size="27" fill="#FFFFFF" class="bold">BUZON Xpress</text>
+<text x="40" y="82" font-size="17" fill="#FFFFFF">Portada: propuesta, horario y recorrido asistido</text>
+<text x="40" y="1284" font-size="13" fill="#444444">DISEÑO ESTÁTICO · DATOS DE EJEMPLO · ATENCIÓN POR PERSONAL · SIN DISPOSITIVOS EXTERNOS</text>
+<text x="44" y="153" font-size="17" fill="#172033">Cómo funciona       Puntos y horarios       Condiciones</text>
+<rect x="1140" y="124" width="250" height="44" rx="7" fill="#FFFFFF" stroke="#0B368C"/>
+<text x="1154" y="152" font-size="15" fill="#172033" class="bold">Acceder a mi cuenta</text>
+<rect x="40" y="202" width="1360" height="310" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="238" font-size="20" fill="#172033" class="bold">Tu entrega, a su tiempo</text>
+<text x="68" y="292" font-size="31" fill="#0B368C" class="bold">Deja un objeto con constancia y permite</text>
+<text x="68" y="337.88" font-size="31" fill="#0B368C" class="bold">que su destinatario lo recoja después.</text>
+<text x="68" y="394" font-size="19" fill="#172033">Custodia atendida por personal. El registro previo no reserva</text>
+<text x="68" y="422.12" font-size="19" fill="#172033">espacio.</text>
+<rect x="68" y="438" width="230" height="44" rx="7" fill="#0B368C" stroke="#0B368C"/>
+<text x="82" y="466" font-size="15" fill="#FFFFFF" class="bold">Registrar objeto</text>
+<rect x="320" y="438" width="240" height="44" rx="7" fill="#FFFFFF" stroke="#0B368C"/>
+<text x="334" y="466" font-size="15" fill="#172033" class="bold">Consultar estado</text>
+<rect x="967" y="260" width="400" height="195" rx="12" fill="#EDF2FC" stroke="#CBD2DF"/>
+<text x="987" y="295" font-size="21" fill="#0B368C" class="bold">Punto de ejemplo</text>
+<text x="987" y="338" font-size="18" fill="#172033">Horario ilustrativo: lunes a</text>
+<text x="987" y="364.64" font-size="18" fill="#172033">viernes, 09:00 a 18:00.</text>
+<text x="987" y="391.28" font-size="18" fill="#172033">Confirmar antes de acudir.</text>
+<rect x="40" y="548" width="440" height="235" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="584" font-size="20" fill="#172033" class="bold">1. Registra</text>
+<text x="62" y="615" font-size="19" fill="#172033">Indica destinatario, descripción</text>
+<text x="62" y="643.12" font-size="19" fill="#172033">y punto desde tu cuenta.</text>
+<rect x="500" y="548" width="440" height="235" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="522" y="584" font-size="20" fill="#172033" class="bold">2. Déjalo en el punto</text>
+<text x="522" y="615" font-size="19" fill="#172033">El operador confirma capacidad,</text>
+<text x="522" y="643.12" font-size="19" fill="#172033">tarifa y recepción.</text>
+<rect x="960" y="548" width="440" height="235" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="982" y="584" font-size="20" fill="#172033" class="bold">3. Retiro autorizado</text>
+<text x="982" y="615" font-size="19" fill="#172033">El destinatario presenta su</text>
+<text x="982" y="643.12" font-size="19" fill="#172033">código y el personal entrega.</text>
+<rect x="40" y="820" width="870" height="230" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="856" font-size="20" fill="#172033" class="bold">Antes de dejar el objeto</text>
+<text x="64" y="890" font-size="18" fill="#172033">• Consulta horario, tamaño y plazo.</text>
+<text x="64" y="925" font-size="18" fill="#172033">• La custodia empieza con la recepción confirmada.</text>
+<text x="64" y="960" font-size="18" fill="#172033">• El plazo vencido se gestiona con personal.</text>
+<text x="64" y="995" font-size="18" fill="#172033">• Guarda tu constancia y consulta el historial.</text>
+<rect x="940" y="820" width="460" height="230" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="962" y="856" font-size="20" fill="#172033" class="bold">Información clara</text>
+<text x="964" y="895" font-size="19" fill="#172033">La tarifa depende del tamaño y</text>
+<text x="964" y="923.12" font-size="19" fill="#172033">tiempo contratado. Se informa y</text>
+<text x="964" y="951.24" font-size="19" fill="#172033">acepta antes de recibir.</text>
+<rect x="40" y="1084" width="1360" height="135" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="1120" font-size="20" fill="#172033" class="bold">¿Necesitas ayuda con una entrega?</text>
+<text x="64" y="1158" font-size="19" fill="#172033">Consulta tu cuenta o solicita atención al responsable del punto.</text>
+</svg>

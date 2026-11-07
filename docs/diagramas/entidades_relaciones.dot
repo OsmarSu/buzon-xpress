@@ -1,0 +1,28 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
+node [shape=box,style="rounded,filled",fillcolor="#EDF2FC",color="#0B368C",fontname="DejaVu Sans",fontsize=16,margin="0.2"];
+edge [color="#556276",fontname="DejaVu Sans",fontsize=12];
+rankdir=LR;
+users -> sessions;
+users -> staff_assignments;
+service_points -> staff_assignments;
+service_points -> storage_locations;
+service_points -> tariff_versions;
+users -> custody_orders [label="emisor / destinatario"];
+service_points -> custody_orders;
+tariff_versions -> custody_orders;
+custody_orders -> storage_assignments;
+storage_locations -> storage_assignments;
+custody_orders -> pickup_credentials;
+custody_orders -> pickup_authorizations;
+pickup_credentials -> pickup_authorizations;
+custody_orders -> recovery_requests;
+recovery_requests -> pickup_authorizations;
+pickup_authorizations -> handovers;
+custody_orders -> custody_events;
+custody_orders -> notifications;
+custody_orders -> incidents;
+custody_orders -> service_payments;
+users -> idempotency_keys;
+
+}

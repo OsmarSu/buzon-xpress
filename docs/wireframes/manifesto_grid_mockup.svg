@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1220" viewBox="0 0 1440 1220" role="img">
+<title>Manifiesto y ejemplos: objetos personales y compras locales</title><desc>Propuesta estática con datos ficticios. Custodia asistida, sin hardware externo.</desc>
+<style>text{font-family:DejaVu Sans,sans-serif} .bold{font-weight:700}</style>
+<rect x="0" y="0" width="1440" height="1220" rx="0" fill="#F4F6FA" stroke="none"/>
+<rect x="0" y="0" width="1440" height="108" rx="0" fill="#0B368C" stroke="none"/>
+<text x="40" y="46" font-size="27" fill="#FFFFFF" class="bold">BUZON Xpress</text>
+<text x="40" y="82" font-size="17" fill="#FFFFFF">Manifiesto y ejemplos: objetos personales y compras locales</text>
+<text x="40" y="1194" font-size="13" fill="#444444">DISEÑO ESTÁTICO · DATOS DE EJEMPLO · ATENCIÓN POR PERSONAL · SIN DISPOSITIVOS EXTERNOS</text>
+<text x="44" y="165" font-size="28" fill="#0B368C" class="bold">Una solución para dejar y recoger en momentos distintos</text>
+<rect x="40" y="210" width="665" height="275" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="246" font-size="20" fill="#172033" class="bold">Objetos prestados</text>
+<text x="64" y="302" font-size="21" fill="#172033">Devuelve un objeto aunque no coincidan los</text>
+<text x="64" y="333.08" font-size="21" fill="#172033">horarios. El destinatario lo recoge con</text>
+<text x="64" y="364.15999999999997" font-size="21" fill="#172033">autorización.</text>
+<rect x="730" y="210" width="665" height="275" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="752" y="246" font-size="20" fill="#172033" class="bold">Documentos y entregas personales</text>
+<text x="754" y="302" font-size="21" fill="#172033">Deja un bulto identificable en un punto</text>
+<text x="754" y="333.08" font-size="21" fill="#172033">atendido y conserva una constancia.</text>
+<rect x="40" y="515" width="665" height="275" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="551" font-size="20" fill="#172033" class="bold">Compras locales</text>
+<text x="64" y="607" font-size="21" fill="#172033">Una compra puede usar el servicio. BUZON Xpress</text>
+<text x="64" y="638.08" font-size="21" fill="#172033">cobra custodia; no liquida el precio al</text>
+<text x="64" y="669.1600000000001" font-size="21" fill="#172033">vendedor.</text>
+<rect x="730" y="515" width="665" height="275" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="752" y="551" font-size="20" fill="#172033" class="bold">Un proceso comprobable</text>
+<text x="754" y="607" font-size="21" fill="#172033">Personal responsable, ubicación interna,</text>
+<text x="754" y="638.08" font-size="21" fill="#172033">verificación y registro de entrega. Sin</text>
+<text x="754" y="669.1600000000001" font-size="21" fill="#172033">dispositivos externos.</text>
+<rect x="40" y="850" width="1360" height="255" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="886" font-size="20" fill="#172033" class="bold">Antes de utilizar el servicio</text>
+<text x="65" y="928" font-size="21" fill="#172033">1. Consulta el punto y su horario.   2. Revisa el plazo y la tarifa.   3. Registra un destinatario</text>
+<text x="65" y="959.08" font-size="21" fill="#172033">comprobado.</text>
+<text x="65" y="1010" font-size="20" fill="#172033">El prerregistro no reserva espacio. El retiro lo realiza personal después de verificar la autorización.</text>
+</svg>

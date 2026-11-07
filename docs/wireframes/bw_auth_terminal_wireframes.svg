@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1450" viewBox="0 0 1600 1450" role="img">
+<title>Acceso y terminal: verificar y confirmar son acciones distintas</title><desc>Propuesta estática con datos ficticios. Custodia asistida, sin hardware externo.</desc>
+<style>text{font-family:DejaVu Sans,sans-serif} .bold{font-weight:700}</style>
+<rect x="0" y="0" width="1600" height="1450" rx="0" fill="#F3F3F3" stroke="none"/>
+<rect x="0" y="0" width="1600" height="108" rx="0" fill="#202020" stroke="none"/>
+<text x="40" y="46" font-size="27" fill="#FFFFFF" class="bold">BUZON Xpress</text>
+<text x="40" y="82" font-size="17" fill="#FFFFFF">Acceso y terminal: verificar y confirmar son acciones distintas</text>
+<text x="40" y="1424" font-size="13" fill="#444444">DISEÑO ESTÁTICO · DATOS DE EJEMPLO · ATENCIÓN POR PERSONAL · SIN DISPOSITIVOS EXTERNOS</text>
+<rect x="40" y="140" width="740" height="470" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="176" font-size="20" fill="#172033" class="bold">UI-03 · Acceso</text>
+<text x="62" y="206" font-size="14" fill="#555555">Sin cuentas compartidas ni contraseñas universales.</text>
+<rect x="820" y="140" width="740" height="470" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="842" y="176" font-size="20" fill="#172033" class="bold">UI-04 · Registro general</text>
+<text x="842" y="206" font-size="14" fill="#555555">El registro público no concede roles de personal.</text>
+<rect x="40" y="650" width="740" height="650" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="62" y="686" font-size="20" fill="#172033" class="bold">UI-08 · Recepción</text>
+<text x="62" y="716" font-size="14" fill="#555555">Operador y punto identificados.</text>
+<rect x="820" y="650" width="740" height="650" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
+<text x="842" y="686" font-size="20" fill="#172033" class="bold">UI-08 · Retiro asistido</text>
+<text x="842" y="716" font-size="14" fill="#555555">El personal realiza la entrega física.</text>
+<text x="65" y="254" font-size="14" fill="#444444" class="bold">Correo</text>
+<rect x="65" y="264" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="291" font-size="14" fill="#555555">cuenta de ejemplo</text>
+<text x="65" y="332" font-size="14" fill="#444444" class="bold">Contraseña</text>
+<rect x="65" y="342" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="369" font-size="14" fill="#555555">••••••••••••</text>
+<rect x="65" y="418" width="250" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="79" y="446" font-size="15" fill="#FFFFFF" class="bold">Acceder</text>
+<text x="65" y="526" font-size="17" fill="#172033">Sesión segura · Recuperar acceso</text>
+<text x="845" y="254" font-size="14" fill="#444444" class="bold">Nombre y contacto</text>
+<rect x="845" y="264" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="857" y="291" font-size="14" fill="#555555">Datos de prueba</text>
+<text x="845" y="332" font-size="14" fill="#444444" class="bold">Contraseña</text>
+<rect x="845" y="342" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="857" y="369" font-size="14" fill="#555555">Elegida por el usuario</text>
+<rect x="845" y="418" width="300" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="859" y="446" font-size="15" fill="#FFFFFF" class="bold">Crear cuenta general</text>
+<text x="845" y="526" font-size="17" fill="#172033">Comprobar contacto antes de operar.</text>
+<text x="65" y="764" font-size="14" fill="#444444" class="bold">Guía de custodia</text>
+<rect x="65" y="774" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="801" font-size="14" fill="#555555">Buscar registro pendiente</text>
+<text x="65" y="842" font-size="14" fill="#444444" class="bold">Ubicación interna</text>
+<rect x="65" y="852" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="77" y="879" font-size="14" fill="#555555">Seleccionar una ubicación disponible</text>
+<text x="65" y="946" font-size="18" fill="#172033">Revisar bulto, destinatario y condición externa.</text>
+<text x="65" y="990" font-size="18" fill="#172033">Confirmar tarifa, plazo y pago del servicio.</text>
+<rect x="65" y="1042" width="300" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="79" y="1070" font-size="15" fill="#FFFFFF" class="bold">Confirmar recepción</text>
+<text x="65" y="1158" font-size="18" fill="#172033">El éxito se muestra después de persistir. Si hay conflicto</text>
+<text x="65" y="1184.64" font-size="18" fill="#172033">de capacidad, revisar antes de aceptar.</text>
+<text x="845" y="764" font-size="14" fill="#444444" class="bold">Guía y código de retiro</text>
+<rect x="845" y="774" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
+<text x="857" y="801" font-size="14" fill="#555555">Código ingresado manualmente</text>
+<text x="845" y="858" font-size="18" fill="#172033">[ ] Comprobación visual del destinatario</text>
+<rect x="845" y="893" width="320" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="859" y="921" font-size="15" fill="#FFFFFF" class="bold">1. Verificar autorización</text>
+<text x="845" y="980" font-size="19" fill="#172033" class="bold">Autorizado para entregar · Bulto y ubicación</text>
+<text x="845" y="1025" font-size="17" fill="#172033">El objeto sigue bajo responsabilidad del punto hasta la entrega</text>
+<text x="845" y="1050.16" font-size="17" fill="#172033">humana.</text>
+<rect x="845" y="1100" width="685" height="44" rx="7" fill="#202020" stroke="#606060"/>
+<text x="859" y="1128" font-size="15" fill="#FFFFFF" class="bold">2. Confirmar que ya entregué el objeto</text>
+<text x="845" y="1193" font-size="17" fill="#172033">Si falla después de entregar: confirmación pendiente. No</text>
+<text x="845" y="1218.16" font-size="17" fill="#172033">repetir entrega; abrir conciliación.</text>
+<text x="40" y="1370" font-size="18" fill="#172033">Avisos e incidencias conservan hechos y responsables; no incluyen códigos secretos.</text>
+</svg>

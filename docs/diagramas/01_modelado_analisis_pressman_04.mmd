@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor R as Destinatario
+    actor O as Operador
+    participant UI as Terminal web
+    participant API as Aplicación
+    participant DB as PostgreSQL
+    R->>O: Presenta referencia y código
+    O->>UI: Registra código y comprobación visual
+    UI->>API: Verificar retiro
+    API->>DB: Bloquear custodia y validar credencial y permisos
+    DB-->>API: Autorización retenida
+    API-->>UI: Autorizado para entregar
+    O->>R: Entrega físicamente el bulto comprobado
+    O->>UI: Confirma que ya entregó
+    UI->>API: Confirmar con autorización e idempotencia
+    API->>DB: Consumir, cerrar asignación y registrar evento y comprobante
+    DB-->>API: Confirmación persistida
+    API-->>UI: Retiro completado

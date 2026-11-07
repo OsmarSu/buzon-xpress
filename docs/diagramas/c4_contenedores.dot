@@ -1,0 +1,20 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
+node [shape=box,style="rounded,filled",fillcolor="#EDF2FC",color="#0B368C",fontname="DejaVu Sans",fontsize=16,margin="0.2"];
+edge [color="#556276",fontname="DejaVu Sans",fontsize=12];
+rankdir=LR;
+navegador [label="Navegador
+Equipo existente"];
+api [label="Aplicación FastAPI
+Casos de uso y permisos"];
+db [label="PostgreSQL
+Estado y evidencia",shape=cylinder];
+tarea [label="Tarea de la aplicación
+Avisos y vencimientos"];
+correo [label="Correo configurado"];
+navegador -> api [label="HTTPS, sesión y CSRF"];
+api -> db [label="transacciones"];
+tarea -> db [label="pendientes y resultado"];
+tarea -> correo [label="envío y reintento"];
+
+}

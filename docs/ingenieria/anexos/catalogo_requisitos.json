@@ -1,0 +1,501 @@
+{
+  "version": "1.0",
+  "requirements": [
+    {
+      "id": "RF-01",
+      "priority": "P0",
+      "statement": "Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; una sesión revocada deja de autorizar peticiones.",
+      "use_case": "CU-01",
+      "tables": [
+        "users",
+        "sessions"
+      ],
+      "screens": [
+        "UI-03",
+        "UI-04"
+      ],
+      "paths": [
+        "/auth/register",
+        "/auth/login",
+        "/auth/logout"
+      ],
+      "test": "T-01",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-02",
+      "priority": "P0",
+      "statement": "Aplicar permisos por participación, rol y punto; un usuario ajeno o un operador no asignado recibe rechazo.",
+      "use_case": "CU-01",
+      "tables": [
+        "users",
+        "staff_assignments",
+        "sessions"
+      ],
+      "screens": [
+        "UI-03",
+        "UI-08"
+      ],
+      "paths": [
+        "/auth/me"
+      ],
+      "test": "T-02",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-03",
+      "priority": "P0",
+      "statement": "Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía y referencia pública diferentes.",
+      "use_case": "CU-02",
+      "tables": [
+        "custody_orders",
+        "custody_events"
+      ],
+      "screens": [
+        "UI-06"
+      ],
+      "paths": [
+        "/custodies"
+      ],
+      "test": "T-03",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-04",
+      "priority": "P0",
+      "statement": "Recibir un objeto admisible y asignar ubicación con tarifa, pago y evento en una transacción; no hay recepción sin capacidad.",
+      "use_case": "CU-03",
+      "tables": [
+        "custody_orders",
+        "storage_assignments",
+        "storage_locations",
+        "service_payments"
+      ],
+      "screens": [
+        "UI-08"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/receive"
+      ],
+      "test": "T-04",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-05",
+      "priority": "P0",
+      "statement": "Mostrar inventario interno por ubicación y estado; una ubicación activa no puede asignarse a otra custodia.",
+      "use_case": "CU-03",
+      "tables": [
+        "storage_assignments",
+        "storage_locations"
+      ],
+      "screens": [
+        "UI-08"
+      ],
+      "paths": [
+        "/inventory"
+      ],
+      "test": "T-05",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-06",
+      "priority": "P0",
+      "statement": "Separar consulta privada y seguimiento público; la respuesta pública no incluye nombres, teléfonos, ubicación interna ni credenciales.",
+      "use_case": "CU-04",
+      "tables": [
+        "custody_orders",
+        "custody_events"
+      ],
+      "screens": [
+        "UI-02",
+        "UI-05",
+        "UI-07"
+      ],
+      "paths": [
+        "/custodies/{custody_id}",
+        "/public-tracking/{reference}"
+      ],
+      "test": "T-06",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-07",
+      "priority": "P0",
+      "statement": "Emitir y revocar una credencial temporal para el destinatario autenticado; una reemisión invalida la anterior.",
+      "use_case": "CU-05",
+      "tables": [
+        "pickup_credentials"
+      ],
+      "screens": [
+        "UI-07"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/credentials"
+      ],
+      "test": "T-07",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-08",
+      "priority": "P0",
+      "statement": "Verificar credencial en el punto, aplicar límites de intentos y crear autorización vinculada a un operador y custodia.",
+      "use_case": "CU-06",
+      "tables": [
+        "pickup_credentials",
+        "pickup_authorizations",
+        "custody_orders"
+      ],
+      "screens": [
+        "UI-08"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/verify"
+      ],
+      "test": "T-08",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-09",
+      "priority": "P0",
+      "statement": "Confirmar entrega física con una autorización vigente; consume credencial y autorización, cierra asignación y registra comprobante una sola vez.",
+      "use_case": "CU-07",
+      "tables": [
+        "handovers",
+        "pickup_authorizations",
+        "storage_assignments",
+        "custody_orders"
+      ],
+      "screens": [
+        "UI-08"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/handover"
+      ],
+      "test": "T-09",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-10",
+      "priority": "P1",
+      "statement": "Devolver al emisor mediante solicitud y aprobación separadas; queda comprobante y se libera ubicación después de la entrega física.",
+      "use_case": "CU-10",
+      "tables": [
+        "recovery_requests",
+        "pickup_authorizations",
+        "handovers"
+      ],
+      "screens": [
+        "UI-09"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/return-authorization",
+        "/custodies/{custody_id}/return-handover"
+      ],
+      "test": "T-10",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-11",
+      "priority": "P1",
+      "statement": "Crear avisos en bandeja y, si está configurado, correo; registrar intentos, reintentos y fallo sin revertir una recepción válida.",
+      "use_case": "CU-08",
+      "tables": [
+        "notifications"
+      ],
+      "screens": [
+        "UI-12"
+      ],
+      "paths": [
+        "/notifications"
+      ],
+      "test": "T-11",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-12",
+      "priority": "P0",
+      "statement": "Calcular y registrar cobros del servicio con tarifa versionada; el navegador no fija precios ni registra liquidaciones a terceros.",
+      "use_case": "CU-09",
+      "tables": [
+        "tariff_versions",
+        "service_payments",
+        "custody_orders"
+      ],
+      "screens": [
+        "UI-08"
+      ],
+      "paths": [
+        "/points/{point_id}/quote",
+        "/custodies/{custody_id}/receive",
+        "/custodies/{custody_id}/extend"
+      ],
+      "test": "T-12",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-13",
+      "priority": "P1",
+      "statement": "Detectar plazo vencido, avisar y proponer prórroga o devolución; el vencimiento no libera una ubicación ocupada.",
+      "use_case": "CU-09",
+      "tables": [
+        "custody_orders",
+        "notifications",
+        "service_payments"
+      ],
+      "screens": [
+        "UI-07",
+        "UI-08"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/extend"
+      ],
+      "test": "T-13",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-14",
+      "priority": "P0",
+      "statement": "Abrir incidencias y tramitar recuperación con evidencia mínima; las excepciones de entrega requieren un aprobador distinto del solicitante.",
+      "use_case": "CU-10",
+      "tables": [
+        "incidents",
+        "recovery_requests"
+      ],
+      "screens": [
+        "UI-09"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/incidents",
+        "/recovery-requests",
+        "/recovery-requests/{request_id}/decision"
+      ],
+      "test": "T-14",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-15",
+      "priority": "P0",
+      "statement": "Registrar evento con actor, punto, custodia, transición y correlación, sin secretos; la cuenta de aplicación no puede editar o borrar eventos.",
+      "use_case": "CU-12",
+      "tables": [
+        "custody_events"
+      ],
+      "screens": [
+        "UI-11"
+      ],
+      "paths": [
+        "/audit/events"
+      ],
+      "test": "T-15",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-16",
+      "priority": "P1",
+      "statement": "Administrar puntos, horarios, ubicaciones y asignaciones de personal; no desactivar silenciosamente un espacio ocupado.",
+      "use_case": "CU-11",
+      "tables": [
+        "service_points",
+        "storage_locations",
+        "staff_assignments",
+        "tariff_versions"
+      ],
+      "screens": [
+        "UI-10"
+      ],
+      "paths": [
+        "/admin/points",
+        "/admin/locations",
+        "/admin/staff-assignments",
+        "/admin/tariffs"
+      ],
+      "test": "T-16",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-17",
+      "priority": "P1",
+      "statement": "Mostrar ocupación, permanencia, tiempos e incidencias con denominador y periodo; no presentar números simulados como mediciones.",
+      "use_case": "CU-12",
+      "tables": [
+        "custody_orders",
+        "custody_events",
+        "handovers",
+        "incidents"
+      ],
+      "screens": [
+        "UI-11"
+      ],
+      "paths": [
+        "/reports"
+      ],
+      "test": "T-17",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    },
+    {
+      "id": "RF-18",
+      "priority": "P0",
+      "statement": "Manejar reintentos e interrupciones sin duplicar recepción, cobro o entrega; el mismo identificador con otro contenido produce conflicto.",
+      "use_case": "CU-07",
+      "tables": [
+        "idempotency_keys",
+        "handovers"
+      ],
+      "screens": [
+        "UI-08",
+        "UI-09"
+      ],
+      "paths": [
+        "/custodies/{custody_id}/handover",
+        "/custodies/{custody_id}/abort-handover"
+      ],
+      "test": "T-18",
+      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+    }
+  ],
+  "quality": [
+    {
+      "id": "RNF-01",
+      "category": "Usabilidad",
+      "statement": "Cuatro de cinco participantes completan las tareas críticas sin ayuda; registrar errores y limitaciones de la muestra.",
+      "test": "T-19",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-02",
+      "category": "Desempeño",
+      "statement": "P95 de consultas privadas menor o igual a 500 ms en servidor de prueba identificado, con 10 000 custodias sintéticas y 20 usuarios concurrentes. No incluye trabajo humano ni entrega de correo.",
+      "test": "T-20",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-03",
+      "category": "Seguridad",
+      "statement": "Cookies de sesión HttpOnly, Secure en HTTPS y SameSite, defensa CSRF en mutaciones, expiración, autorización y límites de intentos probados.",
+      "test": "T-21",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-04",
+      "category": "Confiabilidad",
+      "statement": "En pruebas de falla de persistencia, ningún retiro o recepción queda parcialmente confirmado en la base de datos.",
+      "test": "T-22",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-05",
+      "category": "Recuperación",
+      "statement": "Metas propuestas RPO 24 horas y RTO 4 horas, sujetas a un ensayo real de copia y restauración.",
+      "test": "T-23",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-06",
+      "category": "Mantenibilidad",
+      "statement": "Casos de uso comprobables con repositorios en memoria; el dominio no importa FastAPI ni SQLAlchemy.",
+      "test": "T-24",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-07",
+      "category": "Accesibilidad",
+      "statement": "Navegación crítica por teclado, foco visible, etiquetas y estados con texto; contraste revisado contra criterios seleccionados de WCAG 2.2.",
+      "test": "T-25",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-08",
+      "category": "Observabilidad",
+      "statement": "Correlación entre petición, evento e incidencia, sin códigos, contraseñas o sesiones en logs.",
+      "test": "T-26",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-09",
+      "category": "Comunicaciones",
+      "statement": "Aviso interno creado en la transacción; primer intento de correo en dos minutos en entorno controlado, con estado de error visible.",
+      "test": "T-27",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-10",
+      "category": "Concurrencia",
+      "statement": "Veinte solicitudes simultáneas sobre una única ubicación disponible producen una sola asignación exitosa.",
+      "test": "T-28",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-11",
+      "category": "Restricción",
+      "statement": "Uso desde navegador y equipos existentes; ningún flujo exige periférico o dispositivo externo.",
+      "test": "T-29",
+      "status": "META_NO_MEDIDA"
+    },
+    {
+      "id": "RNF-12",
+      "category": "Privacidad",
+      "statement": "Vistas por participación y punto, información pública mínima y exportaciones sin secretos. Política de conservación documentada antes del piloto.",
+      "test": "T-30",
+      "status": "META_NO_MEDIDA"
+    }
+  ],
+  "rules": [
+    {
+      "id": "RN-01",
+      "statement": "Toda mutación sensible obtiene actor y alcance desde la sesión; los identificadores enviados por el cliente no sustituyen autorización."
+    },
+    {
+      "id": "RN-02",
+      "statement": "Una custodia tiene como máximo una asignación activa y una ubicación como máximo una custodia activa."
+    },
+    {
+      "id": "RN-03",
+      "statement": "`REGISTRADA` no ocupa ni reserva espacio. La capacidad se confirma en recepción."
+    },
+    {
+      "id": "RN-04",
+      "statement": "Credencial propuesta: seis dígitos aleatorios, quince minutos de vigencia, cinco intentos fallidos por ventana de quince minutos y controles adicionales por cuenta y origen. Una autorización dura dos minutos; son parámetros de piloto."
+    },
+    {
+      "id": "RN-05",
+      "statement": "La guía y el teléfono no autorizan retiro. Ninguna consulta pública o bitácora devuelve el código de retiro."
+    },
+    {
+      "id": "RN-06",
+      "statement": "La tarifa y sus reglas se calculan en servidor; la custodia conserva versión y condiciones aceptadas. El servicio se paga al recibir y las prórrogas antes de entregar."
+    },
+    {
+      "id": "RN-07",
+      "statement": "Un plazo vencido mantiene la custodia y su ubicación. No se elimina ni se dispone automáticamente del objeto."
+    },
+    {
+      "id": "RN-08",
+      "statement": "Recuperaciones y devoluciones requieren solicitud, evidencia y aprobación por otra persona con permiso."
+    },
+    {
+      "id": "RN-09",
+      "statement": "Verificar permite preparar la entrega; confirmar registra que el operador ya entregó físicamente. Son pasos separados y visibles."
+    },
+    {
+      "id": "RN-10",
+      "statement": "Sin conexión no se inician mutaciones operativas. Una entrega humana sin confirmación digital se trata como incidencia y no se repite."
+    },
+    {
+      "id": "RN-11",
+      "statement": "Los eventos son adiciones históricas. Una corrección crea otro evento; no reescribe el anterior."
+    },
+    {
+      "id": "RN-12",
+      "statement": "Una incidencia bloqueante, deuda del servicio o discrepancia de inventario impide una entrega ordinaria."
+    },
+    {
+      "id": "RN-13",
+      "statement": "Emisor y destinatario tienen cuenta activa y contacto comprobado por correo o comprobación presencial registrada."
+    },
+    {
+      "id": "RN-14",
+      "statement": "Se registra la comprobación visual del destinatario y nombre del operador; no se exige fotografía o número completo de documento. El periodo de conservación debe definirse antes del piloto público."
+    }
+  ]
+}

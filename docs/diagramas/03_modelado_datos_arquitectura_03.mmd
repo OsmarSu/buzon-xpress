@@ -1,0 +1,7 @@
+flowchart TB
+    HTTP[Adaptador HTTP] --> UC[Casos de uso]
+    UC --> D[Dominio de custodia y autorización]
+    UC --> P[Puertos: repositorio, unidad de trabajo, reloj y avisos]
+    SQL[Adaptador SQLAlchemy] -. implementa .-> P
+    MAIL[Adaptador de correo] -. implementa .-> P
+    UC --> AUTH[Política de sesión y alcance]

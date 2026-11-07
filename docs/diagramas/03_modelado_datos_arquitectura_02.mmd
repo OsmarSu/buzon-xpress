@@ -1,0 +1,5 @@
+flowchart LR
+    N[Navegador en equipo existente] -->|HTTPS y sesión| API[Aplicación web FastAPI]
+    API --> DB[(PostgreSQL)]
+    W[Proceso de tareas de la misma aplicación] --> DB
+    W --> SMTP[Correo configurado por software]

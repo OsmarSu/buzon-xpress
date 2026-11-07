@@ -1,0 +1,22 @@
+erDiagram
+    users ||--o{ sessions : mantiene
+    users ||--o{ staff_assignments : recibe
+    service_points ||--o{ staff_assignments : habilita
+    service_points ||--o{ storage_locations : organiza
+    service_points ||--o{ tariff_versions : publica
+    users ||--o{ custody_orders : participa
+    service_points ||--o{ custody_orders : atiende
+    tariff_versions o|--o{ custody_orders : establece
+    custody_orders ||--o{ storage_assignments : ocupa
+    storage_locations ||--o{ storage_assignments : aloja
+    custody_orders ||--o{ pickup_credentials : autoriza
+    custody_orders ||--o{ pickup_authorizations : prepara
+    pickup_credentials o|--o{ pickup_authorizations : verifica
+    custody_orders ||--o{ recovery_requests : requiere
+    recovery_requests o|--o{ pickup_authorizations : permite
+    pickup_authorizations ||--o| handovers : confirma
+    custody_orders ||--o{ custody_events : registra
+    custody_orders ||--o{ notifications : comunica
+    custody_orders ||--o{ incidents : documenta
+    custody_orders ||--o{ service_payments : cobra
+    users ||--o{ idempotency_keys : solicita

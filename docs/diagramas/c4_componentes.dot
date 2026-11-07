@@ -1,0 +1,21 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
+node [shape=box,style="rounded,filled",fillcolor="#EDF2FC",color="#0B368C",fontname="DejaVu Sans",fontsize=16,margin="0.2"];
+edge [color="#556276",fontname="DejaVu Sans",fontsize=12];
+rankdir=TB;
+http [label="Adaptador HTTP"];
+aplicacion [label="Casos de uso
+Permisos y unidad de trabajo"];
+dominio [label="Dominio
+Custodia, credencial, autorización"];
+puertos [label="Puertos
+Repositorio, reloj, avisos"];
+sql [label="Adaptador SQLAlchemy"];
+mail [label="Adaptador de correo"];
+http -> aplicacion;
+aplicacion -> dominio;
+aplicacion -> puertos;
+sql -> puertos [style=dashed,label="implementa"];
+mail -> puertos [style=dashed,label="implementa"];
+
+}

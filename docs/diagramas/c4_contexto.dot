@@ -1,0 +1,19 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
+node [shape=box,style="rounded,filled",fillcolor="#EDF2FC",color="#0B368C",fontname="DejaVu Sans",fontsize=16,margin="0.2"];
+edge [color="#556276",fontname="DejaVu Sans",fontsize=12];
+rankdir=LR;
+emisor [label="Emisor y destinatario"];
+operador [label="Personal del punto"];
+admin [label="Administración y auditoría"];
+sistema [label="BUZON Xpress
+Plataforma de custodia asistida",fillcolor="#0B368C",fontcolor="white"];
+correo [label="Correo configurable
+Servicio de software"];
+emisor -> sistema [label="registro, consulta y credencial"];
+operador -> sistema [label="recepción y entrega registradas"];
+admin -> sistema [label="configuración y revisión"];
+sistema -> correo [label="aviso sin código secreto"];
+operador -> emisor [style=dashed,label="entrega material por personal"];
+
+}

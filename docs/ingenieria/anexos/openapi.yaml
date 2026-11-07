@@ -1,0 +1,3513 @@
+openapi: 3.1.0
+info:
+  title: BUZON Xpress — contrato propuesto
+  version: 1.0.0
+  description: Diseño documental sin servidor implementado. Entrega humana, sin hardware
+    externo. Los permisos de negocio se detallan en la especificación.
+servers:
+- url: /api/v1
+  description: Ruta relativa de la futura aplicación.
+security:
+- sessionCookie: []
+paths:
+  /auth/csrf:
+    get:
+      summary: Obtener token antifalsificación ligado al contexto del navegador.
+      operationId: get_auth_csrf
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Csrf'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /auth/register:
+    post:
+      summary: Crear cuenta general; no permite elegir rol privilegiado.
+      operationId: post_auth_register
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+  /auth/login:
+    post:
+      summary: Abrir sesión protegida mediante cookie.
+      operationId: post_auth_login
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+  /auth/logout:
+    post:
+      summary: Revocar sesión actual.
+      operationId: post_auth_logout
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+  /auth/me:
+    get:
+      summary: Consultar identidad y permisos propios.
+      operationId: get_auth_me
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/verify-contact:
+    post:
+      summary: Consumir enlace de correo y comprobar contacto.
+      operationId: post_auth_verify_contact
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenAction'
+  /auth/password-reset/request:
+    post:
+      summary: Solicitar recuperación sin revelar existencia de cuenta.
+      operationId: post_auth_password_reset_request
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetRequest'
+  /auth/password-reset/complete:
+    post:
+      summary: Consumir enlace y revocar sesiones anteriores.
+      operationId: post_auth_password_reset_complete
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetComplete'
+  /admin/users/{user_id}/verify-contact:
+    post:
+      summary: Registrar comprobación presencial con evidencia mínima.
+      operationId: post_admin_users_user_id_verify_contact
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema: &id001
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+  /points:
+    get:
+      summary: Listar puntos activos y horarios publicados.
+      operationId: get_points
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Point'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /points/{point_id}/quote:
+    get:
+      summary: Cotizar plazo y tamaño sin reservar espacio.
+      operationId: get_points_point_id_quote
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - name: point_id
+        in: path
+        required: true
+        schema: *id001
+      - name: size_category
+        in: query
+        required: true
+        schema: &id004
+          type: string
+          enum:
+          - PEQUENO
+          - MEDIANO
+          - GRANDE
+      - name: duration_hours
+        in: query
+        required: true
+        schema: &id010
+          type: integer
+          minimum: 1
+  /custodies:
+    post:
+      summary: Registrar custodia sin reservar capacidad; referencia pública se muestra
+        al crear.
+      operationId: post_custodies
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustodyRegistered'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustodyCreate'
+    get:
+      summary: Listar custodias donde participa la cuenta.
+      operationId: get_custodies
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /custodies/{custody_id}:
+    get:
+      summary: Consultar detalle privado autorizado.
+      operationId: get_custodies_custody_id
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+  /custodies/{custody_id}/public-reference:
+    post:
+      summary: Rotar referencia pública con autorización del participante.
+      operationId: post_custodies_custody_id_public_reference
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicReference'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+  /custodies/{custody_id}/cancel:
+    post:
+      summary: Cancelar exclusivamente antes de recibir.
+      operationId: post_custodies_custody_id_cancel
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReason'
+  /public-tracking/{reference}:
+    get:
+      summary: Estado mínimo por referencia opaca; sin datos personales.
+      operationId: get_public_tracking_reference
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicTracking'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema: &id003
+          type: string
+  /custodies/{custody_id}/receive:
+    post:
+      summary: Recepción, ubicación y cobro transaccionales.
+      operationId: post_custodies_custody_id_receive
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Receive'
+  /custodies/{custody_id}/credentials:
+    post:
+      summary: Mostrar un código una sola vez al destinatario autenticado.
+      operationId: post_custodies_custody_id_credentials
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialIssue'
+  /custodies/{custody_id}/verify:
+    post:
+      summary: Retener credencial y preparar entrega, sin confirmarla.
+      operationId: post_custodies_custody_id_verify
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Verify'
+  /custodies/{custody_id}/handover:
+    post:
+      summary: Confirmar entrega física ya realizada.
+      operationId: post_custodies_custody_id_handover
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Handover'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverConfirm'
+  /custodies/{custody_id}/abort-handover:
+    post:
+      summary: Anular preparación solo si no hubo entrega física.
+      operationId: post_custodies_custody_id_abort_handover
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Abort'
+  /custodies/{custody_id}/extend:
+    post:
+      summary: Registrar prórroga y cobro según contrato histórico.
+      operationId: post_custodies_custody_id_extend
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Custody'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Extension'
+  /custodies/{custody_id}/incidents:
+    post:
+      summary: Abrir incidencia con control de alcance.
+      operationId: post_custodies_custody_id_incidents
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCreate'
+  /incidents/{incident_id}/resolve:
+    post:
+      summary: Resolver con fundamento y comprobación de inventario.
+      operationId: post_incidents_incident_id_resolve
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+  /recovery-requests:
+    post:
+      summary: Solicitar excepción con evidencia.
+      operationId: post_recovery_requests
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recovery'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryCreate'
+  /recovery-requests/{request_id}/decision:
+    post:
+      summary: Revisar con otra persona; ejecutar conciliación según propósito.
+      operationId: post_recovery_requests_request_id_decision
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recovery'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Decision'
+  /custodies/{custody_id}/return-authorization:
+    post:
+      summary: Preparar devolución aprobada al emisor.
+      operationId: post_custodies_custody_id_return_authorization
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnAuthorization'
+  /custodies/{custody_id}/return-handover:
+    post:
+      summary: Confirmar devolución física ya realizada.
+      operationId: post_custodies_custody_id_return_handover
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Handover'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: custody_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverConfirm'
+  /notifications:
+    get:
+      summary: Consultar bandeja propia.
+      operationId: get_notifications
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /notifications/{notification_id}/read:
+    post:
+      summary: Marcar aviso propio como leído.
+      operationId: post_notifications_notification_id_read
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: notification_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+  /inventory:
+    get:
+      summary: Inventario de un punto asignado al personal.
+      operationId: get_inventory
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: point_id
+        in: query
+        required: true
+        schema: *id001
+  /admin/points:
+    post:
+      summary: Crear un punto atendido.
+      operationId: post_admin_points
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Point'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PointWrite'
+  /admin/points/{point_id}:
+    put:
+      summary: Actualizar horario y habilitación sin perder inventario.
+      operationId: put_admin_points_point_id
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Point'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: point_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PointWrite'
+  /admin/locations:
+    post:
+      summary: Registrar ubicación del espacio existente.
+      operationId: post_admin_locations
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationWrite'
+  /admin/locations/{location_id}:
+    patch:
+      summary: Bloquear o retirar de servicio sin liberar un objeto ocupado.
+      operationId: patch_admin_locations_location_id
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: location_id
+        in: path
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationState'
+  /admin/staff-assignments:
+    post:
+      summary: Asignar o deshabilitar personal con auditoría.
+      operationId: post_admin_staff_assignments
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffWrite'
+  /admin/tariffs:
+    post:
+      summary: Publicar nueva versión tarifaria.
+      operationId: post_admin_tariffs
+      responses:
+        '201':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TariffWrite'
+  /audit/events:
+    get:
+      summary: Consultar eventos dentro del alcance autorizado.
+      operationId: get_audit_events
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: point_id
+        in: query
+        required: true
+        schema: *id001
+  /reports:
+    get:
+      summary: Indicadores con periodo y calidad de datos.
+      operationId: get_reports
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: point_id
+        in: query
+        required: true
+        schema: *id001
+      - name: from
+        in: query
+        required: true
+        schema: &id002
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        required: true
+        schema: *id002
+  /health:
+    get:
+      summary: Comprobar dependencias realmente consultadas.
+      operationId: get_health
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: buzon_session
+  parameters:
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: *id003
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 120
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code: *id003
+        message: *id003
+        correlation_id: *id001
+      required:
+      - code
+      - message
+      - correlation_id
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        full_name: *id003
+        role:
+          type: string
+          enum:
+          - USUARIO
+          - OPERADOR
+          - ADMIN
+          - AUDITOR
+        contact_verified:
+          type: boolean
+      required:
+      - id
+      - full_name
+      - role
+      - contact_verified
+    Register:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+        full_name: *id003
+        phone: *id003
+      required:
+      - email
+      - password
+      - full_name
+    Login:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    Session:
+      type: object
+      additionalProperties: false
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        expires_at: *id002
+      required:
+      - user
+      - expires_at
+    Csrf:
+      type: object
+      additionalProperties: false
+      properties:
+        csrf_token: *id003
+      required:
+      - csrf_token
+    TokenAction:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+    ResetRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    ResetComplete:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - token
+      - password
+    Reason:
+      type: object
+      additionalProperties: false
+      properties:
+        reason: *id003
+      required:
+      - reason
+    VersionReason:
+      type: object
+      additionalProperties: false
+      properties:
+        reason: *id003
+        expected_version: &id005
+          type: integer
+          minimum: 1
+      required:
+      - reason
+      - expected_version
+    Point:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        name: *id003
+        address: *id003
+        opening_hours:
+          type: object
+          additionalProperties: true
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+      - address
+      - opening_hours
+      - is_active
+    CustodyCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        recipient_contact: *id003
+        point_id: *id001
+        description:
+          type: string
+          maxLength: 255
+        size_category: *id004
+      required:
+      - recipient_contact
+      - point_id
+      - description
+      - size_category
+    Custody:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        tracking_number: *id003
+        state: &id006
+          type: string
+          enum:
+          - REGISTRADA
+          - EN_CUSTODIA
+          - RETIRO_EN_CURSO
+          - RETIRADA
+          - DEVOLUCION_EN_CURSO
+          - DEVUELTA
+          - CANCELADA
+        point_id: *id001
+        description: *id003
+        size_category: *id004
+        version: *id005
+        service_total: &id007
+          type: string
+          pattern: ^\d+\.\d{2}$
+          description: BOB decimal, no float binario.
+        due_at: &id008
+          type:
+          - string
+          - 'null'
+          format: date-time
+        received_at: &id009
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - tracking_number
+      - state
+      - point_id
+      - description
+      - size_category
+      - version
+      - service_total
+    CustodyRegistered:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        tracking_number: *id003
+        state: *id006
+        point_id: *id001
+        description: *id003
+        size_category: *id004
+        version: *id005
+        service_total: *id007
+        due_at: *id008
+        received_at: *id009
+        public_reference: *id003
+      required:
+      - id
+      - tracking_number
+      - state
+      - point_id
+      - description
+      - size_category
+      - version
+      - service_total
+    PublicReference:
+      type: object
+      additionalProperties: false
+      properties:
+        public_reference: *id003
+      required:
+      - public_reference
+    PublicTracking:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          enum:
+          - PENDIENTE
+          - RECIBIDA
+          - FINALIZADA
+        point_name: *id003
+        opening_hours:
+          type: object
+          additionalProperties: true
+      required:
+      - state
+      - point_name
+      - opening_hours
+    Quote:
+      type: object
+      additionalProperties: false
+      properties:
+        tariff_id: *id001
+        amount: *id007
+        currency:
+          const: BOB
+        duration_hours: *id010
+      required:
+      - tariff_id
+      - amount
+      - currency
+      - duration_hours
+    Receive:
+      type: object
+      additionalProperties: false
+      properties:
+        location_id: *id001
+        expected_version: *id005
+        duration_hours: *id010
+        tariff_id: *id001
+        accepted_amount: *id007
+        payment_method: &id011
+          type: string
+          enum:
+          - EFECTIVO
+          - REFERENCIA_MANUAL
+        payment_reference: *id003
+        external_condition: *id003
+      required:
+      - location_id
+      - expected_version
+      - duration_hours
+      - tariff_id
+      - accepted_amount
+      - payment_method
+      - external_condition
+    CredentialIssue:
+      type: object
+      additionalProperties: false
+      properties:
+        reissue:
+          type: boolean
+          default: false
+      required: []
+    Credential:
+      type: object
+      additionalProperties: false
+      properties:
+        credential_id: *id001
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+          readOnly: true
+        expires_at: *id002
+      required:
+      - credential_id
+      - code
+      - expires_at
+    Verify:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+          writeOnly: true
+        expected_version: *id005
+        recipient_check:
+          const: COMPROBACION_VISUAL_COMPLETADA
+      required:
+      - code
+      - expected_version
+      - recipient_check
+    Authorization:
+      type: object
+      additionalProperties: false
+      properties:
+        authorization_id: *id001
+        custody_id: *id001
+        expires_at: *id002
+        state:
+          const: VALIDADA
+        location_code: *id003
+        description: *id003
+        version: *id005
+      required:
+      - authorization_id
+      - custody_id
+      - expires_at
+      - state
+      - location_code
+      - description
+      - version
+    HandoverConfirm:
+      type: object
+      additionalProperties: false
+      properties:
+        authorization_id: *id001
+        expected_version: *id005
+        physically_delivered:
+          const: true
+      required:
+      - authorization_id
+      - expected_version
+      - physically_delivered
+    Handover:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        custody_id: *id001
+        kind:
+          type: string
+          enum:
+          - RETIRO
+          - DEVOLUCION
+        confirmed_at: *id002
+        operator_id: *id001
+      required:
+      - id
+      - custody_id
+      - kind
+      - confirmed_at
+      - operator_id
+    Abort:
+      type: object
+      additionalProperties: false
+      properties:
+        authorization_id: *id001
+        physically_delivered:
+          const: false
+        reason: *id003
+      required:
+      - authorization_id
+      - physically_delivered
+      - reason
+    Extension:
+      type: object
+      additionalProperties: false
+      properties:
+        additional_hours: *id010
+        accepted_amount: *id007
+        expected_version: *id005
+        payment_method: *id011
+        payment_reference: *id003
+      required:
+      - additional_hours
+      - accepted_amount
+      - expected_version
+      - payment_method
+    IncidentCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        kind: *id003
+        description: *id003
+        is_blocking:
+          type: boolean
+          default: true
+      required:
+      - kind
+      - description
+    Incident:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        custody_id: *id001
+        state:
+          type: string
+          enum:
+          - ABIERTA
+          - EN_REVISION
+          - RESUELTA
+        is_blocking:
+          type: boolean
+      required:
+      - id
+      - custody_id
+      - state
+      - is_blocking
+    RecoveryCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        custody_id: *id001
+        purpose:
+          type: string
+          enum:
+          - REEMITIR_CREDENCIAL
+          - CAMBIAR_DESTINATARIO
+          - AUTORIZAR_DEVOLUCION
+          - RECONCILIAR_ENTREGA
+        evidence: *id003
+        target_recipient_id: *id001
+      required:
+      - custody_id
+      - purpose
+      - evidence
+    Recovery:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        custody_id: *id001
+        state:
+          type: string
+          enum:
+          - PENDIENTE
+          - APROBADA
+          - RECHAZADA
+          - EJECUTADA
+      required:
+      - id
+      - custody_id
+      - state
+    Decision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+          - APROBAR
+          - RECHAZAR
+        note: *id003
+      required:
+      - decision
+      - note
+    ReturnAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        recovery_request_id: *id001
+        expected_version: *id005
+        sender_check:
+          const: COMPROBACION_VISUAL_COMPLETADA
+      required:
+      - recovery_request_id
+      - expected_version
+      - sender_check
+    Resource:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        state: *id003
+      required:
+      - id
+    Notification:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        subject: *id003
+        body: *id003
+        created_at: *id002
+        read_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - subject
+      - body
+      - created_at
+    Location:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        point_id: *id001
+        code: *id003
+        state:
+          type: string
+          enum:
+          - DISPONIBLE
+          - OCUPADA
+          - BLOQUEADA
+          - FUERA_SERVICIO
+        size_category: *id004
+        version: *id005
+      required:
+      - id
+      - point_id
+      - code
+      - state
+      - size_category
+      - version
+    PointWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        name: *id003
+        address: *id003
+        opening_hours:
+          type: object
+          additionalProperties: true
+        is_active:
+          type: boolean
+      required:
+      - name
+      - address
+      - opening_hours
+      - is_active
+    LocationWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        point_id: *id001
+        code: *id003
+        size_category: *id004
+      required:
+      - point_id
+      - code
+      - size_category
+    LocationState:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          enum:
+          - DISPONIBLE
+          - BLOQUEADA
+          - FUERA_SERVICIO
+        expected_version: *id005
+        reason: *id003
+      required:
+      - state
+      - expected_version
+      - reason
+    StaffWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        point_id: *id001
+        user_id: *id001
+        role:
+          type: string
+          enum:
+          - OPERADOR
+          - ADMIN
+          - AUDITOR
+        is_active:
+          type: boolean
+      required:
+      - point_id
+      - user_id
+      - role
+      - is_active
+    TariffWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        point_id: *id001
+        valid_from: *id002
+        rules:
+          type: object
+          description: Validar moneda, tamaños, horas y precios en servidor.
+          additionalProperties: true
+      required:
+      - point_id
+      - valid_from
+      - rules
+    Event:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        event_type: *id003
+        created_at: *id002
+        correlation_id: *id001
+        actor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        custody_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - event_type
+      - created_at
+      - correlation_id
+    Report:
+      type: object
+      additionalProperties: false
+      properties:
+        point_id: *id001
+        from: *id002
+        to: *id002
+        available_locations:
+          type: integer
+          minimum: 0
+        occupied_locations:
+          type: integer
+          minimum: 0
+        completed_custodies:
+          type: integer
+          minimum: 0
+        data_quality_note: *id003
+      required:
+      - point_id
+      - from
+      - to
+      - available_locations
+      - occupied_locations
+      - completed_custodies
+      - data_quality_note
+    Health:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+          - OK
+          - DEGRADADO
+        database_checked:
+          type: boolean
+      required:
+      - status
+      - database_checked

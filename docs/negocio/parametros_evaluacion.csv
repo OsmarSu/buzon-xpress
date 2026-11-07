@@ -1,0 +1,13 @@
+parametro,unidad,valor,estado,fuente_fecha_responsable
+ubicaciones,unidad,,por_levantar,
+dias_operacion_mes,dia,,por_levantar,
+permanencia_media,dia,,por_medir,
+custodias_mes,operacion,,hipotesis,
+precio_medio,BOB_operacion,,por_validar,
+costo_variable_unitario,BOB_operacion,,por_medir,
+costos_fijos_mes,BOB_mes,,por_cotizar,
+minutos_recepcion,minuto,,por_medir,
+minutos_retiro,minuto,,por_medir,
+minutos_soporte_por_custodia,minuto,,por_medir,
+inversion_inicial,BOB,,por_estimar,
+tasa_descuento_periodica,proporcion,,por_justificar,

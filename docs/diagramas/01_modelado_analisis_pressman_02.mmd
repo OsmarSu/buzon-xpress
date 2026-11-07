@@ -1,0 +1,37 @@
+classDiagram
+    class Custodia {
+      +id
+      +emisor
+      +destinatario
+      +estado
+      +vencimiento
+      +iniciarRetiro()
+      +finalizarRetiro()
+    }
+    class Asignacion {
+      +inicio
+      +fin
+    }
+    class Ubicacion {
+      +codigo
+      +estado
+    }
+    class Credencial {
+      +verificador
+      +expiraEn
+      +estado
+    }
+    class Autorizacion {
+      +operador
+      +expiraEn
+      +estado
+    }
+    class Entrega {
+      +tipo
+      +confirmadaEn
+    }
+    Custodia "1" --> "0..*" Asignacion
+    Ubicacion "1" --> "0..*" Asignacion
+    Custodia "1" --> "0..*" Credencial
+    Custodia "1" --> "0..*" Autorizacion
+    Autorizacion "1" --> "0..1" Entrega

@@ -1,0 +1,11 @@
+flowchart LR
+    E[Emisor] --> C02[CU-02 Registrar]
+    E --> C04[CU-04 Consultar]
+    R[Destinatario] --> C05[CU-05 Obtener credencial]
+    O[Operador del punto] --> C03[CU-03 Recibir y ubicar]
+    O --> C06[CU-06 Verificar]
+    O --> C07[CU-07 Confirmar entrega]
+    O --> C10[CU-10 Resolver incidencia]
+    A[Administrador] --> C10
+    A --> C11[CU-11 Configurar punto]
+    AU[Auditor] --> C12[CU-12 Revisar eventos]

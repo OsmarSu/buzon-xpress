@@ -1,0 +1,29 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
+node [shape=box,style="rounded,filled",fillcolor="#EDF2FC",color="#0B368C",fontname="DejaVu Sans",fontsize=16,margin="0.2"];
+edge [color="#556276",fontname="DejaVu Sans",fontsize=12];
+rankdir=TB;
+registrada [label="REGISTRADA
+Sin ocupación"];
+guardada [label="EN_CUSTODIA
+Asignación activa"];
+curso [label="RETIRO_EN_CURSO
+Preparación retenida"];
+retirada [label="RETIRADA
+Salida confirmada"];
+devolucion [label="DEVOLUCION_EN_CURSO"];
+devuelta [label="DEVUELTA"];
+cancelada [label="CANCELADA"];
+registrada -> guardada [label="recepción, ubicación y pago"];
+registrada -> cancelada [label="antes de recibir"];
+guardada -> curso [label="verificación válida"];
+curso -> retirada [label="entrega humana confirmada"];
+curso -> guardada [label="no entregado; anulación controlada"];
+guardada -> devolucion [label="devolución aprobada"];
+devolucion -> devuelta [label="entrega al emisor confirmada"];
+devolucion -> guardada [label="no entregado; anulación"];
+nota [shape=note,fillcolor="#FFF6D8",label="Vencimiento e incidencias no eliminan posesión.
+Un corte tras entregar requiere conciliación."];
+nota -> curso [style=dashed,arrowhead=none];
+
+}

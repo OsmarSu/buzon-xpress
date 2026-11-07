@@ -1,0 +1,131 @@
+<html><head><meta charset="utf-8"><style>
+body {font-family:"DejaVu Sans";font-size:10pt;color:#172033;}
+h1 {font-size:19pt;color:#0B368C;margin-top:16pt;}
+h2 {font-size:14pt;color:#0B368C;margin-top:14pt;}
+h3 {font-size:11pt;color:#0B368C;}
+p {margin-top:5pt;margin-bottom:7pt;}
+table {border-collapse:collapse;width:100%;margin-top:8pt;margin-bottom:10pt;}
+th {background-color:#E5ECF9;font-weight:bold;}
+td,th {border:1px solid #B9C4D8;padding:5px;font-size:8pt;vertical-align:top;}
+pre {font-family:"DejaVu Sans Mono";font-size:7pt;white-space:pre-wrap;background-color:#F4F6FA;}
+code {font-family:"DejaVu Sans Mono";font-size:8pt;}
+a {color:#0B368C;}
+.chapter {page-break-before:always;}
+.caption {font-size:8pt;color:#555555;}
+</style></head><body><h1>BUZON Xpress</h1><h2>Perfil del proyecto reformulado</h2>
+    <p>Custodia temporal asistida e intercambio asíncrono de objetos</p>
+    <p>26 de octubre de 2026 · La Paz, Bolivia · Versión documental 1.0</p>
+    <p>La plataforma utiliza equipos y espacio existentes. La recepción y la entrega son realizadas por personal; no se integra hardware externo.</p>
+    <p>Estado: diseño propuesto. Las pruebas de producto, demanda y resultados económicos están pendientes de ejecución.</p><div class="chapter"><h1>Perfil de proyecto: BUZON Xpress</h1>
+<h2>Plataforma web para la custodia temporal asistida y el intercambio asíncrono de objetos</h2>
+<p>Preparación y Evaluación de Proyectos · La Paz, Bolivia · 2026.</p>
+<p>Versión documental 1.0. El emplazamiento concreto, la capacidad y los importes se determinan mediante el levantamiento del punto piloto. Este documento describe una propuesta; no presenta resultados de una empresa operativa.</p>
+<h2>1. Introducción</h2>
+<p>La entrega de un objeto entre dos personas requiere coordinar lugar y horario. Cuando esa coordinación falla, el emisor puede posponerla, contratar un traslado o pedir a un tercero que lo guarde. BUZON Xpress propone un servicio en el que personal de un punto recibe un objeto, registra su custodia y lo entrega posteriormente a un destinatario autorizado.</p>
+<p>La plataforma organiza el proceso y conserva evidencia digital. La recepción y la entrega son actividades humanas; el espacio de almacenamiento permanece bajo responsabilidad del personal. Se utilizan equipos y espacio disponibles, sin incorporar hardware externo ni lockers inteligentes.</p>
+<h2>2. Antecedentes y diagnóstico por realizar</h2>
+<p>El perfil antecedente identifica dificultades de coordinación, resguardo informal y falta de trazabilidad. La documentación del proyecto existente aporta una base web orientada al comercio social. En su código se observaron modelos de paquetes y puntos, una API y pantallas de demostración, además de limitaciones de autenticación e integración.</p>
+<p>Estos antecedentes justifican investigar el problema, pero no prueban su magnitud local ni la disposición a pagar. El diagnóstico propuesto combina entrevistas sobre intercambios recientes, observación autorizada de un punto y un ensayo controlado. Se contrastan consignas, comercios receptores, encuentros personales y mensajería, sin afirmar que tales servicios estén ausentes o sean inferiores.</p>
+<h2>3. Identificación y planteamiento del problema</h2>
+<p>Problema central: dificultad para concretar intercambios de objetos sin coincidencia horaria, con una constancia suficiente de recepción, custodia y entrega.</p>
+<table>
+<thead>
+<tr>
+<th>Causas a investigar</th>
+<th>Manifestación</th>
+<th>Efecto posible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agendas incompatibles.</td>
+<td>Encuentros reprogramados o esperas.</td>
+<td>Tiempo y coordinación adicionales.</td>
+</tr>
+<tr>
+<td>Resguardo sin registro.</td>
+<td>Terceros reciben objetos sin constancia uniforme.</td>
+<td>Incertidumbre sobre responsable y destinatario.</td>
+</tr>
+<tr>
+<td>Verificación insuficiente.</td>
+<td>Se entrega por nombre o teléfono sin autorización comprobable.</td>
+<td>Error de entrega y dificultad de reconstrucción.</td>
+</tr>
+<tr>
+<td>Falta de información de disponibilidad.</td>
+<td>No se conoce si el objeto llegó o sigue guardado.</td>
+<td>Viajes innecesarios y consultas repetidas.</td>
+</tr>
+</tbody>
+</table>
+<p>Pregunta del proyecto: ¿cómo diseñar y evaluar una plataforma y un procedimiento de custodia asistida que permitan recibir y entregar objetos en momentos distintos, con autorización y trazabilidad, usando recursos existentes?</p>
+<h2>4. Justificación</h2>
+<p>La propuesta separa temporalmente al emisor del destinatario y establece responsabilidades durante la custodia. Su valor esperado es reducir incertidumbre, errores y esfuerzo de coordinación. La validación debe comprobar si ese valor resulta suficiente frente al costo, la distancia al punto y su horario.</p>
+<p>El enfoque asistido hace viable investigar la solución con infraestructura disponible. La seguridad depende de controles digitales, organización del espacio y actuación del personal; no se promete protección física automática ni eliminación de pérdidas.</p>
+<h2>5. Objetivos</h2>
+<p><strong>Objetivo general:</strong> desarrollar y evaluar un prototipo de plataforma web para gestionar la custodia temporal asistida y el intercambio asíncrono de objetos, mediante identificación de usuarios, autorización de entrega, registro de operaciones y notificaciones, utilizando equipos y espacio existentes.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Objetivo específico</th>
+<th>Entregable y comprobación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OE-01</td>
+<td>Analizar necesidades y requisitos funcionales, operativos y de seguridad.</td>
+<td>Diagnóstico, requisitos y validación de escenarios con usuarios y operador.</td>
+</tr>
+<tr>
+<td>OE-02</td>
+<td>Diseñar el proceso de atención, la organización del punto y la arquitectura del software.</td>
+<td>Flujo operativo, distribución funcional y modelos de arquitectura y datos.</td>
+</tr>
+<tr>
+<td>OE-03</td>
+<td>Desarrollar identificación y autorización digital de las entregas.</td>
+<td>Autenticación, permisos y credenciales con pruebas de rechazo y uso único.</td>
+</tr>
+<tr>
+<td>OE-04</td>
+<td>Implementar registro, recepción, ubicación, retiro y devolución.</td>
+<td>Ciclo persistido y ensayo de inventario con objetos de prueba.</td>
+</tr>
+<tr>
+<td>OE-05</td>
+<td>Integrar notificaciones e historial para usuarios y personal.</td>
+<td>Avisos en plataforma, correo configurable y eventos asociados al actor.</td>
+</tr>
+<tr>
+<td>OE-06</td>
+<td>Evaluar funcionamiento, usabilidad, seguridad y viabilidad inicial.</td>
+<td>Protocolo, resultados del piloto y evaluación de demanda, costos y capacidad.</td>
+</tr>
+</tbody>
+</table>
+<h2>6. Alcance y delimitación</h2>
+<p>Se propone un punto piloto en el área urbana de La Paz, sujeto a disponibilidad de un espacio autorizado por su responsable. La cantidad de ubicaciones se levanta físicamente; no se asume capacidad nacional.</p>
+<p>Se gestionan objetos admitidos por tamaño y condiciones acordadas del punto. Una operación representa un bulto identificable, un emisor, un destinatario y una ubicación exclusiva mientras se encuentra bajo custodia. El registro previo no reserva espacio; la aceptación se confirma al recibir el objeto.</p>
+<p>Se incluyen cuentas generales, gestión de puntos, recepción, autorización, entrega, devolución asistida, cobro del servicio, avisos, incidencias, auditoría y reportes. Quedan fuera transporte, compra o venta de productos, cobro contra entrega a favor de terceros, liquidaciones bancarias, consolidación multitienda y dispositivos automatizados.</p>
+<p>La atención ocurre dentro del horario publicado. Una cuenta o código no acredita por sí solo identidad civil; el procedimiento establece comprobación visual y registro mínimo, sin almacenar imágenes documentales en el prototipo.</p>
+<h2>7. Solución y operación</h2>
+<p>El emisor y el destinatario tienen cuentas activas y contacto comprobado por correo o verificación presencial documentada. El emisor registra el objeto y selecciona al destinatario. El operador verifica admisibilidad, disponibilidad y tarifa, cobra el servicio y registra la recepción y ubicación en una transacción.</p>
+<p>El destinatario consulta su bandeja y genera una credencial temporal. En el punto presenta el código; el operador verifica la operación y al destinatario. El sistema autoriza la entrega y conserva una operación en curso. Después de entregar físicamente el bulto, el operador confirma el retiro, consume la autorización y libera la ubicación. Las diferencias o cortes posteriores a una entrega se gestionan como incidencias.</p>
+<p>El plazo vencido no libera una ubicación ocupada ni autoriza disposición del objeto. Se informa al usuario y se tramita prórroga o devolución. La política exacta de permanencia se establece antes del piloto.</p>
+<h2>8. Metodología</h2>
+<p>La investigación es exploratoria y aplicada. Se proponen diez entrevistas basadas en episodios recientes y observación de sesiones de atención; es una muestra por conveniencia, sin representatividad estadística. La evaluación operativa propuesta comprende treinta ciclos con objetos de prueba y cinco sesiones de usabilidad. Estas cantidades son un diseño inicial que puede ampliarse según resultados.</p>
+<p>La ingeniería se organiza en iteraciones con requisitos, modelos, implementación y pruebas de un flujo completo. Pressman y Maxim, Cockburn, Larman, Evans, Martin, Fowler y Patton aportan herramientas concretas. La <a href="../docs/metodologia/01_marcos_y_aplicacion.md">justificación metodológica</a> explica su selección y límites.</p>
+<h2>9. Factibilidad y evaluación</h2>
+<p>La evaluación distingue disponibilidad técnica de recursos, factibilidad operativa del personal y factibilidad económica del servicio. Se levantan tiempos por recepción y retiro, permanencia media, ocupación, costos fijos y variables y precio aceptable.</p>
+<p>No se fijan ingresos o rentabilidad sin datos. El <a href="../docs/negocio/02_demanda_costos_y_evaluacion.md">modelo económico</a> ofrece fórmulas, sensibilidad y una plantilla de captura. Las condiciones del emplazamiento y del servicio requieren investigación específica antes de atención al público; este perfil no emite conclusiones jurídicas.</p>
+<h2>10. Cronograma propuesto</h2>
+<p>Se plantean seis iteraciones de una semana como referencia de planificación: descubrimiento y alcance; identidad y contratos; registro y recepción; autorización y retiro; recuperación y comunicaciones; ensayo y evaluación. La duración es una estimación, no un compromiso sin conocer capacidad del equipo. El <a href="../docs/gestion/02_plan_implementacion.md">plan</a> define dependencias y entregables.</p>
+<h2>11. Resultados esperados y límites</h2>
+<p>Se espera obtener un prototipo que registre quién recibió, dónde se almacenó, quién autorizó y quién entregó cada objeto. La aceptación requiere que usuarios ajenos sean rechazados, que una ubicación no se asigne dos veces y que el historial permita reconstruir una operación y sus incidencias.</p>
+<p>El estudio permitirá decidir si el servicio merece continuar, ajustar horario o segmento, modificar tarifas o detenerse. La conclusión actual es de diseño: existe una formulación coherente con la restricción. La eficacia, demanda y rentabilidad permanecen pendientes de medición.</p>
+<h2>12. Referencias y anexos</h2>
+<p>La <a href="../docs/metodologia/02_bibliografia_verificada.md">bibliografía verificada</a> y el <a href="../referencias/original/PERFIL_ORIGINAL_BUZON_XPRESS.docx">archivo del perfil original</a> completan los antecedentes. Se adjuntan requisitos, modelos, wireframes, manual, plan de pruebas e instrumentos de investigación mediante el índice del <a href="../README.md">proyecto</a>.</p>
+</div></body></html>

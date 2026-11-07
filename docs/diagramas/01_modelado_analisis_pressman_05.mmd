@@ -1,0 +1,16 @@
+flowchart TB
+    U[Usuarios] --> P1[1 Identificar y registrar]
+    O[Operador] --> P2[2 Recibir y ubicar]
+    P1 --> C[(Custodias)]
+    P2 --> C
+    P2 --> I[(Asignaciones e inventario)]
+    R[Destinatario] --> P3[3 Emitir credencial]
+    P3 --> K[(Credenciales)]
+    O --> P4[4 Verificar y entregar]
+    K --> P4
+    C --> P4
+    P4 --> I
+    P4 --> E[(Eventos y comprobantes)]
+    C --> P5[5 Avisar y supervisar]
+    E --> P5
+    P5 --> U

@@ -1,0 +1,97 @@
+[
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/01_modelado_analisis_pressman.md",
+    "archive": "referencias/original/docs/ingenieria/01_modelado_analisis_pressman.md",
+    "sha256": "093abc94986c1e55c8527d13aa12b0f02aaf0442e2013254dd9f36256b117e32"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/02_modelado_diseno_ui.md",
+    "archive": "referencias/original/docs/ingenieria/02_modelado_diseno_ui.md",
+    "sha256": "409fc0161d6157f2963f57765caeba823847027c9e5c39e01beb086615bb6cb0"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/03_modelado_datos_arquitectura.md",
+    "archive": "referencias/original/docs/ingenieria/03_modelado_datos_arquitectura.md",
+    "sha256": "955de119260336e9193db7c024fc22d9b7ac5c429c7dda0ea0260cdedb0a048a"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/04_propuestas_wireframes_identidad.md",
+    "archive": "referencias/original/docs/ingenieria/04_propuestas_wireframes_identidad.md",
+    "sha256": "c92f04959a74c05c66b07d45e72207b8fe465b494a5644484eeadf4299d907b6"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/05_wireframes_estructurales_bn.md",
+    "archive": "referencias/original/docs/ingenieria/05_wireframes_estructurales_bn.md",
+    "sha256": "63ece401b7bd6d97f9afa770d698bccf0131a7845f85a363f3a8b8af24b58125"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/06_casos_de_uso_alto_nivel_y_expandidos.md",
+    "archive": "referencias/original/docs/ingenieria/06_casos_de_uso_alto_nivel_y_expandidos.md",
+    "sha256": "d597143ad88382bff5f0ac022e6612e50b58ce6417dddbdfd8e3c47b473d449d"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/ingenieria/BuzonExpress_Especificacion_Software.md",
+    "archive": "referencias/original/docs/ingenieria/BuzonExpress_Especificacion_Software.md",
+    "sha256": "796063bb48b0678ebb8089ac9d59a9e130456fff8badebd7d51e7e2e9d609794"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/negocio/BuzonExpress_Formulacion_Negocio.md",
+    "archive": "referencias/original/docs/negocio/BuzonExpress_Formulacion_Negocio.md",
+    "sha256": "1390c1fe52fd93e60bab21e4d504a77ab0c6e2534dd6fd39e7d2f25847e62ae8"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/wireframes/bw_auth_terminal_wireframes.jpg",
+    "archive": "referencias/original/docs/wireframes/bw_auth_terminal_wireframes.jpg",
+    "sha256": "24b3715e8d956d82553690987780be37646d5775384e821935eadb790cd6faa7"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/wireframes/bw_wireframes_suite.jpg",
+    "archive": "referencias/original/docs/wireframes/bw_wireframes_suite.jpg",
+    "sha256": "ccc514e8c9918d9d250fd2bf2ee7afadfd9b1fe8f6726d943e02eec0eccce402"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/wireframes/corporate_identity_mockup.jpg",
+    "archive": "referencias/original/docs/wireframes/corporate_identity_mockup.jpg",
+    "sha256": "54d7377d4789c6ef0a30c1ebba5f05bdccb4b5f140160c90e92f64be7d0b8202"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/wireframes/landing_page_wireframe.jpg",
+    "archive": "referencias/original/docs/wireframes/landing_page_wireframe.jpg",
+    "sha256": "ce8e7502225361d13ed76b2739005f27a4fbffc36d342de9a7ff97214493c88d"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docs/wireframes/manifesto_grid_mockup.jpg",
+    "archive": "referencias/original/docs/wireframes/manifesto_grid_mockup.jpg",
+    "sha256": "cd3ac12f67a47a5802be3e61d927c7c11942e0323f8e59f5d901537570f1a3d7"
+  },
+  {
+    "source": "/home/oswi/Descargas/PERFIL DE PROYECTO PAQUETERIA BUZON XPRESS.docx",
+    "archive": "referencias/original/PERFIL_ORIGINAL_BUZON_XPRESS.docx",
+    "sha256": "be0ed7008c7973c689051c0f1e8341908ef8f2f5b6a58ea29e343c665c1ca2d1"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/README.md",
+    "archive": "referencias/original/README_PROYECTO_ORIGINAL.md",
+    "sha256": "4d2ecfa8bf91835021ebdb464525eb86a089cc83951aa6bef72d38fd3515b1ef"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/backend/README.md",
+    "archive": "referencias/original/backend/README.md",
+    "sha256": "073ccec7ce0a5f70d027d5a53262b3b25224aecb5eaef38984ba374055c98be3"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/backend/alembic/README",
+    "archive": "referencias/original/backend/alembic/README",
+    "sha256": "31595cf53626af9ed16e15c44fa43183209cc163fbc3ebcb904b22ac436a8884"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/backend/database/schema.sql",
+    "archive": "referencias/original/backend/database/schema.sql",
+    "sha256": "e37df3a848ce25140fd0fc1c86a934c33f7df494def5daa94a191c8f81d8fee9"
+  },
+  {
+    "source": "/home/oswi/Proyectos/Dev/buzon-xpress/docker-compose.yml",
+    "archive": "referencias/original/docker-compose.yml",
+    "sha256": "27f13e722ac057edecc0ddbf2a51e3408caed1a860ae9232e8d20066e780a80d"
+  }
+]
