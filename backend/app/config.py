@@ -24,6 +24,8 @@ class Settings:
     smtp_sender: str = ""
     smtp_user: str = ""
     smtp_password: str = ""
+    credential_key: bytes = b""
+    request_key: bytes = b""
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -42,6 +44,13 @@ class Settings:
                 raise RuntimeError("Solo se permite HTTP de loopback en desarrollo y pruebas.")
         if len({urlsplit(origin).scheme for origin in origins}) != 1:
             raise RuntimeError("Separa los orígenes HTTP de desarrollo y HTTPS en entornos distintos.")
+        credential_key = environ.get("BUZON_CREDENTIAL_HMAC_KEY", "").encode()
+        request_key = environ.get("BUZON_REQUEST_HMAC_KEY", "").encode()
+        keys = (secret, credential_key, request_key)
+        if not local and (any(len(key) < 32 for key in keys) or len(set(keys)) != len(keys)):
+            raise RuntimeError("Configura tres secretos distintos de al menos 32 bytes para el piloto.")
+        if any(key and len(key) < 32 for key in (credential_key, request_key)):
+            raise RuntimeError("Las claves HMAC configuradas requieren al menos 32 bytes.")
         sender = environ.get("BUZON_SMTP_FROM", "")
         smtp_host = environ.get("BUZON_SMTP_HOST", "")
         if smtp_host and not sender:
@@ -57,4 +66,6 @@ class Settings:
             smtp_sender=sender,
             smtp_user=environ.get("BUZON_SMTP_USER", ""),
             smtp_password=environ.get("BUZON_SMTP_PASSWORD", ""),
+            credential_key=credential_key,
+            request_key=request_key,
         )
