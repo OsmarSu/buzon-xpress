@@ -26,6 +26,14 @@ class TokenAction(Payload):
     token: Annotated[SecretStr, Field(min_length=43, max_length=43)]
 
 
+class ResetRequest(Payload):
+    email: EmailStr
+
+
+class ResetComplete(TokenAction):
+    password: Annotated[SecretStr, Field(min_length=15, max_length=128)]
+
+
 class User(Payload):
     id: UUID
     full_name: str

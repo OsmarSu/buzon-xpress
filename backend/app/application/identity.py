@@ -1,18 +1,22 @@
 from datetime import UTC, datetime, timedelta
 from hashlib import sha256
+from logging import getLogger
 from secrets import token_urlsafe
 from uuid import UUID, uuid4
 
 from pwdlib import PasswordHash
 from sqlalchemy.engine import RowMapping
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.adapters.storage.identity import IdentityStore
 from app.domain.identity import IdentityError, Role
-from app.ports.mail import IdentityMail
+from app.ports.mail import IdentityMail, MailUnavailable
 
 
 SESSION_TTL = timedelta(hours=8)
 VERIFICATION_TTL = timedelta(minutes=30)
+RESET_TTL = timedelta(minutes=30)
+log = getLogger(__name__)
 
 
 def token_hash(token: str) -> str:
@@ -83,6 +87,30 @@ class IdentityService:
         user_id = self.store.verify_contact(token_hash(token), datetime.now(UTC))
         if user_id is None:
             raise IdentityError(400, "ENLACE_INVALIDO", "El enlace es inválido, venció o ya se utilizó.")
+        return user_id
+
+    def request_password_reset(self, email: str) -> None:
+        if self.mail is None:
+            return
+        email = email.casefold()
+        token = token_urlsafe(32)
+        try:
+            with self.store.transaction() as connection:
+                if self.store.set_password_reset(
+                    connection, email, token_hash(token), datetime.now(UTC) + RESET_TTL
+                ):
+                    self.mail.password_reset(email, token)
+        except (MailUnavailable, SQLAlchemyError):
+            # The public response is independent of the account and channel.
+            log.warning("No se pudo procesar una solicitud de recuperación.")
+
+    def complete_password_reset(self, token: str, password: str) -> UUID:
+        with self.store.transaction() as connection:
+            now = datetime.now(UTC)
+            user_id = self.store.lock_reset_user(connection, token_hash(token), now)
+            if user_id is None:
+                raise IdentityError(400, "ENLACE_INVALIDO", "El enlace es inválido, venció o ya se utilizó.")
+            self.store.replace_password(connection, user_id, self.passwords.hash(password), now)
         return user_id
 
     def require_point_access(self, actor: RowMapping, point_id: UUID, allowed_roles: frozenset[Role]) -> None:

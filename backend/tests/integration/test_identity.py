@@ -29,12 +29,18 @@ class TestMailbox:
 
     def __init__(self):
         self.deliveries = {}
+        self.resets = {}
         self.unavailable = False
 
     def verify_contact(self, recipient, token):
         if self.unavailable:
             raise MailUnavailable
         self.deliveries[recipient] = token
+
+    def password_reset(self, recipient, token):
+        if self.unavailable:
+            raise MailUnavailable
+        self.resets[recipient] = token
 
 
 @pytest.fixture(scope="module")
@@ -224,3 +230,86 @@ def test_login_limits_attempts_before_password_work(environment, assert_contract
     response = mutate(client, "/login", credentials, csrf_token=signed)
     assert_contract(response, "post", "/auth/login", 429)
     assert response.json()["code"] == "LIMITE_DE_INTENTOS"
+
+
+def test_t21_password_reset_consumes_token_and_revokes_all_sessions(environment, assert_contract):
+    client, mailbox, engine = environment
+    user = account()
+    registration = mutate(client, "/register", user)
+    assert registration.status_code == 201
+    user_id = registration.json()["id"]
+    old_credentials = {key: user[key] for key in ("email", "password")}
+    sessions = []
+    for _ in range(2):
+        client.cookies.clear()
+        assert mutate(client, "/login", old_credentials).status_code == 200
+        sessions.append(client.cookies.get("buzon_session"))
+    assert sessions[0] != sessions[1]
+
+    requested = mutate(client, "/password-reset/request", {"email": user["email"]})
+    unknown = mutate(client, "/password-reset/request", {"email": account()["email"]})
+    for response in (requested, unknown):
+        assert_contract(response, "post", "/auth/password-reset/request", 200)
+        assert response.json()["state"] == "SOLICITADA"
+        assert response.json()["id"] != user_id
+
+    token = mailbox.resets[user["email"]]
+    with engine.connect() as connection:
+        digest = connection.execute(
+            text("SELECT password_reset_hash FROM users WHERE id = :id"), {"id": user_id}
+        ).scalar_one()
+    assert len(digest) == 64 and digest != token
+
+    new_password = token_hex(18)
+    body = {"token": token, "password": new_password}
+    completed = mutate(client, "/password-reset/complete", body)
+    assert_contract(completed, "post", "/auth/password-reset/complete", 200)
+    assert completed.json() == {"id": user_id, "state": "RESTABLECIDA"}
+    assert not client.cookies.get("buzon_session")
+    assert mutate(client, "/password-reset/complete", body).status_code == 400
+    for session in sessions:
+        client.cookies.clear()
+        client.cookies.set("buzon_session", session, path="/api/v1")
+        assert client.get(API + "/me").status_code == 401
+
+    assert mutate(client, "/login", old_credentials).status_code == 401
+    assert mutate(client, "/login", {**old_credentials, "password": new_password}).status_code == 200
+
+
+def test_t21_password_reset_mail_failure_is_generic_and_preserves_token(environment, assert_contract):
+    client, mailbox, engine = environment
+    user = account()
+    assert mutate(client, "/register", user).status_code == 201
+    endpoint = "/password-reset/request"
+    body = {"email": user["email"]}
+    assert mutate(client, endpoint, body).status_code == 200
+    token = mailbox.resets[user["email"]]
+    mailbox.unavailable = True
+    failed = mutate(client, endpoint, body)
+    for response in (failed, mutate(client, endpoint, {"email": account()["email"]})):
+        assert_contract(response, "post", "/auth" + endpoint, 200)
+        assert response.json()["state"] == "SOLICITADA"
+    assert mailbox.resets[user["email"]] == token
+    with engine.begin() as connection:
+        assert connection.execute(
+            text("SELECT password_reset_hash FROM users WHERE email = :email"), body
+        ).scalar_one() is not None
+        connection.execute(
+            text("UPDATE users SET password_reset_expires_at = CURRENT_TIMESTAMP - INTERVAL '1 second' WHERE email = :email"),
+            body,
+        )
+    assert mutate(
+        client, "/password-reset/complete", {"token": token, "password": token_hex(18)}
+    ).status_code == 400
+
+
+def test_t21_password_reset_rate_limit_is_independent_of_account_existence(environment, assert_contract):
+    client, _mailbox, _engine = environment
+    addresses = [account()["email"], account()["email"]]
+    for address in addresses:
+        for _ in range(3):
+            assert mutate(client, "/password-reset/request", {"email": address}).status_code == 200
+        assert_contract(
+            mutate(client, "/password-reset/request", {"email": address}),
+            "post", "/auth/password-reset/request", 429,
+        )

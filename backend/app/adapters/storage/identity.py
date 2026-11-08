@@ -89,6 +89,45 @@ class IdentityStore:
                 ).returning(users.c.id)
             ).scalar_one_or_none()
 
+    def set_password_reset(
+        self, connection: Connection, email: str, digest: str, expires_at: datetime
+    ) -> bool:
+        users = self.users
+        result = connection.execute(
+            update(users)
+            .where(users.c.email == email, users.c.is_active.is_(True))
+            .values(password_reset_hash=digest, password_reset_expires_at=expires_at)
+            .returning(users.c.id)
+        )
+        return result.scalar_one_or_none() is not None
+
+    def lock_reset_user(self, connection: Connection, digest: str, now: datetime) -> UUID | None:
+        users = self.users
+        return connection.execute(
+            select(users.c.id).where(
+                users.c.password_reset_hash == digest,
+                users.c.password_reset_expires_at > now,
+                users.c.is_active.is_(True),
+            ).with_for_update()
+        ).scalar_one_or_none()
+
+    def replace_password(
+        self, connection: Connection, user_id: UUID, password_hash: str, now: datetime
+    ) -> None:
+        users, sessions = self.users, self.sessions
+        connection.execute(
+            update(users).where(users.c.id == user_id).values(
+                password_hash=password_hash,
+                password_reset_hash=None,
+                password_reset_expires_at=None,
+            )
+        )
+        connection.execute(
+            update(sessions)
+            .where(sessions.c.user_id == user_id, sessions.c.revoked_at.is_(None))
+            .values(revoked_at=now)
+        )
+
     def has_active_assignment(self, user_id: UUID, point_id: UUID) -> bool:
         assignments, points = self.assignments, self.points
         query = select(assignments.c.id).join(points, points.c.id == assignments.c.point_id).where(

@@ -2,11 +2,12 @@ from hashlib import sha256
 import hmac
 import re
 from secrets import token_urlsafe
+from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.engine import RowMapping
 
-from app.adapters.api.dto import Csrf, Login, Register, Resource, Session, TokenAction, User
+from app.adapters.api.dto import Csrf, Login, Register, ResetComplete, ResetRequest, Resource, Session, TokenAction, User
 from app.adapters.api.limits import IdentityRateLimit
 from app.application.identity import IdentityService, SESSION_TTL
 from app.config import Settings
@@ -77,6 +78,23 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
     def verify_contact(body: TokenAction, request: Request) -> Resource:
         limit(request, "verify-contact", 12)
         return Resource(id=service.verify_contact(body.token.get_secret_value()), state="VERIFICADO")
+
+    @router.post("/password-reset/request", response_model=Resource, dependencies=[Depends(require_csrf)])
+    def request_password_reset(body: ResetRequest, request: Request, tasks: BackgroundTasks) -> Resource:
+        limit(request, "password-reset-request", 8)
+        email = str(body.email).casefold()
+        email_key = hmac.new(settings.session_secret, b"reset-rate-v1:" + email.encode(), sha256).hexdigest()
+        limits.check("password-reset-address", email_key, 3)
+        tasks.add_task(service.request_password_reset, email)
+        return Resource(id=uuid4(), state="SOLICITADA")
+
+    @router.post("/password-reset/complete", response_model=Resource, dependencies=[Depends(require_csrf)])
+    def complete_password_reset(body: ResetComplete, request: Request, response: Response) -> Resource:
+        limit(request, "password-reset-complete", 10)
+        user_id = service.complete_password_reset(body.token.get_secret_value(), body.password.get_secret_value())
+        response.delete_cookie(SESSION_COOKIE, path=API_PATH, **cookie_flags)
+        response.delete_cookie(csrf_cookie, path=csrf_path, **cookie_flags)
+        return Resource(id=user_id, state="RESTABLECIDA")
 
     @router.post("/login", response_model=Session, dependencies=[Depends(require_csrf)])
     def login(body: Login, request: Request, response: Response) -> Session:
