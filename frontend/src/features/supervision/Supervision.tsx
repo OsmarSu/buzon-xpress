@@ -249,6 +249,7 @@ export function Audit({ points }: { points: Point[] }) {
   return <div className="dashboard-grid">
     <section aria-labelledby="audit-heading">
       <h2 id="audit-heading">Eventos de auditoría</h2>
+      <p>Consulta eventos recientes del punto. Los filtros se aplican a los resultados recibidos.</p>
       <form onSubmit={(event) => {
         const data = formData(event);
         setEvents(undefined);

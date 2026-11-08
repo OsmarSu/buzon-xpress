@@ -56,3 +56,27 @@ test("un rechazo confirmado de credencial permite un intento posterior distinto"
   await assert.rejects(send("/custodies/r1/verify", { code: "000000" }));
   assert.notEqual(keys[0], keys[1]);
 });
+
+test("una confirmación mantiene la clave aunque el servidor responda que sigue pendiente", async (context) => {
+  const keys = [];
+  context.mock.method(globalThis, "fetch", async (url, options) => {
+    if (url.endsWith("/csrf")) return Response.json({ csrf_token: "synthetic" });
+    keys.push(options.headers["Idempotency-Key"]);
+    return keys.length === 1
+      ? Response.json({ code: "EN_CURSO", message: "Aún en curso" }, { status: 409 })
+      : Response.json({ id: "receipt" });
+  });
+  const confirm = mutationSeries();
+  const payload = { authorization_id: "auth", expected_version: 2, physically_delivered: true };
+  await assert.rejects(confirm("/custodies/r1/handover", payload), { status: 409 });
+  await confirm("/custodies/r1/handover", payload);
+  assert.equal(keys[0], keys[1]);
+});
+
+test("un cuerpo exitoso pero ilegible se trata como confirmación incierta", async (context) => {
+  context.mock.method(globalThis, "fetch", async (url) =>
+    url.endsWith("/csrf") ? Response.json({ csrf_token: "synthetic" }) :
+      new Response("not json", { status: 200, headers: { "X-Correlation-ID": "receipt-reference" } }));
+  await assert.rejects(mutate("/custodies/r1/handover", { expected_version: 2 }), (error) =>
+    error instanceof ApiError && error.status === 0 && error.correlationId === "receipt-reference");
+});

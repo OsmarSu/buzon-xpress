@@ -101,6 +101,11 @@ export function Access({ verificationToken, resetToken, initialReference, initia
     {!loading && !reset && (user ? <><section aria-labelledby="account-heading">
       <h2 id="account-heading">Mi cuenta</h2>
       <p>{user.full_name} · {user.contact_verified ? "Contacto comprobado" : "Contacto pendiente"}</p>
+      <details>
+        <summary>Identificador de mi cuenta</summary>
+        <p>Compártelo solo con personal autorizado para comprobar tu contacto o asignarte funciones.</p>
+        <p><code>{user.id}</code></p>
+      </details>
       <button type="button" className="secondary" disabled={task.busy} onClick={() => doTask(async () => {
         try {
           await auth.logout();

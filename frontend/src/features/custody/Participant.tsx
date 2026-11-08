@@ -204,6 +204,7 @@ export function Participant({ points, openId, setOpenId, verified }: {
       ? list.map((existing) => existing.id === item.id ? item : existing) : [item, ...list]);
   }
 
+  const currentDetail = selected?.id === openId ? selected : undefined;
   const visible = items.filter((item) => !filter || item.state === filter);
   return <div className="dashboard-grid">
     <section aria-labelledby="mine-heading">
@@ -232,11 +233,11 @@ export function Participant({ points, openId, setOpenId, verified }: {
     {openId && <section className="full-width" aria-labelledby="detail-heading">
       <h2 id="detail-heading" tabIndex={-1}>Detalle privado</h2>
       <button type="button" className="secondary" onClick={() => setOpenId(null)}>Cerrar detalle</button>
-      <Status {...detailTask} busy={!selected && !detailTask.error} />
-      {selected && <>
-        <CustodySummary custody={selected} point={points.find((point) => point.id === selected.point_id)} />
-        <ParticipantActions key={selected.id} custody={selected} onUpdate={update} />
-        <CustodyExceptions key={selected.id} custody={selected} />
+      <Status {...detailTask} busy={!currentDetail && !detailTask.error} />
+      {currentDetail && <>
+        <CustodySummary custody={currentDetail} point={points.find((point) => point.id === currentDetail.point_id)} />
+        <ParticipantActions key={currentDetail.id} custody={currentDetail} onUpdate={update} />
+        <CustodyExceptions key={currentDetail.id} custody={currentDetail} />
       </>}
     </section>}
   </div>;
