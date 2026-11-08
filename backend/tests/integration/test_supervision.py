@@ -215,24 +215,44 @@ def test_t15_t16_t17_admin_scope_occupied_space_and_audit(scenario):
     route = f"/admin/locations/{s.location}"
     assert s.change("outsider", route, change, method="PATCH").status_code == 403
     assert s.change("admin1", route, change, method="PATCH").status_code == 409
-    created = s.change("admin1", "/admin/locations", {
+    creation = s.change("admin1", "/admin/locations", {
         "point_id": str(s.point), "code": "B-01", "size_category": "MEDIANO",
-    }).raise_for_status().json()
+    }).raise_for_status()
+    created = creation.json()
     assert s.change("admin1", f"/admin/locations/{created['id']}", change, method="PATCH").status_code == 200
     assert s.get("outsider", "/audit/events", point_id=s.point).status_code == 403
     events = s.get("admin1", "/audit/events", point_id=s.point).raise_for_status().json()
     assert "UBICACION_ESTADO" in {event["event_type"] for event in events}
+    created_event = next(event for event in events if event["event_type"] == "UBICACION_CREADA")
+    assert created_event["correlation_id"] == creation.headers["x-correlation-id"]
     assert all(set(event) == {"id", "event_type", "created_at", "correlation_id", "actor_id", "custody_id"} for event in events)
     audit_table = s.store.table("custody_events")
-    with pytest.raises(DBAPIError) as violation, s.engine.begin() as conn:
-        conn.execute(audit_table.update().where(audit_table.c.point_id == s.point).values(event_type="ALTERADO"))
-    assert violation.value.orig.sqlstate == "55000"
+    update = audit_table.update().where(audit_table.c.point_id == s.point).values(event_type="ALTERADO")
+    delete = audit_table.delete().where(audit_table.c.point_id == s.point)
+    for statement in (update, delete):
+        with pytest.raises(DBAPIError) as violation, s.engine.begin() as conn:
+            conn.execute(statement)
+        assert violation.value.orig.sqlstate == "55000"
     period = {"from": (s.now - timedelta(days=1)).isoformat(), "to": (s.now + timedelta(days=1)).isoformat()}
     report = s.get("admin1", "/reports", point_id=s.point, **period).raise_for_status().json()
     assert report["occupied_locations"] == 1
     assert report["available_locations"] == 0
     assert report["completed_custodies"] == 0
     assert "1 ubicaciones utilizables" in report["data_quality_note"]
+    assert "sin mediciones" in report["data_quality_note"]
+    orders = s.store.table("custody_orders")
+    with s.engine.begin() as conn:
+        for received in (s.now - timedelta(hours=1), None):
+            synthetic = uuid4()
+            conn.execute(orders.insert().values(
+                id=synthetic, tracking_number=synthetic.hex, public_reference_hash=sha256(synthetic.bytes).hexdigest(),
+                sender_id=s.accounts["sender"][0], recipient_id=s.accounts["recipient"][0], point_id=s.point,
+                description="Salida sintética para informe", size_category="PEQUENO", state="RETIRADA",
+                received_at=received, completed_at=s.now,
+            ))
+    report = s.get("admin1", "/reports", point_id=s.point, **period).raise_for_status().json()
+    assert report["completed_custodies"] == 2
+    assert "1.00 h en 1 de 2 salidas" in report["data_quality_note"]
 
 
 def test_t11_t13_expiry_notices_and_smtp_retries_keep_inventory(scenario):
@@ -427,3 +447,21 @@ def test_t20_load_report_for_twenty_users(scenario):
     p95 = timings[18]
     print(f"Carga local T-20 · 10 000 custodias · 20 usuarios concurrentes · P95 /reports {p95:.1f} ms")
     assert p95 <= 500
+
+
+def test_staff_promotion_revokes_preexisting_session(scenario):
+    s = scenario
+    member = s.accounts["new"][0]
+    response = s.change("admin1", "/admin/staff-assignments", {
+        "point_id": str(s.point), "user_id": str(member), "role": "OPERADOR", "is_active": True,
+    })
+    assert response.status_code == 200
+    assert s.get("new", "/auth/me").status_code == 401
+    assert s.row("users", member)["role"] == "OPERADOR"
+
+    revoked = s.change("admin1", "/admin/staff-assignments", {
+        "point_id": str(s.point), "user_id": str(s.accounts["operator"][0]),
+        "role": "OPERADOR", "is_active": False,
+    })
+    assert revoked.status_code == 200
+    assert s.get("operator", "/inventory", point_id=s.point).status_code == 403

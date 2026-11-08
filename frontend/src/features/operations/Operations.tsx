@@ -240,21 +240,21 @@ export function Operations({ points }: { points: Point[] }) {
       {custody && <section className="full-width" aria-labelledby="operation-custody-heading">
         <h2 id="operation-custody-heading">Operar custodia</h2>
         <CustodySummary custody={custody} point={point} />
-        {custody.state === "REGISTRADA" && <Reception key={custody.id} custody={custody} inventory={inventory}
+        {custody.state === "REGISTRADA" && <Reception key={"reception-" + custody.id} custody={custody} inventory={inventory}
           onReceive={(result) => {
             setCustody(result);
             setMessage("Recepción, ubicación y cobro registrados.");
             updateInventory();
           }} />}
-        <Pickup key={custody.id} custody={custody} onUpdate={setCustody} onInventoryChange={updateInventory} onRefresh={() => void custodyTask.run(async () => setCustody(await custodyApi.detail(custody.id)))} />
-        <Returns key={custody.id} custody={custody}
+        <Pickup key={"pickup-" + custody.id} custody={custody} onUpdate={setCustody} onInventoryChange={updateInventory} onRefresh={() => void custodyTask.run(async () => setCustody(await custodyApi.detail(custody.id)))} />
+        <Returns key={"returns-" + custody.id} custody={custody}
           onAuthorized={(result) => setCustody({ ...custody, state: "DEVOLUCION_EN_CURSO", version: result.version })}
           onReturned={() => {
             void custodyTask.run(async () => setCustody(await custodyApi.detail(custody.id)));
             updateInventory();
           }} />
-        <CustodyExceptions key={custody.id} custody={custody} />
-        {custody.state === "EN_CUSTODIA" && <Extension key={custody.id} custody={custody} onUpdate={setCustody} />}
+        <CustodyExceptions key={"custodyexceptions-" + custody.id} custody={custody} />
+        {custody.state === "EN_CUSTODIA" && <Extension key={"extension-" + custody.id} custody={custody} onUpdate={setCustody} />}
       </section>}
     </div>}
   </>;

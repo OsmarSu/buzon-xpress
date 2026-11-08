@@ -34,6 +34,7 @@ def admin_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
     occupancy = store.table("storage_assignments")
     tariffs = store.table("tariff_versions")
     users = store.table("users")
+    sessions = store.table("sessions")
     events = store.table("custody_events")
     incidents = store.table("incidents")
     write = [Depends(security.csrf)]
@@ -173,6 +174,9 @@ def admin_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
                 if other_points is not None:
                     raise IdentityError(409, "ROL_EN_OTRO_PUNTO", "El cambio de rol afecta otros puntos activos.")
                 conn.execute(users.update().where(users.c.id == body.user_id).values(role=body.role))
+                conn.execute(sessions.update().where(
+                    sessions.c.user_id == body.user_id, sessions.c.revoked_at.is_(None),
+                ).values(revoked_at=datetime.now(UTC)))
             assignment_id = assignment["id"] if assignment is not None else uuid4()
             if assignment is None:
                 conn.execute(staff.insert().values(

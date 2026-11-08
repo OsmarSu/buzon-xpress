@@ -122,7 +122,7 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
           setNotice("Registro cancelado.");
         });
       }}>
-        <Field label="Motivo de la cancelación"><input name="reason" required maxLength={500} /></Field>
+        <Field label="Motivo de la cancelación"><input name="reason" required maxLength={255} /></Field>
         <button type="submit" disabled={task.busy}>Cancelar registro</button>
       </form>
     </details>}
@@ -236,8 +236,8 @@ export function Participant({ points, openId, setOpenId, verified }: {
       <Status {...detailTask} busy={!currentDetail && !detailTask.error} />
       {currentDetail && <>
         <CustodySummary custody={currentDetail} point={points.find((point) => point.id === currentDetail.point_id)} />
-        <ParticipantActions key={currentDetail.id} custody={currentDetail} onUpdate={update} />
-        <CustodyExceptions key={currentDetail.id} custody={currentDetail} />
+        <ParticipantActions key={"actions-" + currentDetail.id} custody={currentDetail} onUpdate={update} />
+        <CustodyExceptions key={"exceptions-" + currentDetail.id} custody={currentDetail} />
       </>}
     </section>}
   </div>;

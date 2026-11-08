@@ -72,7 +72,7 @@ export function PaymentFields() {
       </select>
     </Field>
     <Field label="Referencia del cobro (si corresponde)">
-      <input name="payment_reference" maxLength={160} />
+      <input name="payment_reference" maxLength={120} />
     </Field>
   </>;
 }
