@@ -89,12 +89,14 @@ export function custodyPath(id: string, operation?: string) {
 
 export const custodyApi = {
   points: () => request<Point[]>("/points"),
-  quote: (pointId: string, size: Size, hours: number) =>
+  quote: (pointId: string, size: Size, hours: number, custodyId?: string) =>
     request<Quote>("/points/" + encodeURIComponent(pointId) + "/quote?" + new URLSearchParams({
       size_category: size,
       duration_hours: String(hours),
+      ...(custodyId ? { custody_id: custodyId } : {}),
     })),
-  list: () => request<Custody[]>("/custodies"),
+  list: (filters?: Record<string, string>) =>
+    request<Custody[]>("/custodies" + (filters ? "?" + new URLSearchParams(filters) : "")),
   detail: (id: string) => request<Custody>(custodyPath(id)),
   tracking: (reference: string) => request<Tracking>("/public-tracking/" + encodeURIComponent(reference)),
   rotate: (id: string) => mutate<{ public_reference: string }>(custodyPath(id, "public-reference")),
