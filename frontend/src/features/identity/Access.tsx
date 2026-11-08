@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ApiError } from "../../services/api";
 import { auth, type User } from "../../services/auth";
 import { PublicService } from "../custody/PublicService";
+import { Dashboard } from "../dashboard/Dashboard";
 import { Field, formData, Status, useTask, value } from "../shared/forms";
 
 type Mode = "login" | "register" | "request-reset";
@@ -14,7 +15,7 @@ interface Links {
   initialCustody: string | null;
 }
 
-export function Access({ verificationToken, resetToken, initialReference }: Links) {
+export function Access({ verificationToken, resetToken, initialReference, initialCustody }: Links) {
   const [user, setUser] = useState<User | null>(null);
   const [mode, setMode] = useState<Mode>("login");
   const [token, setToken] = useState(verificationToken);
@@ -97,7 +98,7 @@ export function Access({ verificationToken, resetToken, initialReference }: Link
       </form>
     </section>}
 
-    {!loading && !reset && (user ? <section aria-labelledby="account-heading">
+    {!loading && !reset && (user ? <><section aria-labelledby="account-heading">
       <h2 id="account-heading">Mi cuenta</h2>
       <p>{user.full_name} · {user.contact_verified ? "Contacto comprobado" : "Contacto pendiente"}</p>
       <button type="button" className="secondary" disabled={task.busy} onClick={() => doTask(async () => {
@@ -109,7 +110,7 @@ export function Access({ verificationToken, resetToken, initialReference }: Link
         setUser(null);
         setMessage("Sesión cerrada.");
       })}>Cerrar sesión</button>
-    </section> : <>
+    </section><Dashboard key={user.id} user={user} initialCustody={initialCustody} /></> : <>
       <section aria-labelledby="access-heading">
         <h2 id="access-heading">{heading}</h2>
         <form key={mode} onSubmit={(event) => {

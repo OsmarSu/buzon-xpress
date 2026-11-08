@@ -52,3 +52,6 @@ summary { cursor: pointer; font-weight: 650; }
 @media (max-width: 47rem) {
   .public-grid, .dashboard-grid { grid-template-columns: 1fr; gap: 0; }
 }
+
+.full-width { grid-column: 1 / -1; }
+.dashboard-nav { margin-bottom: 1.25rem; }
