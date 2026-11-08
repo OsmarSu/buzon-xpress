@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { custodyApi, custodyPath, dateLabel, sizeLabel, stateLabel, type Credential, type Custody, type Point, type Quote, type Registered, type Size } from "../../services/custody";
+import { CustodyExceptions } from "../operations/Exceptions";
 import { Field, formData, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
 
 export function CustodySummary({ custody, point }: { custody: Custody; point?: Point }) {
@@ -186,6 +187,7 @@ export function Participant({ points, openId, setOpenId, verified }: {
     setSelected(undefined);
     detailTask.setError("");
     if (openId) {
+      document.getElementById("detail-heading")?.focus();
       let current = true;
       // Details may change while a response for the previous selection is still in flight.
       void custodyApi.detail(openId).then((item) => { if (current) setSelected(item); })
@@ -234,6 +236,7 @@ export function Participant({ points, openId, setOpenId, verified }: {
       {selected && <>
         <CustodySummary custody={selected} point={points.find((point) => point.id === selected.point_id)} />
         <ParticipantActions key={selected.id} custody={selected} onUpdate={update} />
+        <CustodyExceptions key={selected.id} custody={selected} />
       </>}
     </section>}
   </div>;

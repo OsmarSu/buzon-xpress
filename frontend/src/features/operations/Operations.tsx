@@ -1,19 +1,13 @@
 import { useState } from "react";
 
 import { ApiError } from "../../services/api";
-import { custodyApi, custodyPath, dateLabel, sizeLabel, type Authorization, type Custody, type Handover, type Location, type Point, type Quote } from "../../services/custody";
+import { custodyApi, custodyPath, sizeLabel, type Authorization, type Custody, type Handover, type Location, type Point, type Quote } from "../../services/custody";
 import { CustodySummary } from "../custody/Participant";
+import { CustodyExceptions, Returns } from "./Exceptions";
+import { AuthorizedHandover, Receipt } from "./Handover";
 import { Field, formData, payment, PaymentFields, Status, useMutation, useTask, value } from "../shared/forms";
 
 const physicalCheck = "COMPROBACION_VISUAL_COMPLETADA";
-
-function Receipt({ handover }: { handover: Handover }) {
-  return <div className="receipt" role="status">
-    <strong>{handover.kind === "DEVOLUCION" ? "Devolución registrada" : "Retiro registrado"}</strong>
-    <p>Comprobante <code>{handover.id}</code></p>
-    <p>Confirmado {dateLabel(handover.confirmed_at)} · Operador <code>{handover.operator_id}</code></p>
-  </div>;
-}
 
 function QuoteFields({ quote }: { quote: Quote }) {
   return <>
@@ -112,69 +106,8 @@ function Extension({ custody, onUpdate }: { custody: Custody; onUpdate: (next: C
   </details>;
 }
 
-export function AuthorizedHandover({ authorization, kind, onConfirmed, onAborted }: {
-  authorization: Authorization;
-  kind: "RETIRO" | "DEVOLUCION";
-  onConfirmed: (handover: Handover) => void;
-  onAborted?: (custody: Custody) => void;
-}) {
-  const task = useTask();
-  const confirm = useMutation();
-  const abort = useMutation();
-  const [pending, setPending] = useState(false);
-  const [delivered, setDelivered] = useState(false);
-  const isReturn = kind === "DEVOLUCION";
-
-  return <div className="receipt">
-    <h3>Autorizado para {isReturn ? "devolver" : "entregar"}</h3>
-    <dl className="details">
-      <div><dt>Autorización</dt><dd><code>{authorization.authorization_id}</code></dd></div>
-      <div><dt>Objeto</dt><dd>{authorization.description}</dd></div>
-      <div><dt>Ubicación interna</dt><dd>{authorization.location_code}</dd></div>
-      <div><dt>Vence</dt><dd>{dateLabel(authorization.expires_at)}</dd></div>
-    </dl>
-    {pending && <p role="alert" className="warning">
-      Confirmación pendiente. No repitas la entrega física. Reintenta solo el registro con esta autorización.
-    </p>}
-    <form onSubmit={(event) => {
-      event.preventDefault();
-      void task.run(async () => {
-        setPending(true);
-        const result = await confirm<Handover>(custodyPath(authorization.custody_id, isReturn ? "return-handover" : "handover"), {
-          authorization_id: authorization.authorization_id,
-          expected_version: authorization.version,
-          physically_delivered: true,
-        });
-        setPending(false);
-        onConfirmed(result);
-      });
-    }} aria-busy={task.busy}>
-      <label className="check">
-        <input type="checkbox" required checked={delivered} disabled={pending || task.busy}
-          onChange={(event) => setDelivered(event.target.checked)} />
-        {isReturn ? "Confirmo que ya devolví físicamente el objeto al emisor" : "Confirmo que ya entregué físicamente el objeto"}
-      </label>
-      <button type="submit" disabled={task.busy || !delivered}>{pending ? "Reintentar solo el registro"
-        : isReturn ? "Registrar devolución realizada" : "Registrar entrega realizada"}</button>
-    </form>
-    {!pending && !delivered && onAborted && <details>
-      <summary>No entregado · anular preparación</summary>
-      <form onSubmit={(event) => {
-        const data = formData(event);
-        void task.run(async () => onAborted(await abort<Custody>(custodyPath(authorization.custody_id, "abort-handover"), {
-          authorization_id: authorization.authorization_id, physically_delivered: false, reason: value(data, "reason"),
-        })));
-      }}>
-        <Field label="Motivo de anulación"><textarea name="reason" required maxLength={500} /></Field>
-        <button type="submit" className="secondary" disabled={task.busy}>Anular porque no se entregó</button>
-      </form>
-    </details>}
-    <Status {...task} />
-  </div>;
-}
-
-function Pickup({ custody, onUpdate, onInventoryChange }: {
-  custody: Custody; onUpdate: (next: Custody) => void; onInventoryChange: () => void;
+function Pickup({ custody, onUpdate, onInventoryChange, onRefresh }: {
+  custody: Custody; onUpdate: (next: Custody) => void; onInventoryChange: () => void; onRefresh: () => void;
 }) {
   const task = useTask();
   const send = useMutation();
@@ -187,7 +120,7 @@ function Pickup({ custody, onUpdate, onInventoryChange }: {
     onConfirmed={(result) => {
       setReceipt(result);
       setAuthorization(undefined);
-      onUpdate({ ...custody, state: "RETIRADA", version: authorization.version + 1 });
+      onRefresh();
       onInventoryChange();
     }}
     onAborted={(result) => {
@@ -231,7 +164,8 @@ export function Operations({ points }: { points: Point[] }) {
   const custodyTask = useTask();
   const [point, setPoint] = useState<Point>();
   const [inventory, setInventory] = useState<Location[]>([]);
-  const [custody, setCustody] = useState<Custody>();
+  const [selectedCustody, setCustody] = useState<Custody>();
+  const custody = selectedCustody?.point_id === point?.id ? selectedCustody : undefined;
   const [message, setMessage] = useState("");
 
   function updateInventory() {
@@ -312,7 +246,14 @@ export function Operations({ points }: { points: Point[] }) {
             setMessage("Recepción, ubicación y cobro registrados.");
             updateInventory();
           }} />}
-        <Pickup key={custody.id} custody={custody} onUpdate={setCustody} onInventoryChange={updateInventory} />
+        <Pickup key={custody.id} custody={custody} onUpdate={setCustody} onInventoryChange={updateInventory} onRefresh={() => void custodyTask.run(async () => setCustody(await custodyApi.detail(custody.id)))} />
+        <Returns key={custody.id} custody={custody}
+          onAuthorized={(result) => setCustody({ ...custody, state: "DEVOLUCION_EN_CURSO", version: result.version })}
+          onReturned={() => {
+            void custodyTask.run(async () => setCustody(await custodyApi.detail(custody.id)));
+            updateInventory();
+          }} />
+        <CustodyExceptions key={custody.id} custody={custody} />
         {custody.state === "EN_CUSTODIA" && <Extension key={custody.id} custody={custody} onUpdate={setCustody} />}
       </section>}
     </div>}
