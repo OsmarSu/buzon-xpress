@@ -40,6 +40,18 @@ def recovery_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
             store.complete(conn, record, row["id"])
             return projected(row, INCIDENT_FIELDS)
 
+
+    @router.get("/incidents/{incident_id}")
+    def incident_detail(incident_id: UUID, request: Request) -> dict:
+        actor = security.actor(request)
+        with store.engine.connect() as conn:
+            issue = find(conn, store, "incidents", incident_id)
+            order = find(conn, store, "custody_orders", issue["custody_id"])
+            require_scope(conn, store, actor, order["point_id"], MANAGERS, active_point=False)
+            return projected(issue, (
+                *INCIDENT_FIELDS, "kind", "description", "opened_by", "resolved_by", "resolution_note",
+            ))
+
     @router.post("/incidents/{incident_id}/resolve", dependencies=write)
     def resolve(incident_id: UUID, body: Reason, request: Request, key: IdempotencyKey) -> dict:
         actor = security.actor(request)
@@ -67,6 +79,18 @@ def recovery_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
             row = service.create_recovery(conn, actor, order, body.model_dump(), request.state.correlation_id)
             store.complete(conn, record, row["id"])
             return projected(row, RECOVERY_FIELDS)
+
+
+    @router.get("/recovery-requests/{request_id}")
+    def recovery_detail(request_id: UUID, request: Request) -> dict:
+        actor = security.actor(request)
+        with store.engine.connect() as conn:
+            recovery = find(conn, store, "recovery_requests", request_id)
+            order = find(conn, store, "custody_orders", recovery["custody_id"])
+            require_scope(conn, store, actor, order["point_id"], MANAGERS, active_point=False)
+            return projected(recovery, (
+                *RECOVERY_FIELDS, "purpose", "evidence", "requested_by", "decided_by", "decision_note",
+            ))
 
     @router.post("/recovery-requests/{request_id}/decision", dependencies=write)
     def decide(request_id: UUID, body: Decision, request: Request, key: IdempotencyKey) -> dict:

@@ -118,6 +118,8 @@ def test_t10_return_requires_two_people_and_releases_location_once(scenario):
     })
     assert requested.status_code == 201
     request_id = requested.json()["id"]
+    assert s.get("admin2", f"/recovery-requests/{request_id}").json()["evidence"] == "Emisor y bulto cotejados."
+    assert s.get("outsider", f"/recovery-requests/{request_id}").status_code == 403
     decision = {"decision": "APROBAR", "note": "Evidencia y emisor verificados por separado."}
     assert s.change("admin1", f"/recovery-requests/{request_id}/decision", decision).status_code == 403
     assert s.change("outsider", f"/recovery-requests/{request_id}/decision", decision).status_code == 403
@@ -186,6 +188,7 @@ def test_t18_late_handover_reconciliation_keeps_original_authorization(scenario)
         "is_blocking": False,
     }).raise_for_status().json()
     assert incident["is_blocking"] is True
+    assert s.get("admin2", f"/incidents/{incident['id']}").status_code == 200
     recovery = s.change("operator", "/recovery-requests", {
         "custody_id": str(s.order), "purpose": "RECONCILIAR_ENTREGA",
         "evidence": "La constancia presencial y el cotejo acreditan una entrega previa al corte.",
@@ -380,4 +383,47 @@ def test_every_documented_operation_is_registered(scenario):
     documented = {(API + path, method) for path, entry in expected.items() for method in entry if method in methods}
     registered = {(path, method) for path, entry in live.items() for method in entry if method in methods}
     assert documented == registered
-    assert len(registered) == 41
+    assert len(registered) == 43
+
+
+@pytest.mark.skipif(environ.get("BUZON_PRUEBA_CARGA") != "1", reason="Ensayo explícito de 10 000 custodias.")
+def test_t20_load_report_for_twenty_users(scenario):
+    from threading import Barrier
+    from time import perf_counter
+    from sqlalchemy import text
+
+    s = scenario
+    with s.engine.begin() as conn:
+        for index in range(20):
+            s._account(conn, f"load{index}", "AUDITOR", s.point)
+        conn.execute(text("""
+            INSERT INTO custody_orders
+                (id, tracking_number, public_reference_hash, sender_id, recipient_id, point_id, description, size_category, state)
+            SELECT gen_random_uuid(), md5(cast(:prefix AS text) || n),
+                   md5(cast(:prefix AS text) || n) || md5(n || cast(:prefix AS text)),
+                   :sender, :recipient, :point, 'Bulto sintético de carga', 'PEQUENO', 'REGISTRADA'
+            FROM generate_series(1, 10000) AS n
+        """), {
+            "prefix": s.order.hex, "sender": s.accounts["sender"][0],
+            "recipient": s.accounts["recipient"][0], "point": s.point,
+        })
+    gate = Barrier(20, timeout=8)
+    params = {
+        "point_id": str(s.point), "from": (s.now - timedelta(hours=2)).isoformat(),
+        "to": (s.now + timedelta(hours=1)).isoformat(),
+    }
+    with TestClient(s.app, base_url=ORIGIN) as client, ThreadPoolExecutor(20) as workers:
+        def query(index):
+            bearer = s.accounts[f"load{index}"][1]
+            gate.wait()
+            start = perf_counter()
+            response = client.get(API + "/reports", params=params, headers={"Cookie": f"buzon_session={bearer}"})
+            elapsed = (perf_counter() - start) * 1000
+            assert response.status_code == 200
+            assert response.json()["occupied_locations"] == 1
+            return elapsed
+
+        timings = sorted(workers.map(query, range(20)))
+    p95 = timings[18]
+    print(f"Carga local T-20 · 10 000 custodias · 20 usuarios concurrentes · P95 /reports {p95:.1f} ms")
+    assert p95 <= 500

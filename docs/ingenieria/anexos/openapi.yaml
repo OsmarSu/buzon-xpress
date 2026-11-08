@@ -1,12 +1,11 @@
 openapi: 3.1.0
 info:
-  title: BUZON Xpress — contrato propuesto
-  version: 1.0.0
-  description: Diseño documental sin servidor implementado. Entrega humana, sin hardware
-    externo. Los permisos de negocio se detallan en la especificación.
+  title: BUZON Xpress — API de custodia
+  version: 1.2.0
+  description: Servicio de custodia con recepción y entrega humanas. Los permisos de negocio se detallan en la especificación.
 servers:
 - url: /api/v1
-  description: Ruta relativa de la futura aplicación.
+  description: Ruta relativa de la aplicación.
 security:
 - sessionCookie: []
 paths:
@@ -669,6 +668,8 @@ paths:
   /points/{point_id}/quote:
     get:
       summary: Cotizar plazo y tamaño sin reservar espacio.
+      description: La cotización habitual es pública. Con custody_id se calcula una prórroga
+        según la tarifa histórica y se exige operador asignado al punto.
       operationId: get_points_point_id_quote
       responses:
         '200':
@@ -746,6 +747,10 @@ paths:
         schema: &id010
           type: integer
           minimum: 1
+      - name: custody_id
+        in: query
+        description: Custodia de la prórroga. duration_hours indica horas adicionales.
+        schema: *id001
   /custodies:
     post:
       summary: Registrar custodia sin reservar capacidad; referencia pública se muestra
@@ -818,6 +823,17 @@ paths:
     get:
       summary: Listar custodias donde participa la cuenta.
       operationId: get_custodies
+      parameters:
+      - name: point_id
+        in: query
+        schema: *id001
+      - name: tracking_number
+        in: query
+        description: Coincidencia exacta de guía dentro del alcance de la sesión.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 32
       responses:
         '200':
           description: Resultado del contrato propuesto.
@@ -1645,6 +1661,52 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/IncidentCreate'
+  /incidents/{incident_id}:
+    get:
+      summary: Consultar evidencia de incidencia en el punto asignado.
+      operationId: get_incidents_incident_id
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema: *id001
+      responses:
+        '200':
+          description: Detalle disponible para el administrador del punto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentDetail'
+        '401':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /incidents/{incident_id}/resolve:
     post:
       summary: Resolver con fundamento y comprobación de inventario.
@@ -1785,6 +1847,52 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RecoveryCreate'
+  /recovery-requests/{request_id}:
+    get:
+      summary: Consultar evidencia de recuperación en el punto asignado.
+      operationId: get_recovery_requests_request_id
+      parameters:
+      - name: request_id
+        in: path
+        required: true
+        schema: *id001
+      responses:
+        '200':
+          description: Detalle disponible para el administrador del punto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryDetail'
+        '401':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado sin secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /recovery-requests/{request_id}/decision:
     post:
       summary: Revisar con otra persona; ejecutar conciliación según propósito.
@@ -3332,6 +3440,46 @@ components:
         state: *id003
       required:
       - id
+    IncidentDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        custody_id: *id001
+        state:
+          type: string
+          enum: [ABIERTA, EN_REVISION, RESUELTA]
+        is_blocking:
+          type: boolean
+        kind: *id003
+        description: *id003
+        opened_by: *id001
+        resolved_by:
+          type: [string, 'null']
+          format: uuid
+        resolution_note:
+          type: [string, 'null']
+      required: [id, custody_id, state, is_blocking, kind, description, opened_by]
+    RecoveryDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        custody_id: *id001
+        state:
+          type: string
+          enum: [PENDIENTE, APROBADA, RECHAZADA, EJECUTADA]
+        purpose:
+          type: string
+          enum: [REEMITIR_CREDENCIAL, CAMBIAR_DESTINATARIO, AUTORIZAR_DEVOLUCION, RECONCILIAR_ENTREGA]
+        evidence: *id003
+        requested_by: *id001
+        decided_by:
+          type: [string, 'null']
+          format: uuid
+        decision_note:
+          type: [string, 'null']
+      required: [id, custody_id, state, purpose, evidence, requested_by]
     Notification:
       type: object
       additionalProperties: false
