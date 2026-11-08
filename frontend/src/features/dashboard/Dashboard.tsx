@@ -7,8 +7,9 @@ import { Participant } from "../custody/Participant";
 import { ReviewExceptions } from "../operations/Exceptions";
 import { Operations } from "../operations/Operations";
 import { Status, useTask } from "../shared/forms";
+import { Administration, Audit } from "../supervision/Supervision";
 
-type Panel = "custodies" | "notices" | "operations" | "review";
+type Panel = "custodies" | "notices" | "operations" | "review" | "admin" | "audit";
 
 export function Dashboard({ user, initialCustody }: { user: User; initialCustody: string | null }) {
   const [points, setPoints] = useState<Point[]>([]);
@@ -40,11 +41,17 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
           setCustody(null);
           setPanel("review");
         }}>Resolver incidencias</button>}
+      {user.role === "ADMIN" && <button type="button" className={panel === "admin" ? "" : "secondary"}
+        aria-current={panel === "admin" ? "page" : undefined} onClick={() => setPanel("admin")}>Administración</button>}
+      {(user.role === "ADMIN" || user.role === "AUDITOR") && <button type="button" className={panel === "audit" ? "" : "secondary"}
+        aria-current={panel === "audit" ? "page" : undefined} onClick={() => setPanel("audit")}>Auditoría e indicadores</button>}
     </nav>
     <Status {...task} />
     {task.error && <button type="button" className="secondary" onClick={loadPoints}>Volver a consultar los puntos</button>}
     {panel === "custodies" ? <Participant points={points} openId={custody} setOpenId={setCustody} verified={user.contact_verified} />
       : panel === "notices" ? <Notifications onOpen={(id) => { setCustody(id); setPanel("custodies"); }} />
-      : panel === "operations" ? <Operations points={points} /> : <ReviewExceptions />}
+      : panel === "operations" ? <Operations points={points} />
+      : panel === "review" ? <ReviewExceptions />
+      : panel === "admin" ? <Administration points={points} /> : <Audit points={points} />}
   </>;
 }
