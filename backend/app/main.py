@@ -8,10 +8,15 @@ from sqlalchemy import text
 from sqlalchemy.exc import InterfaceError, OperationalError
 from starlette.exceptions import HTTPException
 
+from app.adapters.api.admin import admin_router
 from app.adapters.api.auth import API_PATH, auth_router
 from app.adapters.api.dto import Error, Health
+from app.adapters.api.notifications import notifications_router
+from app.adapters.api.recovery import recovery_router
+from app.adapters.api.security import ApiSecurity
 from app.adapters.mail.smtp import SmtpIdentityMail
 from app.adapters.storage.identity import IdentityStore
+from app.adapters.storage.operations import OperationsStore
 from app.application.identity import IdentityService
 from app.config import Settings
 from app.domain.identity import IdentityError
@@ -25,6 +30,9 @@ def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = 
         SmtpIdentityMail(settings) if settings.smtp_host else None
     ))
 
+    operations = OperationsStore(store.engine, smtp_enabled=bool(settings.smtp_host))
+    security = ApiSecurity(service, settings)
+
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
         try:
@@ -34,6 +42,8 @@ def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = 
 
     app = FastAPI(title="BUZON Xpress", version="0.1.0", lifespan=lifespan)
     app.include_router(auth_router(service, settings), prefix=API_PATH)
+    for router in (admin_router, recovery_router, notifications_router):
+        app.include_router(router(operations, security), prefix=API_PATH)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):
