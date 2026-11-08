@@ -1,6 +1,7 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
+import re
 from secrets import token_hex, token_urlsafe
 from uuid import UUID, uuid4
 
@@ -21,6 +22,11 @@ LOCATION_FIELDS = ("id", "point_id", "code", "state", "size_category", "version"
 SIZE_ORDER = {"PEQUENO": 0, "MEDIANO": 1, "GRANDE": 2}
 STAFF_ROLES = (Role.OPERADOR, Role.ADMIN, Role.AUDITOR)
 OPERATOR_ROLES = (Role.OPERADOR,)
+SENSITIVE_TEXT = re.compile(r"(?<![0-9])[0-9]{6}(?![0-9])|(?<![A-Za-z0-9_-])[A-Za-z0-9_-]{43}(?![A-Za-z0-9_-])")
+
+
+def audit_text(value: str) -> str:
+    return SENSITIVE_TEXT.sub("[redactado]", value)
 
 
 def public_reference_hash(reference: str) -> str:
@@ -86,7 +92,8 @@ class CustodyOperations:
             if prior is not None:
                 return custody_view(self.locked_order(conn, prior))
             point_id = body["point_id"]
-            self.active_point(conn, point_id)
+            self.active_point(conn, point_id, lock=True)
+            self.require_verified(conn, actor["id"], lock=True)
             recipient_id = self.find_recipient(conn, body["recipient_contact"])
             reference = token_urlsafe(32)
             order = conn.execute(
@@ -169,7 +176,7 @@ class CustodyOperations:
             updated = self.update_order(conn, order, state="CANCELADA", completed_at=datetime.now(UTC))
             self.event(
                 conn, actor, updated, "CUSTODIA_CANCELADA", correlation_id,
-                previous_state=order["state"], payload={"reason": body["reason"]},
+                previous_state=order["state"], payload={"reason": audit_text(body["reason"])},
             )
             self.store.complete(conn, record, custody_id)
             return custody_view(updated)
@@ -177,12 +184,13 @@ class CustodyOperations:
     def receive(self, actor: RowMapping, custody_id: UUID, key: str, body: dict, correlation_id: UUID) -> dict:
         with self.store.engine.begin() as conn:
             order = self.locked_order(conn, custody_id)
-            self.require_staff(conn, actor, order["point_id"], lock=True)
             record, prior = self.claim(conn, actor, f"custodies:{custody_id}:receive", key, body)
             if prior is not None:
+                self.require_staff(conn, actor, order["point_id"])
                 return custody_view(order)
-            self.require_state(order, "REGISTRADA", body["expected_version"])
             self.active_point(conn, order["point_id"], lock=True)
+            self.require_staff(conn, actor, order["point_id"], lock=True)
+            self.require_state(order, "REGISTRADA", body["expected_version"])
             for user_id in sorted({order["sender_id"], order["recipient_id"]}):
                 self.require_verified(conn, user_id, lock=True)
             tariff, rules, amount = self.current_price(
@@ -208,7 +216,7 @@ class CustodyOperations:
                 conn, actor, updated, "CUSTODIA_RECIBIDA", correlation_id, previous_state=order["state"],
                 payload={
                     "location_id": str(location["id"]), "tariff_id": str(tariff["id"]),
-                    "amount": f"{amount:.2f}", "external_condition": body["external_condition"],
+                    "amount": f"{amount:.2f}", "external_condition": audit_text(body["external_condition"]),
                 },
             )
             self.store.complete(conn, record, custody_id)
@@ -289,7 +297,7 @@ class CustodyOperations:
         exact = users.c.email == contact.casefold() if "@" in contact else users.c.phone == contact
         rows = conn.execute(select(users.c.id).where(
             exact, users.c.is_active, users.c.contact_verified_at.is_not(None),
-        ).limit(2)).scalars().all()
+        ).limit(2).with_for_update(read=True)).scalars().all()
         if len(rows) != 1:
             raise IdentityError(400, "DESTINATARIO_NO_DISPONIBLE", "No se pudo seleccionar un destinatario comprobado.")
         return rows[0]
