@@ -61,6 +61,24 @@ class CustodyOperations:
             tariff, _rules, price = self.current_price(conn, point_id, category, hours)
             return {"tariff_id": tariff["id"], "amount": f"{price:.2f}", "currency": "BOB", "duration_hours": hours}
 
+    def historical_quote(
+        self, actor: RowMapping, point_id: UUID, custody_id: UUID, category: str, hours: int
+    ) -> dict:
+        with self.store.engine.connect() as conn:
+            self.require_staff(conn, actor, point_id)
+            order = self.get_order(conn, custody_id)
+            if order["point_id"] != point_id:
+                raise IdentityError(404, "CUSTODIA_NO_ENCONTRADA", "No se encontró la custodia.")
+            if order["state"] != "EN_CUSTODIA":
+                raise conflict("ESTADO_NO_PERMITE", "El estado de la custodia no permite una prórroga.")
+            if order["size_category"] != category:
+                raise conflict("TAMANO_NO_COINCIDE", "Cotiza con el tamaño registrado en la custodia.")
+            amount = self.extension_amount(order, hours)
+            return {
+                "tariff_id": order["tariff_id"], "amount": f"{amount:.2f}",
+                "currency": "BOB", "duration_hours": hours,
+            }
+
     def create(self, actor: RowMapping, key: str, body: dict, correlation_id: UUID) -> dict:
         with self.store.engine.begin() as conn:
             self.require_verified(conn, actor["id"])
@@ -83,7 +101,7 @@ class CustodyOperations:
             self.store.complete(conn, record, order["id"])
             return {**custody_view(order), "public_reference": reference}
 
-    def list(self, actor: RowMapping, point_id: UUID | None, tracking_number: str | None) -> list[dict]:
+    def list_custodies(self, actor: RowMapping, point_id: UUID | None, tracking_number: str | None) -> list[dict]:
         order = self.orders
         visible = or_(order.c.sender_id == actor["id"], order.c.recipient_id == actor["id"])
         if actor["role"] in STAFF_ROLES:
@@ -111,7 +129,8 @@ class CustodyOperations:
     def rotate_reference(self, actor: RowMapping, custody_id: UUID, correlation_id: UUID) -> dict:
         with self.store.engine.begin() as conn:
             order = self.locked_order(conn, custody_id)
-            self.require_sender(order, actor)
+            if actor["id"] not in (order["sender_id"], order["recipient_id"]):
+                raise IdentityError(404, "CUSTODIA_NO_ENCONTRADA", "No se encontró la custodia.")
             reference = token_urlsafe(32)
             conn.execute(
                 self.orders.update().where(self.orders.c.id == custody_id)
@@ -203,13 +222,10 @@ class CustodyOperations:
             if prior is not None:
                 return custody_view(order)
             self.require_state(order, "EN_CUSTODIA", body["expected_version"])
-            rules = TariffRules.model_validate(order["tariff_snapshot"])
-            amount = rules.sizes[order["size_category"]].extension_price(body["additional_hours"])
+            amount = self.extension_amount(order, body["additional_hours"])
             if amount != Decimal(body["accepted_amount"]):
                 raise conflict("IMPORTE_NO_COINCIDE", "Confirma el importe calculado con la tarifa histórica.")
             total = order["service_total"] + amount
-            if total > MAX_AMOUNT:
-                raise IdentityError(400, "IMPORTE_FUERA_DE_RANGO", "El total supera el importe admitido.")
             due = self.advance_hours(order["due_at"], body["additional_hours"])
             updated = self.update_order(conn, order, service_total=total, due_at=due)
             self.register_payment(conn, actor, custody_id, "PRORROGA", amount, body)
@@ -298,6 +314,14 @@ class CustodyOperations:
         if price > MAX_AMOUNT:
             raise IdentityError(400, "IMPORTE_FUERA_DE_RANGO", "La cotización supera el importe admitido.")
         return row, rules, price
+
+    @staticmethod
+    def extension_amount(order: RowMapping, hours: int) -> Decimal:
+        rules = TariffRules.model_validate(order["tariff_snapshot"])
+        amount = rules.sizes[order["size_category"]].extension_price(hours)
+        if order["service_total"] + amount > MAX_AMOUNT:
+            raise IdentityError(400, "IMPORTE_FUERA_DE_RANGO", "El total supera el importe admitido.")
+        return amount
 
     def available_location(self, conn: Connection, order: RowMapping, location_id: UUID) -> RowMapping:
         loc, allocations = self.locations, self.storage

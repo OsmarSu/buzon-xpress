@@ -63,7 +63,12 @@ def custody_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
         return operations.points_list()
 
     @router.get("/points/{point_id}/quote")
-    def quote(point_id: UUID, size_category: SizeCategory, duration_hours: Annotated[int, Query(ge=1)]):
+    def quote(
+        request: Request, point_id: UUID, size_category: SizeCategory,
+        duration_hours: Annotated[int, Query(ge=1)], custody_id: UUID | None = None,
+    ):
+        if custody_id is not None:
+            return operations.historical_quote(security.actor(request), point_id, custody_id, size_category, duration_hours)
         return operations.quote(point_id, size_category, duration_hours)
 
     @router.post("/custodies", status_code=201, dependencies=csrf)
@@ -77,7 +82,7 @@ def custody_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
         request: Request, point_id: UUID | None = None,
         tracking_number: Annotated[str | None, Query(min_length=1, max_length=32)] = None,
     ):
-        return operations.list(security.actor(request), point_id, tracking_number)
+        return operations.list_custodies(security.actor(request), point_id, tracking_number)
 
     @router.get("/custodies/{custody_id}")
     def detail(request: Request, custody_id: UUID):
