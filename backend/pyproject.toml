@@ -1,0 +1,20 @@
+[project]
+name = "buzon-xpress-api"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "alembic>=1.15,<2",
+    "fastapi>=0.115,<1",
+    "psycopg[binary]>=3.2,<4",
+    "pwdlib[argon2]>=0.3,<1",
+    "pydantic[email]>=2.11,<3",
+    "sqlalchemy>=2.0,<2.1",
+    "uvicorn>=0.34,<1",
+]
+
+[dependency-groups]
+dev = ["httpx2>=2,<3", "pytest>=8,<10", "pyyaml>=6,<7", "jsonschema>=4,<5"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

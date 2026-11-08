@@ -1,0 +1,79 @@
+from contextlib import asynccontextmanager
+from uuid import uuid4
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.exc import InterfaceError, OperationalError
+from starlette.exceptions import HTTPException
+
+from app.adapters.api.auth import API_PATH, auth_router
+from app.adapters.api.dto import Error, Health
+from app.adapters.mail.smtp import SmtpIdentityMail
+from app.adapters.storage.identity import IdentityStore
+from app.application.identity import IdentityService
+from app.config import Settings
+from app.domain.identity import IdentityError
+from app.ports.mail import IdentityMail, MailUnavailable
+
+
+def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = None) -> FastAPI:
+    settings = settings or Settings.from_env()
+    store = IdentityStore(settings.database_url)
+    service = IdentityService(store, mail if mail is not None else (
+        SmtpIdentityMail(settings) if settings.smtp_host else None
+    ))
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        try:
+            yield
+        finally:
+            store.engine.dispose()
+
+    app = FastAPI(title="BUZON Xpress", version="0.1.0", lifespan=lifespan)
+    app.include_router(auth_router(service, settings), prefix=API_PATH)
+
+    @app.middleware("http")
+    async def request_context(request: Request, call_next):
+        request.state.correlation_id = uuid4()
+        response = await call_next(request)
+        response.headers["X-Correlation-ID"] = str(request.state.correlation_id)
+        if request.url.path.startswith(f"{API_PATH}/"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+        return response
+
+    def failure(request: Request, status: int, code: str, message: str) -> JSONResponse:
+        error = Error(code=code, message=message, correlation_id=request.state.correlation_id)
+        return JSONResponse(error.model_dump(mode="json"), status_code=status)
+
+    @app.exception_handler(IdentityError)
+    async def identity_error(request: Request, error: IdentityError):
+        return failure(request, error.status, error.code, error.message)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request: Request, _error: RequestValidationError):
+        return failure(request, 422, "PETICION_INVALIDA", "Revisa los campos enviados.")
+
+    @app.exception_handler(HTTPException)
+    async def http_error(request: Request, error: HTTPException):
+        return failure(request, error.status_code, "PETICION_RECHAZADA", "No se pudo atender la petición.")
+
+    @app.exception_handler(OperationalError)
+    @app.exception_handler(InterfaceError)
+    async def database_error(request: Request, _error):
+        return failure(request, 503, "BASE_NO_DISPONIBLE", "La base de datos no está disponible.")
+
+    @app.exception_handler(MailUnavailable)
+    async def mail_error(request: Request, _error: MailUnavailable):
+        return failure(request, 503, "CORREO_NO_DISPONIBLE", "No se pudo enviar el enlace. Vuelve a intentarlo.")
+
+    @app.get(f"{API_PATH}/health", response_model=Health, tags=["Servicio"])
+    def health() -> Health:
+        with store.engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return Health(status="OK", database_checked=True)
+
+    return app

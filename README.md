@@ -16,19 +16,51 @@ BUZON Xpress organiza la custodia temporal y el intercambio asíncrono de objeto
 | Operación y aceptación | [Manual](docs/operacion/01_manual_operativo.md), [plan de validación](docs/validacion/01_plan_validacion.md) y [plan de implementación](docs/gestion/02_plan_implementacion.md) |
 | Documentos para presentar | [Perfil y dossier de la edición 1.0 en Word, PDF y HTML](entregables/README.md) |
 
-La base documental proviene de `../buzon-xpress-reformulado`. El código de `../buzon-xpress` es el antecedente ejecutable de paquetería, útil para evaluar componentes reutilizables. El perfil, la especificación y el contrato de esta carpeta gobiernan la futura implementación de custodia.
+La base documental proviene de `../buzon-xpress-reformulado`. El código de `../buzon-xpress` es el antecedente ejecutable de paquetería, útil para evaluar componentes reutilizables. El perfil, la especificación y el contrato de esta carpeta gobiernan la implementación de custodia.
 
 ## 2. Estructura y verificación
 
 [Mapa de archivos, límites de cada capa y orden de implementación](docs/gestion/04_estructura_de_archivos.md).
 
-El árbol inicial reserva espacio para React/TypeScript, FastAPI, SQLAlchemy y Alembic. La base de referencia se reconstruyó a partir del diccionario de 156 columnas y las reglas documentadas. Su destino es una base nueva. La primera migración del producto se escribirá como parte de la fase de identidad.
+El primer incremento implementa identidad y sesiones en FastAPI, PostgreSQL y React. La revisión Alembic inicial crea cuentas, sesiones, puntos y asignaciones en una base vacía. Las operaciones de custodia se incorporan después de identidad.
 
-Ejecutar en WSL:
+### Probar identidad en WSL
+
+Desde la raíz de este checkout:
 
 ```bash
-cd /home/oswi/Proyectos/buzon-xpress-final
-./verificar.sh
+./infra/probar-identidad.sh
+cd frontend
+npm ci
+npm run build
 ```
 
-La comprobación valida enlaces, trazabilidad, OpenAPI y el SQL en PostgreSQL 16 desechable. [Resultado documental](docs/validacion/03_verificacion_linea_base.md) · [Herramientas](herramientas/README.md)
+El ensayo crea y elimina su propio PostgreSQL 16 en loopback. Aplica la migración, la revierte, la aplica de nuevo y prueba la API contra OpenAPI con datos sintéticos y un puerto de correo de prueba.
+
+### Ejecutar el incremento
+
+Prepara una base nueva de desarrollo. En la terminal de la API, configura `BUZON_DATABASE_URL` con una URL `postgresql+psycopg://` para esa base y ejecuta desde la raíz:
+
+```bash
+cd backend
+uv sync --locked --python 3.13
+export BUZON_ENV=desarrollo
+export BUZON_ALLOWED_ORIGINS=http://127.0.0.1:5173
+export BUZON_SESSION_SECRET="$(python -c 'from secrets import token_hex; print(token_hex(32))')"
+uv run --locked alembic upgrade head
+uv run --locked uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000
+```
+
+Desde la raíz en otra terminal:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Abre `http://127.0.0.1:5173`. Para recibir el enlace de verificación en desarrollo, configura `BUZON_SMTP_HOST` y `BUZON_SMTP_FROM` y, si corresponde, `BUZON_SMTP_PORT`, `BUZON_SMTP_USER` y `BUZON_SMTP_PASSWORD`. El transporte usa STARTTLS. Con el correo deshabilitado, las cuentas nuevas quedan con contacto pendiente. El límite de intentos se aplica por cliente y proceso en el servidor de desarrollo.
+
+### Verificar el diseño
+
+Para comprobar la línea base documental, prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.sh` desde la raíz. La comprobación valida enlaces, trazabilidad, OpenAPI y el SQL de referencia en PostgreSQL desechable. [Resultado documental](docs/validacion/03_verificacion_linea_base.md).

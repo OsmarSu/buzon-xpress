@@ -1,0 +1,65 @@
+:root {
+  color: #1d292c;
+  background: #f3f5f4;
+  font: 1rem / 1.55 system-ui, sans-serif;
+}
+
+body { margin: 0; }
+
+.access {
+  width: min(100% - 2rem, 34rem);
+  margin: clamp(1rem, 6vw, 4rem) auto;
+}
+
+.brand {
+  margin-bottom: 0;
+  color: #14564e;
+  font-weight: 700;
+}
+
+h1 { margin: 0; }
+
+section {
+  margin: 1rem 0;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  border: 1px solid #c6d2cf;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+section h2 { margin-top: 0; }
+
+form { display: grid; gap: 0.5rem; }
+
+label { font-weight: 600; }
+
+input, button {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #5d7771;
+  border-radius: 0.3rem;
+  font: inherit;
+}
+
+input { margin-bottom: 0.5rem; }
+
+button {
+  margin-top: 0.5rem;
+  color: #fff;
+  background: #14564e;
+  cursor: pointer;
+}
+
+button:disabled { opacity: 0.65; cursor: wait; }
+
+button.secondary { color: #14564e; background: #fff; }
+
+:focus-visible { outline: 3px solid #ab4300; outline-offset: 3px; }
+
+.error {
+  overflow-wrap: anywhere;
+  padding: 0.75rem;
+  color: #801818;
+  background: #fce8e7;
+}
