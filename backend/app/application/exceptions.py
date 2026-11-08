@@ -254,7 +254,9 @@ class ExceptionsService:
         conn.execute(self.orders.update().where(self.orders.c.id == order["id"]).values(
             state=result, version=order["version"] + 1, completed_at=now,
         ))
-        event = "ENTREGA_CONCILIADA" if reconciliation else "DEVOLUCION_CONFIRMADA"
+        event = "DEVOLUCION_CONFIRMADA" if result == "DEVUELTA" else "RETIRO_CONFIRMADO"
+        if reconciliation:
+            event = "ENTREGA_CONCILIADA"
         payload = {"handover_id": str(row["id"]), "authorization_id": str(authorization["id"])}
         if reconciliation:
             payload["recovery_id"] = str(reconciliation)

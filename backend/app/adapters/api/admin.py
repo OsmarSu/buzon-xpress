@@ -12,6 +12,7 @@ from app.adapters.api.operations_dto import (
 )
 from app.adapters.api.security import ApiSecurity
 from app.adapters.storage.operations import OperationsStore
+from app.application.custody_tariffs import TariffRules
 from app.application.operations_access import find, projected, require_scope
 from app.domain.identity import IdentityError, Role
 
@@ -188,8 +189,6 @@ def admin_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
     @router.post("/admin/tariffs", status_code=201, dependencies=write)
     def create_tariff(body: TariffWrite, request: Request, key: IdempotencyKey) -> dict:
         actor = security.actor(request)
-        from app.application.custody_tariffs import TariffRules
-
         try:
             rules = TariffRules.model_validate(body.rules).model_dump(mode="json")
         except ValidationError:

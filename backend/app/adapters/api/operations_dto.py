@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import Header
-from pydantic import AwareDatetime, Field, StringConstraints
+from pydantic import AwareDatetime, Field, StringConstraints, field_validator
 
 from app.adapters.api.dto import Payload
 
@@ -77,3 +77,10 @@ class HandoverConfirm(Payload):
     authorization_id: UUID
     expected_version: Version
     physically_delivered: Literal[True]
+
+    @field_validator("physically_delivered", mode="before")
+    @classmethod
+    def must_be_true(cls, value):
+        if value is not True:
+            raise ValueError("Confirma explícitamente que la entrega física ya ocurrió.")
+        return value

@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from hashlib import sha256
@@ -266,3 +267,103 @@ def test_t11_t13_expiry_notices_and_smtp_retries_keep_inventory(scenario):
         )).all()
     assert statuses == [("FALLIDA", 3), ("FALLIDA", 3)]
     assert s.row("custody_orders", s.order)["state"] == "EN_CUSTODIA"
+
+
+def issue_pickup(s, *, reissue=False):
+    response = s.change("recipient", f"/custodies/{s.order}/credentials", {"reissue": reissue})
+    assert response.status_code == 201
+    return response.json()
+
+
+def verify_body(code, *, version=1):
+    return {"code": code, "expected_version": version, "recipient_check": "COMPROBACION_VISUAL_COMPLETADA"}
+
+
+def test_t07_credential_reissue_expires_and_is_never_recovered(scenario):
+    s = scenario
+    path = f"/custodies/{s.order}/credentials"
+    assert s.change("sender", path, {}).status_code == 404
+    first = issue_pickup(s)
+    assert s.change("recipient", path, {}).status_code == 409
+    stored = s.row("pickup_credentials", first["credential_id"])
+    assert len(first["code"]) == 6 and first["code"].isdigit()
+    assert stored["verifier"] != first["code"]
+    second = issue_pickup(s, reissue=True)
+    assert second["code"] != first["code"]
+    assert s.row("pickup_credentials", first["credential_id"])["state"] == "REVOCADA"
+    verify_path = f"/custodies/{s.order}/verify"
+    assert s.change("operator", verify_path, verify_body(first["code"])).status_code == 400
+    table = s.store.table("pickup_credentials")
+    with s.engine.begin() as conn:
+        conn.execute(table.update().where(table.c.id == second["credential_id"]).values(expires_at=s.now))
+    assert s.change("operator", verify_path, verify_body(second["code"])).status_code == 400
+    assert s.row("storage_locations", s.location)["state"] == "OCUPADA"
+
+
+def test_t08_five_failures_survive_retry_and_concurrent_verification(scenario):
+    s = scenario
+    issued = issue_pickup(s)
+    wrong = "000000" if issued["code"] != "000000" else "000001"
+    path = f"/custodies/{s.order}/verify"
+    key = uuid4().hex
+    assert s.change("operator", path, verify_body(wrong), key=key).status_code == 400
+    assert s.change("operator", path, verify_body(wrong), key=key).status_code == 400
+    assert s.row("pickup_credentials", issued["credential_id"])["failed_attempts"] == 1
+    for _ in range(3):
+        assert s.change("operator", path, verify_body(wrong)).status_code == 400
+    assert s.change("operator", path, verify_body(wrong)).status_code == 429
+    assert s.row("pickup_credentials", issued["credential_id"])["failed_attempts"] == 5
+    assert s.change("operator", path, verify_body(issued["code"])).status_code == 429
+    assert s.change("recipient", f"/custodies/{s.order}/credentials", {"reissue": True}).status_code == 429
+    table = s.store.table("pickup_credentials")
+    with s.engine.begin() as conn:
+        conn.execute(table.update().where(table.c.id == issued["credential_id"]).values(
+            expires_at=s.now, blocked_until=s.now,
+        ))
+    new = issue_pickup(s, reissue=True)
+    with ThreadPoolExecutor(2) as workers:
+        futures = [workers.submit(s.change, actor, path, verify_body(new["code"])) for actor in ("operator", "operator2")]
+        statuses = sorted(future.result().status_code for future in futures)
+    assert statuses == [200, 409]
+    assert s.row("custody_orders", s.order)["state"] == "RETIRO_EN_CURSO"
+    assert s.row("storage_locations", s.location)["state"] == "OCUPADA"
+
+
+def test_t09_pickup_confirmation_requires_operator_and_replays_only_once(scenario):
+    s = scenario
+    issued = issue_pickup(s)
+    verify_path = f"/custodies/{s.order}/verify"
+    authorization = s.change("operator", verify_path, verify_body(issued["code"])).raise_for_status().json()
+    assert authorization["location_code"] == "A-01"
+    assert s.row("pickup_credentials", issued["credential_id"])["state"] == "RETENIDA"
+    path = f"/custodies/{s.order}/handover"
+    body = {
+        "authorization_id": authorization["authorization_id"], "expected_version": authorization["version"],
+        "physically_delivered": True,
+    }
+    assert s.change("operator2", path, body).status_code == 403
+    assert s.change("operator", path, {**body, "physically_delivered": 1}).status_code == 422
+    key = uuid4().hex
+    result = s.change("operator", path, body, key=key).raise_for_status().json()
+    assert result["kind"] == "RETIRO"
+    assert s.change("operator", path, body, key=key).raise_for_status().json() == result
+    assert s.change("operator", path, {**body, "expected_version": body["expected_version"] + 1}, key=key).status_code == 409
+    assert s.change("operator", path, body).status_code == 409
+    assert s.row("pickup_credentials", issued["credential_id"])["state"] == "CONSUMIDA"
+    assert s.row("storage_locations", s.location)["state"] == "DISPONIBLE"
+
+
+def test_abort_keeps_object_and_revokes_credential(scenario):
+    s = scenario
+    issued = issue_pickup(s)
+    authorization = s.change("operator", f"/custodies/{s.order}/verify", verify_body(issued["code"])).json()
+    body = {
+        "authorization_id": authorization["authorization_id"], "physically_delivered": False,
+        "reason": "El objeto sigue en su ubicación.",
+    }
+    path = f"/custodies/{s.order}/abort-handover"
+    assert s.change("operator2", path, body).status_code == 403
+    assert s.change("operator", path, {**body, "physically_delivered": True}).status_code == 422
+    assert s.change("operator", path, body).raise_for_status().json()["state"] == "EN_CUSTODIA"
+    assert s.row("pickup_credentials", issued["credential_id"])["state"] == "REVOCADA"
+    assert s.row("storage_locations", s.location)["state"] == "OCUPADA"
