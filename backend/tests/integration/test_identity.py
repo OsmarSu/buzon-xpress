@@ -313,3 +313,86 @@ def test_t21_password_reset_rate_limit_is_independent_of_account_existence(envir
             mutate(client, "/password-reset/request", {"email": address}),
             "post", "/auth/password-reset/request", 429,
         )
+
+
+def test_t01_in_person_verification_is_scoped_idempotent_and_auditable(environment, assert_contract):
+    client, mailbox, engine = environment
+    admin, participant, staff = (account() for _ in range(3))
+    admin_id, user_id, staff_id = (
+        mutate(client, "/register", profile).json()["id"] for profile in (admin, participant, staff)
+    )
+    first_point, second_point = uuid4(), uuid4()
+    with engine.begin() as connection:
+        for role, uid in (("ADMIN", admin_id), ("OPERADOR", staff_id)):
+            connection.execute(text("UPDATE users SET role = :role WHERE id = :id"), {"role": role, "id": uid})
+        for point in (first_point, second_point):
+            connection.execute(text(
+                "INSERT INTO service_points (id, code, name, address, opening_hours)"
+                " VALUES (:id, :code, 'Punto de ensayo', 'Dirección sintética', '{}')"
+            ), {"id": point, "code": point.hex[:20]})
+        connection.execute(text(
+            "INSERT INTO staff_assignments (id, user_id, point_id) VALUES (:id, :user, :point)"
+        ), {"id": uuid4(), "user": staff_id, "point": second_point})
+
+    reason = "Identidad del participante comprobada en el punto."
+    path = f"/admin/users/{user_id}/verify-contact"
+    template = "/admin/users/{user_id}/verify-contact"
+    key = uuid4().hex
+
+    def verify(*, route=path, idempotency_key=key, evidence=reason):
+        headers = {"Origin": ORIGIN, "X-CSRF-Token": csrf(client)}
+        if idempotency_key is not None:
+            headers["Idempotency-Key"] = idempotency_key
+        return client.post("/api/v1" + route, json={"reason": evidence}, headers=headers)
+
+    def login(profile):
+        client.cookies.clear()
+        assert mutate(client, "/login", {k: profile[k] for k in ("email", "password")}).status_code == 200
+
+    assert_contract(verify(), "post", template, 401)
+    login(participant)
+    assert_contract(verify(), "post", template, 403)
+    login(admin)
+    assert_contract(verify(idempotency_key=None), "post", template, 422)
+    assert_contract(verify(), "post", template, 403)
+    with engine.begin() as connection:
+        for point in (first_point, second_point):
+            connection.execute(text(
+                "INSERT INTO staff_assignments (id, user_id, point_id) VALUES (:id, :user, :point)"
+            ), {"id": uuid4(), "user": admin_id, "point": point})
+    assert_contract(verify(), "post", template, 409)
+    assert_contract(verify(route=f"/admin/users/{admin_id}/verify-contact"), "post", template, 403)
+
+    # A staff member with one shared point is unambiguous even for a multi-point administrator.
+    assert_contract(
+        verify(route=f"/admin/users/{staff_id}/verify-contact", idempotency_key=uuid4().hex),
+        "post", template, 200,
+    )
+    with engine.begin() as connection:
+        connection.execute(text(
+            "UPDATE staff_assignments SET is_active = false WHERE user_id = :user AND point_id = :point"
+        ), {"user": admin_id, "point": second_point})
+    assert_contract(
+        verify(route=f"/admin/users/{staff_id}/verify-contact", idempotency_key=uuid4().hex),
+        "post", template, 404,
+    )
+
+    completed = verify()
+    assert_contract(completed, "post", template, 200)
+    assert completed.json()["contact_verified"] is True
+    replay = verify()
+    assert_contract(replay, "post", template, 200)
+    assert replay.json() == completed.json()
+    assert_contract(verify(evidence="Otra evidencia"), "post", template, 409)
+
+    with engine.connect() as connection:
+        event = connection.execute(text(
+            "SELECT actor_id, point_id, correlation_id, payload FROM custody_events"
+            " WHERE event_type = 'CONTACTO_COMPROBADO_PRESENCIAL' AND payload->>'user_id' = :user"
+        ), {"user": user_id}).mappings().one()
+        assert str(event["actor_id"]) == admin_id
+        assert event["point_id"] == first_point
+        assert str(event["correlation_id"]) == completed.headers["x-correlation-id"]
+        assert event["payload"] == {"user_id": user_id, "reason": reason}
+    token = mailbox.deliveries[participant["email"]]
+    assert mutate(client, "/verify-contact", {"token": token}).status_code == 400
