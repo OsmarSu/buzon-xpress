@@ -367,3 +367,17 @@ def test_abort_keeps_object_and_revokes_credential(scenario):
     assert s.change("operator", path, body).raise_for_status().json()["state"] == "EN_CUSTODIA"
     assert s.row("pickup_credentials", issued["credential_id"])["state"] == "REVOCADA"
     assert s.row("storage_locations", s.location)["state"] == "OCUPADA"
+
+
+def test_every_documented_operation_is_registered(scenario):
+    from pathlib import Path
+    import yaml
+
+    contract_path = Path(__file__).resolve().parents[3] / "docs/ingenieria/anexos/openapi.yaml"
+    expected = yaml.safe_load(contract_path.read_text())["paths"]
+    live = scenario.app.openapi()["paths"]
+    methods = {"get", "post", "put", "patch", "delete"}
+    documented = {(API + path, method) for path, entry in expected.items() for method in entry if method in methods}
+    registered = {(path, method) for path, entry in live.items() for method in entry if method in methods}
+    assert documented == registered
+    assert len(registered) == 41
