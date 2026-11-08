@@ -1,6 +1,6 @@
 # Plan de implementación y transición
 
-Estado: plan propuesto, sin desarrollo de producto ejecutado en esta carpeta. Duración de referencia: seis iteraciones de una semana; ajustar según equipo y disponibilidad del punto.
+Plan de implementación de la línea base. El [registro de pruebas](../validacion/resultados_pruebas.csv) recoge el estado técnico de las entregas. Duración de referencia: seis iteraciones de una semana; ajustar según equipo y disponibilidad del punto.
 
 ## 1. Orden y dependencias
 
@@ -26,7 +26,7 @@ No se dedica una iteración completa a una landing sin un flujo comprobable. La 
 7. Introducir migraciones, entorno de pruebas y copias reproducibles.
 8. Ejecutar escenarios funcionales, negativos y operativos antes de usar objetos reales.
 
-Esta lista especifica trabajo futuro. No se copia código sin revisión ni se afirma que el proyecto actual satisfaga los nuevos contratos.
+Las entregas se contrastan con el contrato y la evidencia de pruebas por módulo.
 
 ## 3. Migración de datos
 

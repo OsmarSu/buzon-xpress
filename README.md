@@ -1,6 +1,8 @@
 # BUZON Xpress final
 
-**Línea base 1.1 · 7 de noviembre de 2026 · Arch WSL**
+**Versión de desarrollo 1.2 · Arch WSL**
+
+Base documental 1.1.
 
 BUZON Xpress organiza la custodia temporal y el intercambio asíncrono de objetos. El emisor registra y deja el objeto, el operador lo guarda en una ubicación interna y el destinatario lo recoge tras la comprobación digital y presencial. El punto usa su espacio y sus equipos existentes. El personal realiza la recepción y la entrega.
 
@@ -22,24 +24,25 @@ La base documental proviene de `../buzon-xpress-reformulado`. El código de `../
 
 [Mapa de archivos, límites de cada capa y orden de implementación](docs/gestion/04_estructura_de_archivos.md).
 
-El primer incremento implementa identidad y sesiones en FastAPI, PostgreSQL y React. La revisión Alembic inicial crea cuentas, sesiones, puntos y asignaciones en una base vacía. Las operaciones de custodia se incorporan después de identidad.
+La aplicación integra identidad, registro y recepción, inventario, retiro, incidencias y devoluciones, avisos y supervisión. El contrato de [OpenAPI](docs/ingenieria/anexos/openapi.yaml) documenta la API y las consultas de expedientes por punto.
 
-### Probar identidad en WSL
+### Pruebas reproducibles en WSL
 
-Desde la raíz de este checkout:
+Desde la raíz del repositorio:
 
 ```bash
-./infra/probar-identidad.sh
+BUZON_PRUEBA_CARGA=1 BUZON_PROBAR_RESTAURACION=1 ./infra/probar-sistema.sh
 cd frontend
 npm ci
+npm test
 npm run build
 ```
 
-El ensayo crea y elimina su propio PostgreSQL 16 en loopback. Aplica la migración, la revierte, la aplica de nuevo y prueba la API contra OpenAPI con datos sintéticos y un puerto de correo de prueba.
+El ensayo crea PostgreSQL 16 desechable en loopback y ejecuta migración, reversión, migración y pruebas con datos sintéticos. Las variables opcionales activan la carga concurrente y la restauración local. El ensayo STARTTLS usa un receptor en loopback con certificado efímero. La [matriz de validación](docs/validacion/resultados_pruebas.csv) distingue aprobados, parciales y pendientes.
 
-### Ejecutar el incremento
+### Arrancar la aplicación
 
-Prepara una base nueva de desarrollo. En la terminal de la API, configura `BUZON_DATABASE_URL` con una URL `postgresql+psycopg://` para esa base y ejecuta desde la raíz:
+Crea una base PostgreSQL nueva de desarrollo y configura `BUZON_DATABASE_URL` con una URL `postgresql+psycopg://` para esa base. En la terminal de la API, desde la raíz:
 
 ```bash
 cd backend
@@ -48,10 +51,10 @@ export BUZON_ENV=desarrollo
 export BUZON_ALLOWED_ORIGINS=http://127.0.0.1:5173
 export BUZON_SESSION_SECRET="$(python -c 'from secrets import token_hex; print(token_hex(32))')"
 uv run --locked alembic upgrade head
-uv run --locked uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000
+uv run --locked uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
 ```
 
-Desde la raíz en otra terminal:
+En otra terminal, desde la raíz:
 
 ```bash
 cd frontend
@@ -59,8 +62,12 @@ npm ci
 npm run dev
 ```
 
-Abre `http://127.0.0.1:5173`. Para recibir el enlace de verificación en desarrollo, configura `BUZON_SMTP_HOST` y `BUZON_SMTP_FROM` y, si corresponde, `BUZON_SMTP_PORT`, `BUZON_SMTP_USER` y `BUZON_SMTP_PASSWORD`. El transporte usa STARTTLS. Con el correo deshabilitado, las cuentas nuevas quedan con contacto pendiente. El límite de intentos se aplica por cliente y proceso en el servidor de desarrollo.
+Abre `http://127.0.0.1:5173`. Registra la primera cuenta y obtén su ID en «Mi cuenta». Con el contacto comprobado, habilita la primera administración con `uv run --locked python -m app.jobs.bootstrap_admin UUID_DE_LA_CUENTA` desde `backend/` y con la misma URL de base. Para una comprobación presencial documentada, agrega `--comprobacion-presencial`. El comando exige acceso a la base, se permite una sola vez mientras exista un administrador activo y revoca las sesiones previas de la cuenta. Inicia sesión de nuevo y crea punto, ubicaciones, tarifa y asignaciones.
 
-### Verificar el diseño
+Configura `BUZON_SMTP_HOST` y `BUZON_SMTP_FROM`, con `BUZON_SMTP_PORT`, `BUZON_SMTP_USER` y `BUZON_SMTP_PASSWORD` según el transporte. Ejecuta `uv run --locked python -m app.jobs.maintenance --loop` desde `backend/` con la misma configuración para procesar vencimientos y reintentos de correo. Sin transporte configurado, los avisos quedan disponibles en la bandeja y el contacto se comprueba por procedimiento presencial.
 
-Para comprobar la línea base documental, prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.sh` desde la raíz. La comprobación valida enlaces, trazabilidad, OpenAPI y el SQL de referencia en PostgreSQL desechable. [Resultado documental](docs/validacion/03_verificacion_linea_base.md).
+Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye las referencias públicas de los logs de acceso.
+
+### Verificar el diseño y consultar entregables
+
+Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.sh`. Consulta el [plan y los resultados de validación](docs/validacion/01_plan_validacion.md) y los [archivos editables de Scrum y pruebas](entregables/README.md).

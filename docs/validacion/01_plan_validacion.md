@@ -1,6 +1,6 @@
 # Plan de validación de producto y servicio
 
-Estado: protocolo propuesto. Las treinta pruebas siguientes están **pendientes de ejecución sobre una implementación**. La revisión documental realizada se registra por separado en [revisión documental](02_revision_documental.md).
+Este protocolo define treinta casos de producto y servicio. La [matriz de resultados](resultados_pruebas.csv) registra qué se ejecutó con datos sintéticos y qué evidencia falta para la aceptación operativa. La [revisión documental](02_revision_documental.md) conserva el diagnóstico de la línea base.
 
 ## 1. Entornos y evidencia
 
@@ -64,4 +64,4 @@ Tiempo de recepción y retiro: distinguir espera, atención y respuesta de softw
 
 Criterios críticos: ningún acceso no autorizado en los casos negativos planificados; ninguna asignación o salida duplicada; ningún secreto público; ningún incidente bloqueante que permita entrega ordinaria; conciliación practicable por personal. Estos son criterios del ensayo, no garantías universales de seguridad.
 
-Guardar evidencia de pruebas aprobadas y fallidas, correcciones y repetición de los casos afectados. El informe final debe describir demanda y costos levantados, límites de muestra y decisión de continuidad. La [plantilla de resultados](resultados_pruebas.csv) comienza sin resultados.
+Guardar evidencia de pruebas aprobadas y fallidas, correcciones y repetición de los casos afectados. El informe final debe describir demanda y costos levantados, límites de muestra y decisión de continuidad. La [matriz de resultados](resultados_pruebas.csv) y la [plantilla editable](../../entregables/Plantillas_Pruebas_BUZON_Xpress.xlsx) separan la prueba técnica del ensayo de servicio.

@@ -104,7 +104,15 @@ def main():
     check(not missing_paths,'Rutas de trazabilidad presentes en OpenAPI')
     with (ROOT/'docs/validacion/resultados_pruebas.csv').open() as file: results=list(csv.DictReader(file))
     expected={r['test'] for r in catalog['requirements']+catalog['quality']}
-    check({r['prueba'] for r in results}==expected and all(r['resultado']=='PENDIENTE' for r in results),'Treinta pruebas catalogadas como pendientes; sin resultados fabricados')
+    statuses = {'APROBADA', 'PARCIAL', 'PENDIENTE', 'FALLIDA'}
+    evidence_fields = ('version', 'fecha', 'entorno', 'responsable', 'observacion', 'evidencia')
+    executed = [r for r in results if r['resultado'] != 'PENDIENTE']
+    check(
+        len(results) == len(expected) and {r['prueba'] for r in results} == expected
+        and all(r['resultado'] in statuses for r in results)
+        and all(all(r[field].strip() for field in evidence_fields) for r in executed),
+        'Treinta casos de producto con estados válidos y evidencia para los ejecutados',
+    )
     svg=list((ROOT/'docs/wireframes').glob('*.svg'))
     for p in svg: ElementTree.parse(p)
     check(len(svg)==5 and all(p.with_suffix('.png').exists() for p in svg),'Cinco wireframes SVG válidos con copias PNG')
@@ -112,7 +120,20 @@ def main():
     for p in docx:
         with ZipFile(p) as z:
             check(z.testzip() is None and 'word/document.xml' in z.namelist(),'DOCX íntegro: '+p.name)
-    check(len(docx)==2 and len(list((ROOT/'entregables').glob('*.pdf')))==2,'Perfil y dossier disponibles en Word y PDF')
+    historical = {'Perfil_Proyecto_BUZON_Xpress', 'Dossier_Reformulacion_BUZON_Xpress'}
+    check(
+        historical <= {p.stem for p in docx} and historical <= {p.stem for p in (ROOT/'entregables').glob('*.pdf')},
+        'Perfil y dossier disponibles en Word y PDF',
+    )
+    workbook = ROOT / 'entregables/Plantillas_Pruebas_BUZON_Xpress.xlsx'
+    valid_workbook = False
+    if workbook.is_file():
+        with ZipFile(workbook) as archive:
+            valid_workbook = archive.testzip() is None and 'xl/workbook.xml' in archive.namelist()
+    check(
+        any(p.name == 'Scrum_BUZON_Xpress.docx' for p in docx) and valid_workbook,
+        'Scrum y matriz de pruebas editables disponibles',
+    )
     status = 'ERROR' if errors else 'APROBADA_CON_OBSERVACIONES' if observations else 'APROBADA'
     summary = {
         'baseline': '1.1',
@@ -128,7 +149,7 @@ def main():
         'tables': len(tables),
         'api_operations': len(operation_ids),
         'planned_product_tests': len(results),
-        'product_tests_executed': 0,
+        'product_tests_executed': len(executed),
     }
     output = ROOT / 'docs/validacion/revision_linea_base.json'
     output.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
@@ -137,7 +158,7 @@ def main():
         f'Estado documental **{status}**.', '',
         'La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.',
         'El ensayo de restricciones en PostgreSQL se ejecuta con [verificar-esquema.sh](../../infra/verificar-esquema.sh).',
-        'Las treinta pruebas funcionales del futuro producto siguen pendientes.', '',
+        'La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.', '',
         '## Comprobaciones', '',
         *[f'- {message}' for message in checks],
     ]

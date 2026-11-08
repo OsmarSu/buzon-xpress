@@ -1,6 +1,6 @@
 # Contratos API y controles de seguridad
 
-Estado: contrato de diseño, sin API implementada en esta carpeta. [OpenAPI 3.1.0](anexos/openapi.yaml) enumera operaciones, peticiones, respuestas y seguridad. Referentes: T01 y S01–S03 de la [bibliografía](../metodologia/02_bibliografia_verificada.md).
+El contrato 1.2 documenta la API de desarrollo. [OpenAPI 3.1.0](anexos/openapi.yaml) enumera operaciones, peticiones, respuestas y seguridad. Referentes: T01 y S01–S03 de la [bibliografía](../metodologia/02_bibliografia_verificada.md).
 
 ## 1. Convenciones
 
@@ -36,7 +36,7 @@ La referencia pública se muestra al crear la custodia y solo se conserva su has
 | `GET /audit/events`, `/reports` | Auditor o administrador con alcance y periodo. |
 | `GET /public-tracking/{reference}` | Información mínima por referencia aleatoria independiente de la guía. |
 
-El YAML añade esquemas y rutas concretas para comprobación presencial, resolución de incidencias y cambio de estado de ubicaciones. La matriz funcional enlaza los caminos principales; las operaciones auxiliares conservan los mismos permisos.
+El YAML especifica las rutas de comprobación presencial, consulta y resolución de incidencias, consulta de expedientes y cambio de estado de ubicaciones. El detalle de expedientes requiere un administrador asignado al punto. La matriz funcional enlaza los caminos principales; las operaciones auxiliares conservan los mismos permisos.
 
 ## 3. Recepción y precio
 

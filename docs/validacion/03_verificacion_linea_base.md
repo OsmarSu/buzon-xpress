@@ -4,7 +4,7 @@ Estado documental **APROBADA_CON_OBSERVACIONES**.
 
 La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.
 El ensayo de restricciones en PostgreSQL se ejecuta con [verificar-esquema.sh](../../infra/verificar-esquema.sh).
-Las treinta pruebas funcionales del futuro producto siguen pendientes.
+La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.
 
 ## Comprobaciones
 
@@ -47,11 +47,13 @@ Las treinta pruebas funcionales del futuro producto siguen pendientes.
 - Referencias internas OpenAPI resueltas
 - Operaciones OpenAPI únicas y parámetros de ruta completos
 - Rutas de trazabilidad presentes en OpenAPI
-- Treinta pruebas catalogadas como pendientes; sin resultados fabricados
+- Treinta casos de producto con estados válidos y evidencia para los ejecutados
 - Cinco wireframes SVG válidos con copias PNG
 - DOCX íntegro: Dossier_Reformulacion_BUZON_Xpress.docx
 - DOCX íntegro: Perfil_Proyecto_BUZON_Xpress.docx
+- DOCX íntegro: Scrum_BUZON_Xpress.docx
 - Perfil y dossier disponibles en Word y PDF
+- Scrum y matriz de pruebas editables disponibles
 
 ## Observaciones de procedencia
 

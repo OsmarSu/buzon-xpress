@@ -1,6 +1,6 @@
-# Guía técnica, entornos y despliegue propuesto
+# Guía técnica, entornos y despliegue
 
-Estado: diseño para la futura implementación. Complementa los README raíz y backend y la configuración de datos del proyecto antecedente. En esta carpeta se entregan documentos y herramientas de exportación; no existe todavía un backend o frontend ejecutable reformulado.
+La implementación de desarrollo se ejecuta con el [README](../../README.md). Esta guía conserva los criterios de entorno y preparación del piloto.
 
 ## 1. Base tecnológica y estructura prevista
 
@@ -23,7 +23,7 @@ frontend/src/
   components/         elementos compartidos
 ```
 
-Es una estructura propuesta, no un árbol ya implementado. Una carpeta por cada libro o patrón no aporta valor por sí sola; la revisión debe comprobar dependencias y responsabilidades.
+La estructura separa reglas, aplicación, persistencia e interfaz. Una carpeta por cada libro o patrón no aporta valor por sí sola; la revisión debe comprobar dependencias y responsabilidades.
 
 ## 2. Configuración prevista
 
