@@ -1,7 +1,7 @@
 {
   "baseline": "1.1",
   "status": "APROBADA_CON_OBSERVACIONES",
-  "document_checks": 48,
+  "document_checks": 44,
   "errors": [],
   "observations": [
     "Copia histórica ausente: referencias/original/backend/database/schema.sql",

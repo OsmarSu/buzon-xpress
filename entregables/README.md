@@ -1,6 +1,6 @@
 # Documentos de lectura y presentación
 
-Estas exportaciones corresponden a la edición documental 1.0. El índice, el SQL reconstruido, la estructura y la propuesta de agentes de la línea base 1.1 están en el [README principal](../README.md).
+Estas exportaciones corresponden a la edición documental 1.0. El índice, el SQL reconstruido y la estructura de la línea base 1.1 están en el [README principal](../README.md).
 
 | Entregable | Word editable | PDF |
 |---|---|---|

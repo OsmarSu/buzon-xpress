@@ -8,11 +8,7 @@ Las treinta pruebas funcionales del futuro producto siguen pendientes.
 
 ## Comprobaciones
 
-- Bloques de código equilibrados: AGENTS.md
 - Bloques de código equilibrados: README.md
-- Bloques de código equilibrados: agentes/README.md
-- Bloques de código equilibrados: agentes/plantilla-tarea.md
-- Bloques de código equilibrados: agentes/tareas/001-identidad.md
 - Bloques de código equilibrados: docs/diagramas/README.md
 - Bloques de código equilibrados: docs/gestion/01_decisiones_y_correspondencia.md
 - Bloques de código equilibrados: docs/gestion/02_plan_implementacion.md

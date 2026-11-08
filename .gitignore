@@ -8,6 +8,4 @@ dist/
 .env
 .env.*
 !.env.example
-.agentes-local/
-.worktrees/
 *.log

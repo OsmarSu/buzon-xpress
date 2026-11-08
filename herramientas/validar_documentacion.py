@@ -20,7 +20,7 @@ def main():
         (checks if condition else errors).append(message)
     report_path = ROOT / 'docs/validacion/03_verificacion_linea_base.md'
     docs = sorted(ROOT.glob('*.md'))
-    for directory in ('agentes', 'docs', 'entregables', 'herramientas'):
+    for directory in ('docs', 'entregables', 'herramientas'):
         docs.extend(sorted((ROOT / directory).rglob('*.md')))
     docs = [p for p in docs if p != report_path]
     broken=[]

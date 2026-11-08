@@ -32,7 +32,3 @@ cd /home/oswi/Proyectos/buzon-xpress-final
 ```
 
 La comprobación valida enlaces, trazabilidad, OpenAPI y el SQL en PostgreSQL 16 desechable. [Resultado documental](docs/validacion/03_verificacion_linea_base.md) · [Herramientas](herramientas/README.md)
-
-## 3. Desarrollo con agentes
-
-[Propuesta de DeepSeek Harness, OmniRoute, Ollama y flujo de trabajo](agentes/README.md). [Primera tarea de implementación](agentes/tareas/001-identidad.md). Las instrucciones del repositorio están en [AGENTS.md](AGENTS.md).

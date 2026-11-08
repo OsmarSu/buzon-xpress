@@ -3,7 +3,6 @@
 ```text
 buzon-xpress-final/
 ├── README.md                         Orden de lectura y arranque de verificación
-├── AGENTS.md                         Alcance, invariantes y reglas para sesiones de código
 ├── docs/
 │   ├── perfil/ negocio/ metodologia/ Definición del servicio y antecedentes
 │   ├── ingenieria/                   Casos de uso, arquitectura, UX y seguridad
@@ -30,8 +29,7 @@ buzon-xpress-final/
 │   └── tests/
 ├── herramientas/                      Generación y verificación documental
 ├── infra/                             Ensayo de esquema PostgreSQL
-├── verificar.sh                       Comprobación reproducible de la línea base
-└── agentes/                           Propuesta, plantilla y primera tarea
+└── verificar.sh                       Comprobación reproducible de la línea base
 ```
 
 ## Orden y responsabilidad de archivos
@@ -42,4 +40,4 @@ buzon-xpress-final/
 4. Conectar la UI de acceso al contrato real. Organizar `frontend/src/features` por identidad, custodias, operación y supervisión. `services` contiene cliente HTTP y errores comunes.
 5. Completar una entrega vertical que registre, reciba, verifique y confirme la salida de un objeto sintético. Después se incorporan incidencias, recuperación, avisos y reportes.
 
-Las carpetas del producto son el punto de partida. Los scripts que se ejecutan hoy verifican el diseño y la persistencia de referencia. El [plan de implementación](02_plan_implementacion.md) y la [primera tarea](../../agentes/tareas/001-identidad.md) detallan los criterios de inicio.
+Las carpetas del producto son el punto de partida. Los scripts que se ejecutan hoy verifican el diseño y la persistencia de referencia. El [plan de implementación](02_plan_implementacion.md) detalla los criterios de inicio.
