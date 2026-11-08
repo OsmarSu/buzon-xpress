@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { request as apiRequest } from "../../services/api";
 import { custodyPath, type Authorization, type Custody, type Handover } from "../../services/custody";
 import { Field, formData, Status, useMutation, useTask, value } from "../shared/forms";
 import { AuthorizedHandover, Receipt } from "./Handover";
@@ -136,54 +137,108 @@ export function Returns({ custody, onAuthorized, onReturned }: {
   </details>;
 }
 
-export function ReviewExceptions() {
-  const incidenceTask = useTask();
-  const decisionTask = useTask();
-  const resolve = useMutation();
-  const decide = useMutation();
-  const [incident, setIncident] = useState<Incident>();
-  const [recovery, setRecovery] = useState<Recovery>();
+interface IncidentDetail extends Incident {
+  kind: string;
+  description: string;
+  opened_by: string;
+  resolved_by?: string | null;
+  resolution_note?: string | null;
+}
 
-  return <div className="dashboard-grid">
-    <section aria-labelledby="resolve-heading">
-      <h2 id="resolve-heading">Resolver incidencia</h2>
-      <p>Verifica el inventario y las circunstancias antes de resolver.</p>
-      <form onSubmit={(event) => {
-        const data = formData(event);
-        const id = encodeURIComponent(value(data, "id"));
-        void incidenceTask.run(async () =>
-          setIncident(await resolve<Incident>("/incidents/" + id + "/resolve", { reason: value(data, "reason") })));
-      }}>
-        <Field label="Identificador de incidencia"><input name="id" required maxLength={36} /></Field>
-        <Field label="Fundamento de la resolución"><textarea name="reason" required maxLength={1000} /></Field>
-        <button type="submit" disabled={incidenceTask.busy}>Resolver incidencia</button>
-      </form>
-      <Status {...incidenceTask} />
-      {incident && <p role="status" className="receipt">Incidencia <code>{incident.id}</code> · {incident.state}</p>}
-    </section>
-    <section aria-labelledby="decision-heading">
-      <h2 id="decision-heading">Revisar solicitud de recuperación</h2>
-      <p>Consulta la evidencia del expediente y verifica que otra persona haya solicitado la recuperación.</p>
-      <form onSubmit={(event) => {
-        const data = formData(event);
-        const id = encodeURIComponent(value(data, "id"));
-        void decisionTask.run(async () => setRecovery(await decide<Recovery>("/recovery-requests/" + id + "/decision", {
-          decision: value(data, "decision"),
-          note: value(data, "note"),
-        })));
-      }}>
-        <Field label="Identificador de solicitud"><input name="id" required maxLength={36} /></Field>
-        <Field label="Decisión">
-          <select name="decision" required defaultValue="">
-            <option value="">Elige una decisión</option><option value="APROBAR">Aprobar</option><option value="RECHAZAR">Rechazar</option>
-          </select>
-        </Field>
-        <Field label="Justificación de la decisión"><textarea name="note" required maxLength={1000} /></Field>
-        <label className="check"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
-        <button type="submit" disabled={decisionTask.busy}>Registrar decisión</button>
-      </form>
-      <Status {...decisionTask} />
-      {recovery && <p role="status" className="receipt">Solicitud <code>{recovery.id}</code> · {recovery.state}</p>}
-    </section>
-  </div>;
+interface RecoveryDetail extends Recovery {
+  purpose: keyof typeof reasons;
+  evidence: string;
+  requested_by: string;
+  decided_by?: string | null;
+  decision_note?: string | null;
+}
+
+function ResolveIncident() {
+  const task = useTask();
+  const send = useMutation();
+  const [id, setId] = useState("");
+  const [item, setItem] = useState<IncidentDetail>();
+  const endpoint = "/incidents/" + encodeURIComponent(id.trim());
+
+  return <section aria-labelledby="resolve-heading">
+    <h2 id="resolve-heading">Resolver incidencia</h2>
+    <form onSubmit={(event) => {
+      event.preventDefault();
+      void task.run(async () => setItem(await apiRequest<IncidentDetail>(endpoint)));
+    }}>
+      <Field label="Identificador de incidencia"><input required maxLength={36} value={id} disabled={task.busy}
+        onChange={(event) => { setId(event.target.value); setItem(undefined); }} /></Field>
+      <button type="submit" className="secondary" disabled={task.busy}>Consultar incidencia</button>
+    </form>
+    {item && <div className="receipt">
+      <strong>{item.kind} · {item.state}</strong>
+      <p>{item.description}</p>
+      <p>Abierta por <code>{item.opened_by}</code></p>
+      <p>Custodia <code>{item.custody_id}</code> · {item.is_blocking ? "Bloqueante" : "Sin bloqueo"}</p>
+      {item.resolution_note && <p>Resolución registrada: {item.resolution_note}</p>}
+    </div>}
+    {item && item.state !== "RESUELTA" && <form onSubmit={(event) => {
+      const reason = value(formData(event), "reason");
+      void task.run(async () => {
+        const result = await send<Incident>(endpoint + "/resolve", { reason });
+        setItem({ ...item, ...result, resolution_note: reason });
+      });
+    }}>
+      <Field label="Fundamento de la resolución"><textarea name="reason" required maxLength={1000} /></Field>
+      <label className="check"><input type="checkbox" required /> Comprobé el inventario y la diferencia</label>
+      <button type="submit" disabled={task.busy}>Resolver incidencia</button>
+    </form>}
+    <Status {...task} />
+  </section>;
+}
+
+function DecideRecovery({ actorId }: { actorId: string }) {
+  const task = useTask();
+  const send = useMutation();
+  const [id, setId] = useState("");
+  const [item, setItem] = useState<RecoveryDetail>();
+  const endpoint = "/recovery-requests/" + encodeURIComponent(id.trim());
+  const isOwn = item?.requested_by === actorId;
+
+  return <section aria-labelledby="decision-heading">
+    <h2 id="decision-heading">Revisar solicitud de recuperación</h2>
+    <form onSubmit={(event) => {
+      event.preventDefault();
+      void task.run(async () => setItem(await apiRequest<RecoveryDetail>(endpoint)));
+    }}>
+      <Field label="Identificador de solicitud"><input required maxLength={36} value={id} disabled={task.busy}
+        onChange={(event) => { setId(event.target.value); setItem(undefined); }} /></Field>
+      <button type="submit" className="secondary" disabled={task.busy}>Consultar expediente</button>
+    </form>
+    {item && <div className="receipt">
+      <strong>{reasons[item.purpose]} · {item.state}</strong>
+      <p>{item.evidence}</p>
+      <p>Solicitó <code>{item.requested_by}</code></p>
+      <p>Custodia <code>{item.custody_id}</code></p>
+      {item.decision_note && <p>Decisión registrada: {item.decision_note}</p>}
+    </div>}
+    {item?.state === "PENDIENTE" && isOwn && <p className="warning">La revisión corresponde a otra persona autorizada.</p>}
+    {item?.state === "PENDIENTE" && !isOwn && <form onSubmit={(event) => {
+      const data = formData(event);
+      const note = value(data, "note");
+      void task.run(async () => {
+        const result = await send<Recovery>(endpoint + "/decision", { decision: value(data, "decision"), note });
+        setItem({ ...item, ...result, decision_note: note });
+      });
+    }}>
+      <Field label="Decisión">
+        <select name="decision" required defaultValue="">
+          <option value="">Elige una decisión</option><option value="APROBAR">Aprobar</option><option value="RECHAZAR">Rechazar</option>
+        </select>
+      </Field>
+      <Field label="Justificación de la decisión"><textarea name="note" required maxLength={1000} /></Field>
+      <label className="check"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
+      <button type="submit" disabled={task.busy}>Registrar decisión</button>
+    </form>}
+    <Status {...task} />
+  </section>;
+}
+
+export function ReviewExceptions({ actorId }: { actorId: string }) {
+  return <div className="dashboard-grid"><ResolveIncident /><DecideRecovery actorId={actorId} /></div>;
 }

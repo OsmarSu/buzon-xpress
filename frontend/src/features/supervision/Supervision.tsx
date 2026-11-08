@@ -217,6 +217,26 @@ interface PointReport {
   data_quality_note: string;
 }
 
+function downloadReport(report: PointReport) {
+  const quote = (value: string | number) => {
+    const text = String(value);
+    const safe = /^[=+@-]|^[\\t\\r\\n]/.test(text) ? "'" + text : text;
+    return '"' + safe.replaceAll('"', '""') + '"';
+  };
+  const rows = [
+    ["Punto", "Desde", "Hasta", "Ubicaciones disponibles", "Ubicaciones ocupadas", "Custodias completadas", "Calidad de datos"],
+    [report.point_id, report.from, report.to, report.available_locations, report.occupied_locations,
+      report.completed_custodies, report.data_quality_note],
+  ];
+  const csv = rows.map((row) => row.map(quote).join(",")).join("\\r\\n");
+  const url = URL.createObjectURL(new Blob(["\\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "buzon-indicadores.csv";
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 export function Audit({ points }: { points: Point[] }) {
   const audit = useTask();
   const reportTask = useTask();
@@ -275,6 +295,7 @@ export function Audit({ points }: { points: Point[] }) {
           <div><dt>Custodias completadas</dt><dd>{report.completed_custodies}</dd></div>
         </dl>
         <p>{report.data_quality_note}</p>
+        <button type="button" className="secondary" onClick={() => downloadReport(report)}>Descargar indicadores en CSV</button>
       </div>}
     </section>
   </div>;

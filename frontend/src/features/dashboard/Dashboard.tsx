@@ -51,7 +51,7 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
     {panel === "custodies" ? <Participant points={points} openId={custody} setOpenId={setCustody} verified={user.contact_verified} />
       : panel === "notices" ? <Notifications onOpen={(id) => { setCustody(id); setPanel("custodies"); }} />
       : panel === "operations" ? <Operations points={points} />
-      : panel === "review" ? <ReviewExceptions />
+      : panel === "review" ? <ReviewExceptions actorId={user.id} />
       : panel === "admin" ? <Administration points={points} /> : <Audit points={points} />}
   </>;
 }
