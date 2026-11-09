@@ -116,7 +116,7 @@ def main():
     svg=list((ROOT/'docs/wireframes').glob('*.svg'))
     for p in svg: ElementTree.parse(p)
     check(len(svg)==5 and all(p.with_suffix('.png').exists() for p in svg),'Cinco wireframes SVG válidos con copias PNG')
-    docx=list((ROOT/'entregables').glob('*.docx'))
+    docx = sorted((ROOT/'entregables').glob('*.docx'))
     for p in docx:
         with ZipFile(p) as z:
             check(z.testzip() is None and 'word/document.xml' in z.namelist(),'DOCX íntegro: '+p.name)

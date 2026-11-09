@@ -1,6 +1,6 @@
-# BUZON Xpress final
+# BUZON Xpress
 
-**Versión de desarrollo 1.2 · Arch WSL**
+**Versión de desarrollo 1.2**
 
 Base documental 1.1.
 
@@ -18,7 +18,7 @@ BUZON Xpress organiza la custodia temporal y el intercambio asíncrono de objeto
 | Operación y aceptación | [Manual](docs/operacion/01_manual_operativo.md), [plan de validación](docs/validacion/01_plan_validacion.md) y [plan de implementación](docs/gestion/02_plan_implementacion.md) |
 | Documentos para presentar | [Perfil y dossier de la edición 1.0 en Word, PDF y HTML](entregables/README.md) |
 
-La base documental proviene de `../buzon-xpress-reformulado`. El código de `../buzon-xpress-original` es el antecedente ejecutable de paquetería, útil para evaluar componentes reutilizables. El perfil, la especificación y el contrato de esta carpeta gobiernan la implementación de custodia.
+El repositorio incluye [copias de referencia del sistema original](referencias/original/README.md), que gestionaba paquetería. El perfil, la especificación y el contrato documentan la reformulación para custodia temporal.
 
 ## 2. Estructura y verificación
 
@@ -26,9 +26,13 @@ La base documental proviene de `../buzon-xpress-reformulado`. El código de `../
 
 La aplicación integra identidad, registro y recepción, inventario, retiro, incidencias y devoluciones, avisos y supervisión. El contrato de [OpenAPI](docs/ingenieria/anexos/openapi.yaml) documenta la API y las consultas de expedientes por punto.
 
-### Pruebas reproducibles en WSL
+### Requisitos para ejecutar el proyecto
 
-Desde la raíz del repositorio:
+Usa una terminal Bash en Linux o WSL con Git, uv, Node.js 24 y npm. El backend usa Python 3.13, que uv puede instalar. Para ejecutar la aplicación necesitas PostgreSQL 16. Las pruebas de integración crean su propia base con Docker y la prueba de correo requiere OpenSSL.
+
+### Pruebas reproducibles
+
+Desde la raíz del repositorio ejecuta:
 
 ```bash
 BUZON_PRUEBA_CARGA=1 BUZON_PROBAR_RESTAURACION=1 ./infra/probar-sistema.sh
@@ -42,19 +46,20 @@ El ensayo crea PostgreSQL 16 desechable en loopback y ejecuta migración, revers
 
 ### Arrancar la aplicación
 
-Crea una base PostgreSQL nueva de desarrollo y configura `BUZON_DATABASE_URL` con una URL `postgresql+psycopg://` para esa base. En la terminal de la API, desde la raíz:
+Crea una base PostgreSQL de desarrollo y un usuario con permisos para crear tablas en ella. En una terminal, desde la raíz del repositorio, reemplaza `USUARIO`, `CONTRASENA` y `BASE` por tus valores. Ajusta el puerto si tu PostgreSQL usa otro y codifica en la URL los caracteres especiales de la contraseña.
 
 ```bash
 cd backend
 uv sync --locked --python 3.13
+export BUZON_DATABASE_URL="postgresql+psycopg://USUARIO:CONTRASENA@127.0.0.1:5432/BASE"
 export BUZON_ENV=desarrollo
 export BUZON_ALLOWED_ORIGINS=http://127.0.0.1:5173
-export BUZON_SESSION_SECRET="$(python -c 'from secrets import token_hex; print(token_hex(32))')"
+export BUZON_SESSION_SECRET="$(uv run --locked python -c 'from secrets import token_hex; print(token_hex(32))')"
 uv run --locked alembic upgrade head
 uv run --locked uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
 ```
 
-En otra terminal, desde la raíz:
+Comprueba la API en `http://127.0.0.1:8000/api/v1/health`. En otra terminal, desde la raíz del repositorio, inicia el frontend:
 
 ```bash
 cd frontend

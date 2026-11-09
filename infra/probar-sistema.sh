@@ -3,8 +3,8 @@ set -euo pipefail
 
 cd -- "$(dirname -- "$0")/../backend"
 uv sync --locked --python 3.13
-db_name="buzon_test_$(python -c 'from secrets import token_hex; print(token_hex(5))')"
-db_password=$(python -c 'from secrets import token_hex; print(token_hex(24))')
+db_name="buzon_test_$(uv run --locked python -c 'from secrets import token_hex; print(token_hex(5))')"
+db_password=$(uv run --locked python -c 'from secrets import token_hex; print(token_hex(24))')
 container=$(
     POSTGRES_PASSWORD="$db_password" docker run --detach --rm \
         --tmpfs /var/lib/postgresql/data:rw \

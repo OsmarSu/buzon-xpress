@@ -9,3 +9,9 @@ dist/
 .env.*
 !.env.example
 *.log
+
+# Metadatos del sistema operativo
+.DS_Store
+Desktop.ini
+Thumbs.db
+*:Zone.Identifier
