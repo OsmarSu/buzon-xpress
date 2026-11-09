@@ -37,7 +37,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 
 export function Status({ busy, error, message }: { busy?: boolean; error?: string; message?: string }) {
   return <>
-    <p role="status" className="status">{busy ? "Consultando el servicio…" : message}</p>
+    <p role="status" className="status">{busy ? "Procesando la solicitud…" : message}</p>
     {error && <p role="alert" className="error">{error}</p>}
   </>;
 }
