@@ -1,12 +1,12 @@
 # Diseño de interfaz y navegación
 
-Estado: diseño. Referencias: Mandel [U01], WCAG 2.2 [U02] y modelado de experiencia de Pressman y Maxim [I01]. Las decisiones concretas son del proyecto.
+La interfaz implementada aplica los principios de Mandel [U01] recogidos por Pressman y Maxim [I01]. WCAG 2.2 [U02] orienta la revisión de foco, contraste y reflujo.
 
 ## 1. Principios aplicados
 
 | Principio | Decisión visible | Comprobación |
 |---|---|---|
-| Control del usuario | Editar o cancelar antes de recepción; explicar las restricciones después de depositar. | El usuario identifica qué puede corregir sin ayuda. |
+| Control del usuario | Permitir cancelar el prerregistro antes de recibir y confirmar explícitamente las acciones operativas. | El usuario identifica qué puede corregir sin ayuda. |
 | Reducir carga de memoria | Mostrar punto, plazo y siguiente paso en el detalle; conservar filtros tras errores. | No exige memorizar guía ni nombres de estados técnicos. |
 | Consistencia | “Registrar”, “Recibir”, “Autorizar entrega” y “Confirmar entrega realizada” conservan su sentido. | No hay botón “Entregado” antes de la entrega física. |
 | Accesibilidad | Texto e icono junto al color, foco visible, etiquetas y navegación por teclado. | Tareas críticas ejecutables sin ratón; contraste revisado. |
@@ -15,6 +15,8 @@ Estado: diseño. Referencias: Mandel [U01], WCAG 2.2 [U02] y modelado de experie
 La reducción de pasos no reemplaza la verificación. Las restricciones de autorización se presentan con instrucciones claras y una vía de recuperación. No se usan mensajes de “cero filas”, “24/7” o “seguridad garantizada”.
 
 ## 2. Arquitectura de información y rutas propuestas
+
+La portada organiza acceso, recorrido del servicio, puntos, cotización y seguimiento público. El espacio autenticado agrupa custodias, avisos, terminal y supervisión según el rol. La tabla conserva las rutas previstas en el diseño de información.
 
 | ID | Ruta | Audiencia | Contenido |
 |---|---|---|---|
