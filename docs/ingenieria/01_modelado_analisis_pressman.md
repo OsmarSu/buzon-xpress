@@ -6,7 +6,13 @@ Estado: diseño. Referentes: Pressman y Maxim [I01], Cockburn [I02] y Larman [I0
 
 Una persona registra un objeto para otra. El operador comprueba condiciones y capacidad, cobra el servicio y registra la recepción. El destinatario obtiene una credencial y acude al punto. El operador verifica, entrega el objeto y confirma la entrega. El sistema conserva evidencia y libera la ubicación.
 
-La frontera del software termina en el registro y autorización. Recepción material, custodia del espacio y entrega humana pertenecen al proceso del servicio; se representan como interacciones con el operador, no como sensores o actuadores implícitos.
+La recepción material, la custodia del espacio y la entrega humana corresponden al servicio asistido. El operador registra los hechos en BUZON Xpress.
+
+![Diagrama UML de casos de uso de alto nivel de BUZON Xpress](../diagramas/casos_uso_alto_nivel.png)
+
+El diagrama sitúa los actores humanos fuera del límite de BUZON Xpress y sus metas dentro. Los óvalos con sufijos detallan metas con permisos distintos y conservan el identificador del [catálogo](06_casos_de_uso_alto_nivel_y_expandidos.md#1-catálogo-de-alto-nivel). [Diagrama vectorial](../diagramas/casos_uso_alto_nivel.svg) · [OMG UML 2.5.1, secciones 18.1.3 y 18.1.4](https://www.omg.org/spec/UML/2.5.1/)
+
+**Vista inicial de análisis**
 
 ```mermaid
 flowchart LR
@@ -22,7 +28,7 @@ flowchart LR
     AU[Auditor] --> C12[CU-12 Revisar eventos]
 ```
 
-Esta es una vista de relaciones actor–capacidad en Mermaid, no un diagrama UML formal de casos de uso. Las descripciones completas están en [casos de uso](06_casos_de_uso_alto_nivel_y_expandidos.md).
+El gráfico Mermaid conserva la primera síntesis de actores y capacidades como referencia de análisis.
 
 ## 2. Análisis boundary, control y entity
 

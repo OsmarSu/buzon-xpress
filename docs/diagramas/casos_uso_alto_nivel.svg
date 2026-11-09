@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1514 1164" width="1514" height="1164" role="img" aria-labelledby="title desc">
+<title id="title">Casos de uso de alto nivel de BUZON Xpress</title>
+<desc id="desc">Actores humanos fuera del sistema y metas dentro. El seguimiento público está separado de la custodia privada. El destinatario obtiene el código, el operador verifica y confirma, y el administrador decide excepciones.</desc>
+<style>
+  text { font-family: 'DejaVu Sans', sans-serif; fill: #102342; }
+  .title { font-size: 34px; font-weight: 700; }
+  .sub { font-size: 17px; fill: #405578; }
+  .system { fill: #fff; stroke: #102342; stroke-width: 2; }
+  .system-name { font-size: 23px; font-weight: 700; }
+  .association { fill: none; stroke: #60728f; stroke-width: 1.45; }
+  .figure { fill: none; stroke: #102342; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+  .actor-label { font-size: 17px; font-weight: 700; text-anchor: middle; }
+  .case { fill: #f0f5fe; stroke: #3560a9; stroke-width: 1.5; }
+  .case-id { font-size: 13px; font-weight: 700; letter-spacing: 0.65px; fill: #214f9b; text-anchor: middle; }
+  .case-name { font-size: 17px; text-anchor: middle; }
+</style>
+<rect width="1514" height="1164" fill="#f4f6fa"/>
+<text class="title" x="48" y="57">Casos de uso de alto nivel</text>
+<text class="sub" x="48" y="85">Vista UML 2.5.1 de las metas de los actores humanos</text>
+<rect class="system" x="306" y="115" width="904" height="994"/>
+<text class="system-name" x="330" y="154">BUZON Xpress</text>
+
+<path class="association" data-actor="cuenta" data-case="CU-01" d="M 157 189 L 224 189 L 286 201 H 350.22"/>
+<path class="association" data-actor="visitante" data-case="CU-01" d="M 157 334 L 224 330 L 286 221 H 350.22"/>
+<path class="association" data-actor="visitante" data-case="CU-04a" d="M 157 334 L 224 334 L 286 315 H 344.00"/>
+<path class="association" data-actor="visitante" data-case="CU-09a" d="M 157 334 L 224 338 L 286 419 H 344.00"/>
+<path class="association" data-actor="emisor" data-case="CU-02" d="M 157 564 L 224 558 L 286 523 H 344.00"/>
+<path class="association" data-actor="emisor" data-case="CU-04b" d="M 157 564 L 224 562 L 286 617 H 350.22"/>
+<path class="association" data-actor="destinatario" data-case="CU-04b" d="M 157 784 L 224 778 L 286 637 H 350.22"/>
+<path class="association" data-actor="emisor" data-case="CU-08" d="M 157 564 L 224 566 L 286 721 H 350.22"/>
+<path class="association" data-actor="destinatario" data-case="CU-08" d="M 157 784 L 224 782 L 286 741 H 350.22"/>
+<path class="association" data-actor="destinatario" data-case="CU-05" d="M 157 784 L 224 786 L 286 835 H 344.00"/>
+<path class="association" data-actor="emisor" data-case="CU-10a" d="M 157 564 L 224 570 L 286 973 H 350.22"/>
+<path class="association" data-actor="destinatario" data-case="CU-10a" d="M 157 784 L 224 790 L 286 993 H 350.22"/>
+<path class="association" data-actor="operador" data-case="CU-03" d="M 1357 404 L 1293 392 L 1228 211 H 1168.00"/>
+<path class="association" data-actor="operador" data-case="CU-06" d="M 1357 404 L 1293 396 L 1228 315 H 1168.00"/>
+<path class="association" data-actor="operador" data-case="CU-07" d="M 1357 404 L 1293 400 L 1228 419 H 1168.00"/>
+<path class="association" data-actor="operador" data-case="CU-09b" d="M 1357 404 L 1293 404 L 1228 523 H 1168.00"/>
+<path class="association" data-actor="operador" data-case="CU-04b" d="M 1357 404 L 1293 408 L 1228 615 H 706.98"/>
+<path class="association" data-actor="admin" data-case="CU-04b" d="M 1357 814 L 1293 806 L 1228 627 H 716.00"/>
+<path class="association" data-actor="auditor" data-case="CU-04b" d="M 1357 1039 L 1293 1037 L 1228 639 H 706.98"/>
+<path class="association" data-actor="operador" data-case="CU-10a" d="M 1357 404 L 1293 412 L 1228 975 H 712.04"/>
+<path class="association" data-actor="admin" data-case="CU-10a" d="M 1357 814 L 1293 810 L 1228 991 H 712.04"/>
+<path class="association" data-actor="operador" data-case="CU-10c" d="M 1357 404 L 1293 416 L 1228 731 H 1168.00"/>
+<path class="association" data-actor="admin" data-case="CU-10b" d="M 1357 814 L 1293 814 L 1228 835 H 1168.00"/>
+<path class="association" data-actor="admin" data-case="CU-11" d="M 1357 814 L 1293 818 L 1228 939 H 1168.00"/>
+<path class="association" data-actor="admin" data-case="CU-12" d="M 1357 814 L 1293 822 L 1228 1033 H 1161.78"/>
+<path class="association" data-actor="auditor" data-case="CU-12" d="M 1357 1039 L 1293 1041 L 1228 1053 H 1161.78"/>
+<g id="CU-01"><ellipse class="case" cx="530" cy="211" rx="186" ry="39"/><text class="case-id" x="530" y="195">CU-01</text><text class="case-name" x="530" y="218">Acceder y gestionar el contacto</text></g>
+<g id="CU-04a"><ellipse class="case" cx="530" cy="315" rx="186" ry="39"/><text class="case-id" x="530" y="299">CU-04a</text><text class="case-name" x="530" y="322">Consultar seguimiento público</text></g>
+<g id="CU-09a"><ellipse class="case" cx="530" cy="419" rx="186" ry="39"/><text class="case-id" x="530" y="403">CU-09a</text><text class="case-name" x="530" y="426">Consultar puntos y cotizar</text></g>
+<g id="CU-02"><ellipse class="case" cx="530" cy="523" rx="186" ry="39"/><text class="case-id" x="530" y="507">CU-02</text><text class="case-name" x="530" y="530">Registrar una entrega futura</text></g>
+<g id="CU-04b"><ellipse class="case" cx="530" cy="627" rx="186" ry="39"/><text class="case-id" x="530" y="611">CU-04b</text><text class="case-name" x="530" y="634">Consultar custodia privada</text></g>
+<g id="CU-08"><ellipse class="case" cx="530" cy="731" rx="186" ry="39"/><text class="case-id" x="530" y="715">CU-08</text><text class="case-name" x="530" y="738">Recibir avisos de la custodia</text></g>
+<g id="CU-05"><ellipse class="case" cx="530" cy="835" rx="186" ry="39"/><text class="case-id" x="530" y="819">CU-05</text><text class="case-name" x="530" y="842">Obtener código de retiro</text></g>
+<g id="CU-10a"><ellipse class="case" cx="530" cy="983" rx="186" ry="39"/><text class="case-id" x="530" y="967">CU-10a</text><text class="case-name" x="530" y="984">Registrar incidencia o</text><text class="case-name" x="530" y="1003">solicitar excepción</text></g>
+<g id="CU-03"><ellipse class="case" cx="982" cy="211" rx="186" ry="39"/><text class="case-id" x="982" y="195">CU-03</text><text class="case-name" x="982" y="218">Registrar recepción y ubicación</text></g>
+<g id="CU-06"><ellipse class="case" cx="982" cy="315" rx="186" ry="39"/><text class="case-id" x="982" y="299">CU-06</text><text class="case-name" x="982" y="322">Verificar y preparar el retiro</text></g>
+<g id="CU-07"><ellipse class="case" cx="982" cy="419" rx="186" ry="39"/><text class="case-id" x="982" y="403">CU-07</text><text class="case-name" x="982" y="426">Confirmar entrega realizada</text></g>
+<g id="CU-09b"><ellipse class="case" cx="982" cy="523" rx="186" ry="39"/><text class="case-id" x="982" y="507">CU-09b</text><text class="case-name" x="982" y="530">Registrar prórroga y cobro</text></g>
+<g id="CU-10c"><ellipse class="case" cx="982" cy="731" rx="186" ry="39"/><text class="case-id" x="982" y="715">CU-10c</text><text class="case-name" x="982" y="738">Registrar devolución aprobada</text></g>
+<g id="CU-10b"><ellipse class="case" cx="982" cy="835" rx="186" ry="39"/><text class="case-id" x="982" y="819">CU-10b</text><text class="case-name" x="982" y="836">Revisar y decidir</text><text class="case-name" x="982" y="855">incidencia o excepción</text></g>
+<g id="CU-11"><ellipse class="case" cx="982" cy="939" rx="186" ry="39"/><text class="case-id" x="982" y="923">CU-11</text><text class="case-name" x="982" y="946">Configurar punto y capacidad</text></g>
+<g id="CU-12"><ellipse class="case" cx="982" cy="1043" rx="186" ry="39"/><text class="case-id" x="982" y="1027">CU-12</text><text class="case-name" x="982" y="1050">Consultar auditoría e indicadores</text></g>
+<g transform="translate(134 195)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Persona con cuenta</text></g>
+<g transform="translate(134 340)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Visitante</text></g>
+<g transform="translate(134 570)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Emisor</text></g>
+<g transform="translate(134 790)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Destinatario</text></g>
+<g transform="translate(1380 410)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Operador</text><text class="actor-label" y="71">del punto</text></g>
+<g transform="translate(1380 820)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Administrador</text><text class="actor-label" y="71">del punto</text></g>
+<g transform="translate(1380 1045)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Auditor</text></g>
+<path class="association" d="M306 1141H354"/><text class="sub" x="367" y="1147">Asociación entre un actor y un caso de uso</text>
+</svg>

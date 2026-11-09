@@ -3,6 +3,8 @@ from pathlib import Path
 import re
 import subprocess
 
+from generar_casos_uso import render as render_use_cases
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'docs/diagramas'
 STYLE = '''graph [bgcolor="white",pad="0.4",nodesep="0.5",ranksep="0.8",fontname="DejaVu Sans"];
@@ -102,11 +104,13 @@ custody_orders -> service_payments;
 users -> idempotency_keys;
 '''
     render('entidades_relaciones',relations)
+    render_use_cases()
     rows=['# Diagramas de arquitectura y análisis','','Los archivos Mermaid se extraen de los documentos de ingeniería. Las vistas DOT/SVG/PNG son representaciones equivalentes diseñadas para lectura e impresión; Graphviz no se presenta como un renderizador de Mermaid.','','| Vista | SVG | PNG | Fuente editable |','|---|---|---|---|']
     for name,label in [('c4_contexto','Contexto'),('c4_contenedores','Contenedores'),('c4_componentes','Componentes'),('estados_custodia','Estados'),('entidades_relaciones','Relaciones de datos')]:
         rows.append(f'| {label} | [Ver]({name}.svg) | [Ver]({name}.png) | [DOT]({name}.dot) |')
+    rows.append('| Casos de uso UML | [Ver](casos_uso_alto_nivel.svg) | [Ver](casos_uso_alto_nivel.png) | [Python](../../herramientas/generar_casos_uso.py) |')
     rows+=['','## Fuentes Mermaid','']+[f'- [{name}]({name})' for name in mermaid]
     (OUT/'README.md').write_text('\n'.join(rows)+'\n')
-    print(f'{len(mermaid)} fuentes Mermaid y cinco vistas DOT/SVG/PNG generadas.')
+    print(f'{len(mermaid)} fuentes Mermaid, cinco vistas DOT/SVG/PNG y una vista UML generadas.')
 
 if __name__=='__main__': main()

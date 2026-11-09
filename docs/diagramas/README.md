@@ -9,6 +9,7 @@ Los archivos Mermaid se extraen de los documentos de ingeniería. Las vistas DOT
 | Componentes | [Ver](c4_componentes.svg) | [Ver](c4_componentes.png) | [DOT](c4_componentes.dot) |
 | Estados | [Ver](estados_custodia.svg) | [Ver](estados_custodia.png) | [DOT](estados_custodia.dot) |
 | Relaciones de datos | [Ver](entidades_relaciones.svg) | [Ver](entidades_relaciones.png) | [DOT](entidades_relaciones.dot) |
+| Casos de uso UML | [Ver](casos_uso_alto_nivel.svg) | [Ver](casos_uso_alto_nivel.png) | [Python](../../herramientas/generar_casos_uso.py) |
 
 ## Fuentes Mermaid
 

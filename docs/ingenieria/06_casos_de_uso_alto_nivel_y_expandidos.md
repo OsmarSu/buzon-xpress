@@ -1,25 +1,39 @@
 # Casos de uso de alto nivel y expandidos
 
-Estado: diseño. Plantilla inspirada en Cockburn [I02] y Larman [I03]: actor, meta, alcance, precondiciones, disparador, garantías, escenario y extensiones. Las acciones y límites son específicos del proyecto.
+Los escenarios usan la estructura de actor, meta, alcance, condiciones y extensiones descrita por Cockburn [I02] y Larman [I03]. Las asociaciones del [diagrama UML](../diagramas/casos_uso_alto_nivel.svg) se contrastaron con la API y sus permisos.
 
 ## 1. Catálogo de alto nivel
 
 | ID | Meta de usuario | Actor principal | Requisitos |
 |---|---|---|---|
-| CU-01 | Acceder con permisos apropiados. | Usuario / personal | RF-01, RF-02 |
+| CU-01 | Acceder y gestionar el contacto. | Visitante que se registra / persona con cuenta | RF-01, RF-02 |
 | CU-02 | Registrar una entrega futura. | Emisor | RF-03 |
 | CU-03 | Recibir y localizar un objeto. | Operador | RF-04, RF-05 |
-| CU-04 | Conocer el estado permitido. | Participante / visitante | RF-06 |
-| CU-05 | Obtener autorización secreta de retiro. | Destinatario | RF-07 |
+| CU-04 | Consultar seguimiento público o custodia privada según alcance. | Visitante / participante / personal asignado | RF-06 |
+| CU-05 | Obtener código de retiro. | Destinatario | RF-07 |
 | CU-06 | Verificar y preparar la entrega. | Operador | RF-08 |
 | CU-07 | Confirmar una entrega real. | Operador | RF-09, RF-18 |
 | CU-08 | Recibir avisos del servicio. | Participante | RF-11 |
-| CU-09 | Contratar plazo y resolver vencimiento. | Emisor / destinatario / operador | RF-12, RF-13 |
-| CU-10 | Resolver diferencias y devoluciones. | Personal / administrador | RF-10, RF-14 |
+| CU-09 | Consultar tarifa y registrar una prórroga. | Visitante / operador asignado | RF-12, RF-13 |
+| CU-10 | Tramitar incidencias, excepciones y devoluciones. | Participantes / operador / administrador | RF-10, RF-14 |
 | CU-11 | Mantener el punto y su capacidad. | Administrador | RF-16 |
 | CU-12 | Supervisar operaciones y evidencia. | Administrador / auditor | RF-15, RF-17 |
 
-Los doce casos expandidos siguientes están al nivel de meta de usuario o servicio. La emisión técnica de un evento es una responsabilidad transversal, no un actor humano ficticio.
+El diagrama representa metas observables de roles externos. Emisor y destinatario son roles de una custodia concreta. La misma persona puede desempeñar uno u otro en distintas operaciones. Visitante representa la interacción pública y persona con cuenta cubre el acceso de usuarios y personal. Operador, administrador y auditor ejercen funciones según su asignación al punto.
+
+Los módulos internos y sus dependencias están en la [vista de componentes](../diagramas/c4_componentes.svg). El [diagrama de secuencia](01_modelado_analisis_pressman.md#6-secuencia-de-retiro-asistido) muestra el orden del retiro.
+
+| Caso en el diagrama | Alcance |
+|---|---|
+| CU-04a | Seguimiento público mediante referencia opaca. Muestra estado general, punto y horario. |
+| CU-04b | Consulta privada para el emisor, el destinatario o el operador, administrador o auditor asignado al punto. |
+| CU-09a | Cualquier visitante puede consultar puntos y pedir una cotización inicial. |
+| CU-09b | El operador asignado cotiza la extensión según la tarifa histórica y registra el pago y el nuevo plazo. |
+| CU-10a | Los participantes pueden abrir incidencias propias y solicitar reemisión o devolución. El operador y el administrador asignados pueden registrar incidencias y solicitar los expedientes autorizados. |
+| CU-10b | El administrador del punto revisa el expediente, decide una excepción solicitada por otra persona o resuelve una incidencia. Una incidencia bloqueante requiere un administrador distinto de quien la abrió. |
+| CU-10c | El operador asignado prepara una devolución aprobada y confirma la entrega física al emisor. |
+
+Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación de las figuras, asociaciones, óvalos y límite del sistema sigue las secciones 18.1.3 y 18.1.4 de [OMG UML 2.5.1](https://www.omg.org/spec/UML/2.5.1/).
 
 ## 2. CU-01 — Acceder con permisos apropiados
 
@@ -74,13 +88,13 @@ Los doce casos expandidos siguientes están al nivel de meta de usuario o servic
 
 ## 5. CU-04 — Conocer el estado permitido
 
-**Actor y alcance:** participante autenticado o visitante, plataforma. **Precondiciones:** identificador privado autorizado o referencia pública aleatoria. **Disparador:** consultar estado.
+**Actor y alcance:** el visitante consulta el seguimiento público. El emisor, el destinatario y el personal asignado consultan el detalle privado dentro de su alcance. **Precondiciones:** sesión autorizada para el detalle privado o referencia pública aleatoria para el seguimiento. **Disparador:** consultar estado.
 
 **Escenario principal:**
 
 1. El servidor distingue consulta privada de pública.
 2. En privada comprueba participación o alcance del personal.
-3. Devuelve estado, plazo e historial permitido, sin revelar credenciales de otros participantes.
+3. Devuelve el estado, el plazo y los datos autorizados de la custodia. El administrador y el auditor consultan los eventos de su punto en CU-12.
 4. En pública devuelve solo estado general y punto/horario, sin nombre, teléfono, descripción o ubicación interna.
 5. La pantalla muestra el resultado o una falla real.
 
@@ -156,7 +170,7 @@ Los doce casos expandidos siguientes están al nivel de meta de usuario o servic
 
 ## 10. CU-09 — Contratar plazo y resolver vencimiento
 
-**Actor y alcance:** emisor, destinatario y operador, cobro del servicio. **Precondiciones:** tarifa vigente al recibir o condiciones históricas para prórroga. **Disparador:** recibir o solicitar extensión.
+**Actor y alcance:** el visitante consulta puntos y cotiza el plazo inicial. El operador asignado registra el cobro y la prórroga. **Precondiciones:** tarifa vigente para la cotización inicial o condiciones históricas para una prórroga. **Disparador:** cotizar, recibir o registrar una extensión.
 
 **Escenario principal:**
 
@@ -173,13 +187,13 @@ Los doce casos expandidos siguientes están al nivel de meta de usuario o servic
 
 ## 11. CU-10 — Resolver diferencias y devoluciones
 
-**Actor y alcance:** solicitante autorizado y administrador diferente, proceso asistido. **Precondiciones:** custodia identificada y hechos registrados. **Disparador:** pérdida de acceso, diferencia, cambio o devolución.
+**Actor y alcance:** el participante o el personal autorizado registra la solicitud. El administrador asignado decide la excepción y el operador ejecuta la devolución aprobada. **Precondiciones:** custodia identificada y hechos registrados. **Disparador:** pérdida de acceso, diferencia, cambio o devolución.
 
 **Escenario principal:**
 
-1. El personal abre incidencia y bloquea la entrega si existe riesgo de duplicación o destinatario incierto.
-2. Registra una solicitud con propósito y evidencia mínima.
-3. Otro administrador revisa participantes, estado físico declarado y eventos.
+1. Un participante o un miembro del personal autorizado abre una incidencia. El bloqueo protege la custodia si existe riesgo de duplicación o destinatario incierto.
+2. El solicitante autorizado registra el propósito y la evidencia mínima de la excepción.
+3. Un administrador asignado, distinto del solicitante, revisa participantes, estado físico declarado y eventos.
 4. Aprueba o rechaza con fundamento; la persona solicitante no se autoaprueba.
 5. La acción aprobada revoca secretos anteriores y aplica el cambio correspondiente con auditoría.
 6. Para devolver, se genera autorización al operador, se entrega físicamente al emisor comprobado y se confirma comprobante `DEVOLUCION` y estado `DEVUELTA`.
