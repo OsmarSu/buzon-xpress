@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ApiError } from "../../services/api";
 import { custodyApi, custodyPath, sizeLabel, type Authorization, type Custody, type Handover, type Location, type Point, type Quote } from "../../services/custody";
 import { CustodySummary } from "../custody/Participant";
+import { WorkspaceBadge, WorkspaceEmpty, WorkspaceGlyph, WorkspaceHeading } from "../dashboard/Workspace";
 import { CustodyExceptions, Returns } from "./Exceptions";
 import { AuthorizedHandover, Receipt } from "./Handover";
 import { Field, formData, payment, PaymentFields, Status, useMutation, useTask, value } from "../shared/forms";
 
 const physicalCheck = "COMPROBACION_VISUAL_COMPLETADA";
 
+const locationStates: Record<Location["state"], string> = {
+  DISPONIBLE: "Disponible", OCUPADA: "Ocupada", BLOQUEADA: "Bloqueada", FUERA_SERVICIO: "Fuera de servicio",
+};
+
 function QuoteFields({ quote }: { quote: Quote }) {
   return <>
-    <p role="status">Tarifa calculada de {quote.amount} BOB por {quote.duration_hours} horas.</p>
+    <p role="status" className="receipt">Tarifa calculada de <strong>{quote.amount} BOB</strong> por {quote.duration_hours} horas.</p>
     <label className="check"><input type="checkbox" required /> Acepto el importe indicado</label>
     <PaymentFields />
   </>;
@@ -74,7 +79,7 @@ function Extension({ custody, onUpdate }: { custody: Custody; onUpdate: (next: C
   const [quote, setQuote] = useState<Quote>();
   const [notice, setNotice] = useState("");
 
-  return <details>
+  return <details className="workspace-action-group">
     <summary>Registrar prórroga</summary>
     <form onSubmit={(event) => {
       const data = formData(event);
@@ -133,7 +138,7 @@ function Pickup({ custody, onUpdate, onInventoryChange, onRefresh }: {
     Hay un retiro en curso. Comprueba si ya hubo entrega y continúa mediante la conciliación del punto.
   </p>;
   if (custody.state !== "EN_CUSTODIA") return null;
-  return <details>
+  return <details className="workspace-action-group">
     <summary>Verificar autorización de retiro</summary>
     <form onSubmit={(event) => {
       const form = event.currentTarget;
@@ -172,9 +177,20 @@ export function Operations({ points }: { points: Point[] }) {
     if (point) void pointTask.run(async () => setInventory(await custodyApi.inventory(point.id)));
   }
 
+  useEffect(() => {
+    if (custody?.id) document.getElementById("operation-custody-heading")?.focus();
+  }, [custody?.id]);
+
+  const currentStep = custody ? 2 : point ? 1 : 0;
   return <>
     <section aria-labelledby="operation-point-heading">
-      <h2 id="operation-point-heading">Terminal de operación</h2>
+      <WorkspaceHeading id="operation-point-heading" title="Terminal de operación"
+        description="Usa una sesión del personal asignado al punto donde estás atendiendo." />
+      <ol className="workspace-step-list" aria-label="Progreso de la operación">
+        {["Elegir punto", "Localizar custodia", "Realizar operación"].map((step, index) => (
+          <li key={step} aria-current={currentStep === index ? "step" : undefined}><span>{index + 1}</span>{step}</li>
+        ))}
+      </ol>
       <form onSubmit={(event) => {
         const pointId = value(formData(event), "point");
         const selected = points.find((item) => item.id === pointId);
@@ -194,12 +210,16 @@ export function Operations({ points }: { points: Point[] }) {
         </Field>
         <button type="submit" disabled={pointTask.busy || !points.length}>Abrir terminal del punto</button>
       </form>
-      <Status {...pointTask} message={point ? "Punto autorizado · " + point.name : undefined} />
+      <Status {...pointTask} />
+      {point && <div className="workspace-context" role="status">
+        <WorkspaceGlyph name="pin" /> <p>Punto activo <strong>{point.name}</strong> · {point.address}</p>
+      </div>}
     </section>
 
     {point && <div className="dashboard-grid">
       <section aria-labelledby="find-custody-heading">
-        <h2 id="find-custody-heading">Localizar custodia</h2>
+        <WorkspaceHeading id="find-custody-heading" title="Localizar custodia"
+          description="Usa la guía privada del objeto o el identificador de la custodia." />
         <form onSubmit={(event) => {
           const data = formData(event);
           const query = value(data, "query");
@@ -224,21 +244,32 @@ export function Operations({ points }: { points: Point[] }) {
         {custody && <div className="actions">
           <button className="secondary" type="button" disabled={custodyTask.busy} onClick={() => void custodyTask.run(async () =>
             setCustody(await custodyApi.detail(custody.id)))}>Actualizar estado y versión</button>
-          <button className="secondary" type="button" onClick={() => setCustody(undefined)}>Cerrar detalle</button>
+          <button className="secondary" type="button" onClick={() => {
+            setCustody(undefined);
+            document.getElementById("find-custody-heading")?.focus();
+          }}>Cerrar detalle</button>
         </div>}
       </section>
 
       <section aria-labelledby="inventory-heading">
-        <h2 id="inventory-heading">Inventario del punto</h2>
-        <button type="button" className="secondary" onClick={updateInventory} disabled={pointTask.busy}>Actualizar inventario</button>
-        <ul className="items">{inventory.map((item) => <li key={item.id}>
-          <strong>{item.code}</strong> · {sizeLabel[item.size_category]} · {item.state.replaceAll("_", " ").toLowerCase()}
+        <WorkspaceHeading id="inventory-heading" title="Inventario del punto"
+          description="Consulta el tamaño y el estado de cada ubicación."
+          action={<button type="button" className="secondary workspace-quiet-action" onClick={updateInventory} disabled={pointTask.busy}>
+            <WorkspaceGlyph name="refresh" /> Actualizar inventario
+          </button>} />
+        <ul className="items workspace-location-grid">{inventory.map((item) => <li key={item.id}>
+          <strong>{item.code}</strong><p>{sizeLabel[item.size_category]}</p>
+          <WorkspaceBadge tone={item.state === "DISPONIBLE" ? "good" : item.state === "OCUPADA" ? "info" : "pending"}>
+            {locationStates[item.state]}
+          </WorkspaceBadge>
         </li>)}</ul>
-        {!inventory.length && <p>El punto no tiene ubicaciones registradas.</p>}
+        {!inventory.length && <WorkspaceEmpty title="Sin ubicaciones registradas"
+          description="El inventario del punto aparecerá aquí cuando se creen ubicaciones." />}
       </section>
 
       {custody && <section className="full-width" aria-labelledby="operation-custody-heading">
-        <h2 id="operation-custody-heading">Operar custodia</h2>
+        <WorkspaceHeading id="operation-custody-heading" title="Operar custodia"
+          description="Comprueba el estado y la guía antes de registrar la siguiente acción." />
         <CustodySummary custody={custody} point={point} />
         {custody.state === "REGISTRADA" && <Reception key={"reception-" + custody.id} custody={custody} inventory={inventory}
           onReceive={(result) => {

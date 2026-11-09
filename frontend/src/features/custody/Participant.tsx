@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { custodyApi, custodyPath, dateLabel, sizeLabel, stateLabel, type Credential, type Custody, type Point, type Quote, type Registered, type Size } from "../../services/custody";
+import { WorkspaceBadge, WorkspaceEmpty, WorkspaceGlyph, WorkspaceHeading } from "../dashboard/Workspace";
 import { CustodyExceptions } from "../operations/Exceptions";
 import { Field, formData, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
 
+function CustodyStateBadge({ state }: { state: Custody["state"] }) {
+  const tone = state === "EN_CUSTODIA" ? "info"
+    : state === "RETIRADA" || state === "DEVUELTA" ? "good"
+    : state.endsWith("EN_CURSO") ? "pending" : "neutral";
+  return <WorkspaceBadge tone={tone}>{stateLabel[state]}</WorkspaceBadge>;
+}
+
 export function CustodySummary({ custody, point }: { custody: Custody; point?: Point }) {
-  return <dl className="details">
+  return <dl className="details workspace-fact-grid">
     <div><dt>Guía privada</dt><dd>{custody.tracking_number}</dd></div>
-    <div><dt>Estado</dt><dd>{stateLabel[custody.state]}</dd></div>
+    <div><dt>Estado</dt><dd><CustodyStateBadge state={custody.state} /></dd></div>
     <div><dt>Descripción</dt><dd>{custody.description}</dd></div>
     <div><dt>Tamaño</dt><dd>{sizeLabel[custody.size_category]}</dd></div>
     <div><dt>Punto</dt><dd>{point?.name ?? custody.point_id}</dd></div>
-    <div><dt>Importe de servicio</dt><dd>{custody.service_total} BOB</dd></div>
+    <div><dt>Importe de servicio</dt><dd>{custody.state === "REGISTRADA" ? "Por confirmar en recepción" : custody.service_total + " BOB"}</dd></div>
     {custody.received_at && <div><dt>Recepción</dt><dd>{dateLabel(custody.received_at)}</dd></div>}
     {custody.due_at && <div><dt>Plazo</dt><dd>{dateLabel(custody.due_at)} · La Paz</dd></div>}
     <div><dt>Identificador</dt><dd><code>{custody.id}</code></dd></div>
@@ -38,8 +46,8 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
   const selectedPoint = points.find((point) => point.id === pointId);
 
   return <section aria-labelledby="register-custody-heading">
-    <h2 id="register-custody-heading">Registrar un objeto</h2>
-    <p>El espacio se confirma cuando el operador recibe el objeto.</p>
+    <WorkspaceHeading id="register-custody-heading" title="Registrar un objeto"
+      description="Indica el punto y el destinatario. La ubicación y el importe final se confirman al recibir el bulto." />
     {points.length ? <form onSubmit={(event) => {
       const form = event.currentTarget;
       const fields = formData(event);
@@ -63,7 +71,9 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
           {points.map((point) => <option key={point.id} value={point.id}>{point.name}</option>)}
         </select>
       </Field>
-      {selectedPoint && <p>{selectedPoint.address}</p>}
+      {selectedPoint && <div className="workspace-context">
+        <WorkspaceGlyph name="pin" /><p>{selectedPoint.address}</p>
+      </div>}
       <Field label="Tamaño declarado">
         <select value={size} disabled={task.busy}
           onChange={(event) => { setSize(event.target.value as Size); setQuote(undefined); }}><SizeOptions /></select>
@@ -82,9 +92,12 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
         onClick={() => void task.run(async () => setQuote(await custodyApi.quote(pointId, size, Number(hours))))}>
         Consultar tarifa
       </button>
-      {quote && <p role="status">Cotización de referencia de {quote.amount} BOB por {quote.duration_hours} horas.</p>}
+      {quote && <p className="receipt" role="status">
+        Cotización de referencia de <strong>{quote.amount} BOB</strong> por {quote.duration_hours} horas.
+      </p>}
       <button type="submit" disabled={task.busy}>Registrar objeto</button>
-    </form> : <p>Se requiere un punto activo para registrar.</p>}
+    </form> : <WorkspaceEmpty icon="pin" title="No hay puntos para el registro"
+      description="Vuelve a consultar los puntos cuando se publique un horario de atención." />}
     <Status {...task} message={created ? "Objeto registrado. Preséntalo al operador dentro del horario de atención." : undefined} />
     {created?.public_reference && <PublicReference reference={created.public_reference}
       onDismiss={() => setCreated({ ...created, public_reference: undefined })} />}
@@ -111,7 +124,7 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
   }, [credential]);
 
   return <>
-    {custody.state === "REGISTRADA" && <details>
+    {custody.state === "REGISTRADA" && <details className="workspace-action-group">
       <summary>Cancelar el registro si eres emisor</summary>
       <form onSubmit={(event) => {
         const fields = formData(event);
@@ -127,7 +140,7 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
       </form>
     </details>}
 
-    {custody.state === "EN_CUSTODIA" && <details open={credential ? true : undefined}>
+    {custody.state === "EN_CUSTODIA" && <details className="workspace-action-group" open={credential ? true : undefined}>
       <summary>Obtener código temporal si eres destinatario</summary>
       <p>Muéstralo únicamente al operador al recoger el objeto. Se borra al salir de este detalle.</p>
       <div className="actions">
@@ -146,6 +159,8 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
           setConfirmReissue(false);
           setNotice("Código anterior reemplazado.");
         })}>Confirmar reemisión</button>
+        <button type="button" className="secondary" disabled={task.busy}
+          onClick={() => setConfirmReissue(false)}>Conservar código</button>
       </div>}
       {credential && <div className="receipt">
         <p className="secret">{credential.code}</p>
@@ -154,14 +169,16 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
       </div>}
     </details>}
 
-    <details open={reference ? true : undefined}>
+    <details className="workspace-action-group" open={reference ? true : undefined}>
       <summary>Renovar referencia pública</summary>
       <p>Esta acción invalida el enlace público anterior.</p>
-      {confirmRotation ? <button type="button" disabled={task.busy} onClick={() => void task.run(async () => {
+      {confirmRotation ? <div className="actions"><button type="button" disabled={task.busy} onClick={() => void task.run(async () => {
         setReference((await custodyApi.rotate(custody.id)).public_reference);
         setConfirmRotation(false);
       })}>Confirmar nueva referencia</button>
-        : <button type="button" className="secondary" disabled={task.busy} onClick={() => setConfirmRotation(true)}>
+        <button type="button" className="secondary" disabled={task.busy}
+          onClick={() => setConfirmRotation(false)}>Conservar referencia</button>
+      </div> : <button type="button" className="secondary" disabled={task.busy} onClick={() => setConfirmRotation(true)}>
           Preparar renovación
         </button>}
       {reference && <PublicReference reference={reference} onDismiss={() => setReference(undefined)} />}
@@ -178,6 +195,7 @@ export function Participant({ points, openId, setOpenId, verified }: {
   const [filter, setFilter] = useState("");
   const listTask = useTask();
   const detailTask = useTask();
+  const detailTrigger = useRef<HTMLButtonElement | null>(null);
 
   function load() {
     void listTask.run(async () => setItems(await custodyApi.list()));
@@ -204,12 +222,21 @@ export function Participant({ points, openId, setOpenId, verified }: {
       ? list.map((existing) => existing.id === item.id ? item : existing) : [item, ...list]);
   }
 
+  function closeDetail() {
+    setOpenId(null);
+    const trigger = detailTrigger.current;
+    if (trigger?.isConnected) trigger.focus();
+    else document.getElementById("mine-heading")?.focus();
+  }
+
   const currentDetail = selected?.id === openId ? selected : undefined;
   const visible = items.filter((item) => !filter || item.state === filter);
   return <div className="dashboard-grid">
     <section aria-labelledby="mine-heading">
-      <h2 id="mine-heading">Mis custodias</h2>
-      <div className="actions"><button type="button" className="secondary" disabled={listTask.busy} onClick={load}>Actualizar custodias</button></div>
+      <WorkspaceHeading id="mine-heading" title="Mis custodias" description="Encuentra tus registros por estado y abre su detalle."
+        action={<button type="button" className="secondary workspace-quiet-action" disabled={listTask.busy} onClick={load}>
+          <WorkspaceGlyph name="refresh" /> Actualizar custodias
+        </button>} />
       <Field label="Filtrar por estado">
         <select value={filter} onChange={(event) => setFilter(event.target.value)}>
           <option value="">Todos los estados</option>
@@ -217,22 +244,29 @@ export function Participant({ points, openId, setOpenId, verified }: {
         </select>
       </Field>
       <Status {...listTask} />
-      <ul className="items">{visible.map((item) => <li key={item.id}>
-        <strong>{item.tracking_number}</strong><p>{stateLabel[item.state]}</p>
-        <p>{item.description}</p>
-        <button type="button" className="secondary" onClick={() => setOpenId(item.id)}>
-          Ver detalle de {item.tracking_number}
+      <ul className="items workspace-records">{visible.map((item) => <li key={item.id}>
+        <div className="workspace-record-top"><strong>{item.description}</strong><CustodyStateBadge state={item.state} /></div>
+        <p className="workspace-meta">{item.tracking_number}{item.due_at ? " · Plazo " + dateLabel(item.due_at) : ""}</p>
+        <button type="button" className="secondary workspace-quiet-action"
+          onClick={(event) => { detailTrigger.current = event.currentTarget; setOpenId(item.id); }}>
+          Ver detalle de {item.tracking_number} <WorkspaceGlyph name="chevron" />
         </button>
       </li>)}</ul>
-      {!visible.length && !listTask.busy && !listTask.error && <p>Sin custodias para el estado elegido.</p>}
+      {!visible.length && !listTask.busy && !listTask.error && <WorkspaceEmpty
+        title={filter ? "Sin resultados para este estado" : "Aún no tienes custodias"}
+        description={filter ? "Prueba con otro estado para volver a ver tus registros." : "Registra un objeto o espera a que alguien lo registre para ti."} />}
     </section>
 
     {verified ? <RegisterCustody points={points} onCreated={(item) => { update(item); setOpenId(item.id); }} />
-      : <section><h2>Registrar un objeto</h2><p>Comprueba tu contacto para registrar custodias.</p></section>}
+      : <section aria-labelledby="verify-before-register">
+        <WorkspaceHeading id="verify-before-register" title="Registrar un objeto" />
+        <WorkspaceEmpty title="Comprueba tu contacto"
+          description="Abre el enlace de tu correo o solicita la comprobación en un punto atendido para registrar una custodia." />
+      </section>}
 
     {openId && <section className="full-width" aria-labelledby="detail-heading">
-      <h2 id="detail-heading" tabIndex={-1}>Detalle privado</h2>
-      <button type="button" className="secondary" onClick={() => setOpenId(null)}>Cerrar detalle</button>
+      <WorkspaceHeading id="detail-heading" title="Detalle privado"
+        action={<button type="button" className="secondary" onClick={closeDetail}>Cerrar detalle</button>} />
       <Status {...detailTask} busy={!currentDetail && !detailTask.error} />
       {currentDetail && <>
         <CustodySummary custody={currentDetail} point={points.find((point) => point.id === currentDetail.point_id)} />
