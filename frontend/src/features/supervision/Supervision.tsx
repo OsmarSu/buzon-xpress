@@ -1,7 +1,8 @@
-import { useId, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { ApiError, request } from "../../services/api";
 import { custodyApi, dateLabel, sizeLabel, sizes, type Location, type Point } from "../../services/custody";
+import { WorkspaceBadge, WorkspaceEmpty, WorkspaceHeading } from "../dashboard/Workspace";
 import { Field, formData, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
 
 type Method = "POST" | "PUT" | "PATCH";
@@ -16,21 +17,32 @@ interface Reply {
 }
 
 function PointField({ points }: { points: Point[] }) {
-  const id = useId();
-  return <Field label="Identificador del punto">
-    <input name="point_id" list={id} required maxLength={36} />
-    <datalist id={id}>{points.map((point) => <option key={point.id} value={point.id}>{point.name}</option>)}</datalist>
-  </Field>;
+  const [selection, setSelection] = useState("");
+  const manual = !points.length || selection === "manual";
+
+  return <>
+    {points.length > 0 && <Field label="Punto de servicio">
+      <select name={manual ? undefined : "point_id"} value={selection} required
+        onChange={(event) => setSelection(event.target.value)}>
+        <option value="">Elige un punto</option>
+        {points.map((point) => <option key={point.id} value={point.id}>{point.name}</option>)}
+        <option value="manual">Introducir otro identificador</option>
+      </select>
+    </Field>}
+    {manual && <Field label="Identificador del punto">
+      <input name="point_id" required maxLength={36} />
+    </Field>}
+  </>;
 }
 
-function CommandForm({ heading, button, command, children }: {
-  heading: string; button: string; command: (data: FormData) => Command; children: ReactNode;
+function CommandForm({ heading, button, command, children, onSaved }: {
+  heading: string; button: string; command: (data: FormData) => Command; children: ReactNode; onSaved?: () => void;
 }) {
   const task = useTask();
   const send = useMutation();
   const [result, setResult] = useState<Reply>();
 
-  return <details>
+  return <details className="workspace-action-group">
     <summary>{heading}</summary>
     <form onSubmit={(event) => {
       const data = formData(event);
@@ -38,6 +50,7 @@ function CommandForm({ heading, button, command, children }: {
       void task.run(async () => {
         const { path, body, method } = command(data);
         setResult(await send<Reply>(path, body, method));
+        onSaved?.();
       });
     }} aria-busy={task.busy}>
       {children}
@@ -52,14 +65,29 @@ function requiredPoint(data: FormData) {
   return value(data, "point_id");
 }
 
+const scheduleFields = [
+  ["weekdays", "Lunes a viernes"], ["saturday", "Sábado"], ["sunday", "Domingo"],
+] as const;
+
 function openingHours(data: FormData): Record<string, unknown> {
-  try {
-    const hours: unknown = JSON.parse(value(data, "opening_hours"));
-    if (hours && typeof hours === "object" && !Array.isArray(hours)) return hours as Record<string, unknown>;
-  } catch {
-    // The same correction applies to invalid JSON and JSON of the wrong kind.
+  const advanced = value(data, "opening_hours");
+  if (advanced) {
+    try {
+      const hours: unknown = JSON.parse(advanced);
+      if (hours && typeof hours === "object" && !Array.isArray(hours)) return hours as Record<string, unknown>;
+    } catch {
+      // Invalid JSON and the wrong JSON type share the same correction.
+    }
+    throw new ApiError(422, "HORARIO_INVALIDO", 'Escribe un objeto JSON, por ejemplo {"lunes":"09:00–17:00"}.');
   }
-  throw new ApiError(422, "HORARIO_INVALIDO", 'Escribe el horario como objeto JSON, por ejemplo {"lunes":"09:00–17:00"}.');
+
+  const hours = Object.fromEntries(scheduleFields
+    .map(([field, label]) => [label, value(data, field)])
+    .filter(([, schedule]) => schedule));
+  if (!Object.keys(hours).length) {
+    throw new ApiError(422, "HORARIO_INVALIDO", "Completa al menos un horario o usa el formato avanzado.");
+  }
+  return hours;
 }
 
 function pointBody(data: FormData) {
@@ -71,9 +99,20 @@ function PointFields() {
   return <>
     <Field label="Nombre del punto"><input name="name" required maxLength={120} /></Field>
     <Field label="Dirección"><input name="address" required maxLength={255} /></Field>
-    <Field label="Horario publicado como JSON">
-      <textarea name="opening_hours" placeholder={'{"lunes":"09:00–17:00"}'} required />
-    </Field>
+    <fieldset className="workspace-hours">
+      <legend>Horario publicado</legend>
+      <p>Indica los intervalos de atención. Los días vacíos se omiten.</p>
+      {scheduleFields.map(([field, label]) => <Field key={field} label={label}>
+        <input name={field} placeholder="09:00–17:00" maxLength={80} />
+      </Field>)}
+      <details>
+        <summary>Horario avanzado</summary>
+        <p>Usa esta opción para horarios distintos por día. Si la completas, reemplaza los intervalos anteriores.</p>
+        <Field label="Horario personalizado en formato JSON">
+          <textarea name="opening_hours" placeholder={'{"lunes":"09:00–17:00"}'} />
+        </Field>
+      </details>
+    </fieldset>
     <label className="check"><input type="checkbox" name="active" defaultChecked /> Punto habilitado</label>
   </>;
 }
@@ -82,7 +121,7 @@ function LocationsLookup({ points }: { points: Point[] }) {
   const task = useTask();
   const [locations, setLocations] = useState<Location[]>();
 
-  return <details>
+  return <details className="workspace-action-group">
     <summary>Consultar identificadores y versiones de ubicaciones</summary>
     <form onSubmit={(event) => {
       const data = formData(event);
@@ -120,81 +159,103 @@ function TariffFields() {
   </>;
 }
 
-export function Administration({ points }: { points: Point[] }) {
+export function Administration({ points, onPointChange }: { points: Point[]; onPointChange: () => void }) {
   return <section aria-labelledby="admin-heading">
-    <h2 id="admin-heading">Administración de puntos y personal</h2>
-    <p>El servidor vuelve a comprobar tus permisos y la ocupación del punto en cada cambio.</p>
+    <WorkspaceHeading id="admin-heading" title="Administración de puntos y personal"
+      description="Elige qué parte del servicio quieres configurar. Cada cambio se aplica al punto indicado." />
+    <div className="workspace-subgroups">
+      <section className="workspace-subgroup" aria-labelledby="point-settings-heading">
+        <h3 id="point-settings-heading">Puntos y horarios</h3>
+        <p>Publica los datos y horarios que verá el público.</p>
 
-    <CommandForm heading="Crear punto" button="Crear punto" command={(data) => ({ path: "/admin/points", body: pointBody(data) })}>
-      <PointFields />
-    </CommandForm>
+        <CommandForm heading="Crear punto" button="Crear punto" onSaved={onPointChange}
+          command={(data) => ({ path: "/admin/points", body: pointBody(data) })}>
+          <PointFields />
+        </CommandForm>
 
-    <CommandForm heading="Actualizar un punto existente" button="Guardar punto"
-      command={(data) => ({ path: "/admin/points/" + encodeURIComponent(requiredPoint(data)), method: "PUT", body: pointBody(data) })}>
-      <PointField points={points} /><PointFields />
-    </CommandForm>
+        <CommandForm heading="Actualizar un punto existente" button="Guardar punto" onSaved={onPointChange}
+          command={(data) => ({ path: "/admin/points/" + encodeURIComponent(requiredPoint(data)), method: "PUT", body: pointBody(data) })}>
+          <PointField points={points} /><PointFields />
+        </CommandForm>
 
-    <LocationsLookup points={points} />
-    <CommandForm heading="Crear ubicación" button="Crear ubicación" command={(data) => ({
-      path: "/admin/locations",
-      body: { point_id: requiredPoint(data), code: value(data, "code"), size_category: value(data, "size") },
-    })}>
-      <PointField points={points} />
-      <Field label="Código interno de ubicación"><input name="code" maxLength={24} required /></Field>
-      <Field label="Tamaño"><select name="size"><SizeOptions /></select></Field>
-    </CommandForm>
+      </section>
+      <section className="workspace-subgroup" aria-labelledby="location-settings-heading">
+        <h3 id="location-settings-heading">Ubicaciones</h3>
+        <p>Consulta la capacidad, crea ubicaciones o cambia su estado.</p>
 
-    <CommandForm heading="Cambiar estado de una ubicación" button="Guardar estado" command={(data) => ({
-      path: "/admin/locations/" + encodeURIComponent(value(data, "id")), method: "PATCH",
-      body: { state: value(data, "state"), expected_version: Number(value(data, "version")), reason: value(data, "reason") },
-    })}>
-      <Field label="Identificador de ubicación"><input name="id" required maxLength={36} /></Field>
-      <Field label="Versión consultada"><input type="number" name="version" min={1} step={1} required /></Field>
-      <Field label="Nuevo estado"><select name="state">
-        <option value="DISPONIBLE">Disponible</option><option value="BLOQUEADA">Bloqueada</option>
-        <option value="FUERA_SERVICIO">Fuera de servicio</option>
-      </select></Field>
-      <Field label="Motivo del cambio"><textarea name="reason" required maxLength={500} /></Field>
-    </CommandForm>
+        <LocationsLookup points={points} />
+        <CommandForm heading="Crear ubicación" button="Crear ubicación" command={(data) => ({
+          path: "/admin/locations",
+          body: { point_id: requiredPoint(data), code: value(data, "code"), size_category: value(data, "size") },
+        })}>
+          <PointField points={points} />
+          <Field label="Código interno de ubicación"><input name="code" maxLength={24} required /></Field>
+          <Field label="Tamaño"><select name="size"><SizeOptions /></select></Field>
+        </CommandForm>
 
-    <CommandForm heading="Asignar o revocar personal" button="Guardar asignación" command={(data) => ({
-      path: "/admin/staff-assignments",
-      body: { point_id: requiredPoint(data), user_id: value(data, "user"), role: value(data, "role"), is_active: data.has("active") },
-    })}>
-      <PointField points={points} />
-      <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
-      <Field label="Rol"><select name="role">
-        <option value="OPERADOR">Operador</option><option value="ADMIN">Administrador</option><option value="AUDITOR">Auditor</option>
-      </select></Field>
-      <label className="check"><input type="checkbox" name="active" defaultChecked /> Asignación activa</label>
-    </CommandForm>
+        <CommandForm heading="Cambiar estado de una ubicación" button="Guardar estado" command={(data) => ({
+          path: "/admin/locations/" + encodeURIComponent(value(data, "id")), method: "PATCH",
+          body: { state: value(data, "state"), expected_version: Number(value(data, "version")), reason: value(data, "reason") },
+        })}>
+          <Field label="Identificador de ubicación"><input name="id" required maxLength={36} /></Field>
+          <Field label="Versión consultada"><input type="number" name="version" min={1} step={1} required /></Field>
+          <Field label="Nuevo estado"><select name="state">
+            <option value="DISPONIBLE">Disponible</option><option value="BLOQUEADA">Bloqueada</option>
+            <option value="FUERA_SERVICIO">Fuera de servicio</option>
+          </select></Field>
+          <Field label="Motivo del cambio"><textarea name="reason" required maxLength={500} /></Field>
+        </CommandForm>
 
-    <CommandForm heading="Comprobar contacto presencialmente" button="Registrar comprobación" command={(data) => ({
-      path: "/admin/users/" + encodeURIComponent(value(data, "user")) + "/verify-contact",
-      body: { reason: value(data, "reason") },
-    })}>
-      <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
-      <Field label="Evidencia mínima de comprobación"><textarea name="reason" maxLength={500} required /></Field>
-    </CommandForm>
+      </section>
+      <section className="workspace-subgroup" aria-labelledby="staff-settings-heading">
+        <h3 id="staff-settings-heading">Personal y contactos</h3>
+        <p>Gestiona asignaciones y comprobaciones presenciales.</p>
 
-    <CommandForm heading="Publicar versión de tarifa" button="Publicar nueva tarifa" command={(data) => ({
-      path: "/admin/tariffs",
-      body: {
-        point_id: requiredPoint(data),
-        valid_from: localDateTime(value(data, "valid_from")),
-        rules: {
-          currency: "BOB",
-          sizes: Object.fromEntries(sizes.map((size) => [size, {
-            base_hours: Number(value(data, size + "_base_hours")),
-            block_hours: Number(value(data, size + "_block_hours")),
-            base_amount: value(data, size + "_base_amount"),
-            block_amount: value(data, size + "_block_amount"),
-          }])),
-        },
-      },
-    })}>
-      <PointField points={points} /><TariffFields />
-    </CommandForm>
+        <CommandForm heading="Asignar o revocar personal" button="Guardar asignación" command={(data) => ({
+          path: "/admin/staff-assignments",
+          body: { point_id: requiredPoint(data), user_id: value(data, "user"), role: value(data, "role"), is_active: data.has("active") },
+        })}>
+          <PointField points={points} />
+          <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
+          <Field label="Rol"><select name="role">
+            <option value="OPERADOR">Operador</option><option value="ADMIN">Administrador</option><option value="AUDITOR">Auditor</option>
+          </select></Field>
+          <label className="check"><input type="checkbox" name="active" defaultChecked /> Asignación activa</label>
+        </CommandForm>
+
+        <CommandForm heading="Comprobar contacto presencialmente" button="Registrar comprobación" command={(data) => ({
+          path: "/admin/users/" + encodeURIComponent(value(data, "user")) + "/verify-contact",
+          body: { reason: value(data, "reason") },
+        })}>
+          <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
+          <Field label="Evidencia mínima de comprobación"><textarea name="reason" maxLength={500} required /></Field>
+        </CommandForm>
+
+      </section>
+      <section className="workspace-subgroup" aria-labelledby="tariff-settings-heading">
+        <h3 id="tariff-settings-heading">Tarifas</h3>
+        <p>Define una versión por tamaño y bloque de tiempo.</p>
+
+        <CommandForm heading="Publicar versión de tarifa" button="Publicar nueva tarifa" command={(data) => ({
+          path: "/admin/tariffs",
+          body: {
+            point_id: requiredPoint(data),
+            valid_from: localDateTime(value(data, "valid_from")),
+            rules: {
+              currency: "BOB",
+              sizes: Object.fromEntries(sizes.map((size) => [size, {
+                base_hours: Number(value(data, size + "_base_hours")),
+                block_hours: Number(value(data, size + "_block_hours")),
+                base_amount: value(data, size + "_base_amount"),
+                block_amount: value(data, size + "_block_amount"),
+              }])),
+            },
+          },
+        })}>
+          <PointField points={points} /><TariffFields />
+        </CommandForm>
+      </section>
+    </div>
   </section>;
 }
 
@@ -248,8 +309,8 @@ export function Audit({ points }: { points: Point[] }) {
 
   return <div className="dashboard-grid">
     <section aria-labelledby="audit-heading">
-      <h2 id="audit-heading">Eventos de auditoría</h2>
-      <p>Consulta eventos recientes del punto. Los filtros se aplican a los resultados recibidos.</p>
+      <WorkspaceHeading id="audit-heading" title="Eventos de auditoría"
+        description="Consulta un punto y filtra los eventos recibidos por tipo o correlación." />
       <form onSubmit={(event) => {
         const data = formData(event);
         setEvents(undefined);
@@ -263,16 +324,19 @@ export function Audit({ points }: { points: Point[] }) {
       {events && <Field label="Filtrar eventos consultados por tipo o correlación">
         <input value={filter} onChange={(event) => setFilter(event.target.value)} />
       </Field>}
-      <ul className="items">{visible?.map((event) => <li key={event.id}>
-        <strong>{event.event_type}</strong> · {dateLabel(event.created_at)}
+      <ul className="items workspace-records">{visible?.map((event) => <li key={event.id}>
+        <div className="workspace-record-top"><strong>{event.event_type.replaceAll("_", " ")}</strong>
+          <WorkspaceBadge>{dateLabel(event.created_at)}</WorkspaceBadge></div>
         <p>Correlación <code>{event.correlation_id}</code></p>
         {event.actor_id && <p>Actor <code>{event.actor_id}</code></p>}
         {event.custody_id && <p>Custodia <code>{event.custody_id}</code></p>}
       </li>)}</ul>
-      {visible?.length === 0 && <p>Sin eventos en la consulta.</p>}
+      {visible?.length === 0 && <WorkspaceEmpty icon="audit" title="Sin eventos para esta consulta"
+        description="Revisa el punto o cambia el filtro de resultados." />}
     </section>
     <section aria-labelledby="reports-heading">
-      <h2 id="reports-heading">Indicadores del punto</h2>
+      <WorkspaceHeading id="reports-heading" title="Indicadores del punto"
+        description="Define el periodo antes de consultar los indicadores o exportarlos." />
       <form onSubmit={(event) => {
         const data = formData(event);
         setReport(undefined);
@@ -290,7 +354,7 @@ export function Audit({ points }: { points: Point[] }) {
       <Status {...reportTask} />
       {report && <div className="receipt">
         <p>{dateLabel(report.from)} a {dateLabel(report.to)}.</p>
-        <dl className="details">
+        <dl className="details workspace-fact-grid">
           <div><dt>Ubicaciones disponibles</dt><dd>{report.available_locations}</dd></div>
           <div><dt>Ubicaciones ocupadas</dt><dd>{report.occupied_locations}</dd></div>
           <div><dt>Custodias completadas</dt><dd>{report.completed_custodies}</dd></div>

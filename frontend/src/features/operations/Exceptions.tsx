@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { request as apiRequest } from "../../services/api";
 import { custodyPath, type Authorization, type Custody, type Handover } from "../../services/custody";
+import { WorkspaceBadge, WorkspaceHeading } from "../dashboard/Workspace";
 import { Field, formData, Status, useMutation, useTask, value } from "../shared/forms";
 import { AuthorizedHandover, Receipt } from "./Handover";
 
@@ -17,6 +18,14 @@ interface Recovery {
   custody_id: string;
   state: "PENDIENTE" | "APROBADA" | "RECHAZADA" | "EJECUTADA";
 }
+
+const incidentState: Record<Incident["state"], string> = {
+  ABIERTA: "Abierta", EN_REVISION: "En revisión", RESUELTA: "Resuelta",
+};
+
+const recoveryState: Record<Recovery["state"], string> = {
+  PENDIENTE: "Pendiente", APROBADA: "Aprobada", RECHAZADA: "Rechazada", EJECUTADA: "Ejecutada",
+};
 
 const reasons = {
   REEMITIR_CREDENCIAL: "Reemisión asistida de credencial",
@@ -35,7 +44,7 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
   const [purpose, setPurpose] = useState<keyof typeof reasons>("REEMITIR_CREDENCIAL");
 
   return <>
-    <details>
+    <details className="workspace-action-group">
       <summary>Registrar una incidencia</summary>
       <p>Describe la diferencia observada sin incluir el código ni datos personales de terceros.</p>
       <form onSubmit={(event) => {
@@ -56,11 +65,11 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
         <button type="submit" disabled={incidentTask.busy}>Registrar incidencia</button>
       </form>
       <Status {...incidentTask} />
-      {incident && <p role="status" className="receipt">Incidencia <code>{incident.id}</code> · {incident.state}
+      {incident && <p role="status" className="receipt">Incidencia <code>{incident.id}</code> · {incidentState[incident.state]}
         {incident.is_blocking ? " · entrega bloqueada" : ""}</p>}
     </details>
 
-    <details>
+    <details className="workspace-action-group">
       <summary>Solicitar recuperación asistida</summary>
       <p>La solicitud queda pendiente hasta que una segunda persona autorizada revise la evidencia.</p>
       <form onSubmit={(event) => {
@@ -90,7 +99,7 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
         <button type="submit" disabled={recoveryTask.busy}>Crear solicitud</button>
       </form>
       <Status {...recoveryTask} />
-      {recovery && <p role="status" className="receipt">Solicitud <code>{recovery.id}</code> · {recovery.state}</p>}
+      {recovery && <p role="status" className="receipt">Solicitud <code>{recovery.id}</code> · {recoveryState[recovery.state]}</p>}
     </details>
   </>;
 }
@@ -114,7 +123,7 @@ export function Returns({ custody, onAuthorized, onReturned }: {
     return <p className="warning">Hay una devolución preparada. Si ya ocurrió, abre conciliación y conserva la evidencia.</p>;
   }
   if (custody.state !== "EN_CUSTODIA") return null;
-  return <details>
+  return <details className="workspace-action-group">
     <summary>Preparar devolución aprobada</summary>
     <p>Comprueba visualmente al emisor antes de preparar la devolución.</p>
     <form onSubmit={(event) => {
@@ -161,7 +170,8 @@ function ResolveIncident() {
   const endpoint = "/incidents/" + encodeURIComponent(id.trim());
 
   return <section aria-labelledby="resolve-heading">
-    <h2 id="resolve-heading">Resolver incidencia</h2>
+    <WorkspaceHeading id="resolve-heading" title="Resolver incidencia"
+      description="Consulta el registro y comprueba qué ocurrió antes de guardar una resolución." />
     <form onSubmit={(event) => {
       event.preventDefault();
       void task.run(async () => setItem(await apiRequest<IncidentDetail>(endpoint)));
@@ -171,7 +181,9 @@ function ResolveIncident() {
       <button type="submit" className="secondary" disabled={task.busy}>Consultar incidencia</button>
     </form>
     {item && <div className="receipt">
-      <strong>{item.kind} · {item.state}</strong>
+      <div className="workspace-record-top"><strong>{item.kind}</strong>
+        <WorkspaceBadge tone={item.state === "RESUELTA" ? "good" : "pending"}>{incidentState[item.state]}</WorkspaceBadge>
+      </div>
       <p>{item.description}</p>
       <p>Abierta por <code>{item.opened_by}</code></p>
       <p>Custodia <code>{item.custody_id}</code> · {item.is_blocking ? "Bloqueante" : "Sin bloqueo"}</p>
@@ -185,7 +197,7 @@ function ResolveIncident() {
       });
     }}>
       <Field label="Fundamento de la resolución"><textarea name="reason" required maxLength={1000} /></Field>
-      <label className="check"><input type="checkbox" required /> Comprobé el inventario y la diferencia</label>
+      <label className="check workspace-confirmation"><input type="checkbox" required /> Comprobé el inventario y la diferencia</label>
       <button type="submit" disabled={task.busy}>Resolver incidencia</button>
     </form>}
     <Status {...task} />
@@ -201,7 +213,8 @@ function DecideRecovery({ actorId }: { actorId: string }) {
   const isOwn = item?.requested_by === actorId;
 
   return <section aria-labelledby="decision-heading">
-    <h2 id="decision-heading">Revisar solicitud de recuperación</h2>
+    <WorkspaceHeading id="decision-heading" title="Revisar solicitud de recuperación"
+      description="Abre el expediente y verifica que otra persona autorizada haya iniciado la solicitud." />
     <form onSubmit={(event) => {
       event.preventDefault();
       void task.run(async () => setItem(await apiRequest<RecoveryDetail>(endpoint)));
@@ -211,7 +224,9 @@ function DecideRecovery({ actorId }: { actorId: string }) {
       <button type="submit" className="secondary" disabled={task.busy}>Consultar expediente</button>
     </form>
     {item && <div className="receipt">
-      <strong>{reasons[item.purpose]} · {item.state}</strong>
+      <div className="workspace-record-top"><strong>{reasons[item.purpose]}</strong>
+        <WorkspaceBadge tone={item.state === "PENDIENTE" ? "pending" : "neutral"}>{recoveryState[item.state]}</WorkspaceBadge>
+      </div>
       <p>{item.evidence}</p>
       <p>Solicitó <code>{item.requested_by}</code></p>
       <p>Custodia <code>{item.custody_id}</code></p>
@@ -232,7 +247,7 @@ function DecideRecovery({ actorId }: { actorId: string }) {
         </select>
       </Field>
       <Field label="Justificación de la decisión"><textarea name="note" required maxLength={1000} /></Field>
-      <label className="check"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
+      <label className="check workspace-confirmation"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
       <button type="submit" disabled={task.busy}>Registrar decisión</button>
     </form>}
     <Status {...task} />

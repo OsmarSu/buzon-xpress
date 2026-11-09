@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export type WorkspaceIcon = "box" | "notice" | "operation" | "incident" | "settings" | "audit"
-  | "pin" | "chevron" | "refresh" | "plus" | "check";
+  | "pin" | "chevron" | "refresh" | "check";
 
 const paths: Record<WorkspaceIcon, string> = {
   box: "m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7M12 11v10M7.5 5l9 4",
@@ -13,7 +13,6 @@ const paths: Record<WorkspaceIcon, string> = {
   pin: "M19 10c0 5-7 10-7 10S5 15 5 10a7 7 0 1 1 14 0Z M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
   chevron: "m9 18 6-6-6-6",
   refresh: "M20 10a8 8 0 0 0-14-4L3 9m0 0V4m0 5h5m-4 5a8 8 0 0 0 14 4l3-3m0 0v5m0-5h-5",
-  plus: "M12 5v14M5 12h14",
   check: "m5 12 4 4L19 6",
 };
 

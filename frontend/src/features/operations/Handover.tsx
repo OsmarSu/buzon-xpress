@@ -1,13 +1,20 @@
 import { useState } from "react";
 
 import { custodyPath, dateLabel, type Authorization, type Custody, type Handover } from "../../services/custody";
+import { WorkspaceBadge, WorkspaceGlyph } from "../dashboard/Workspace";
 import { Field, formData, Status, useMutation, useTask, value } from "../shared/forms";
 
 export function Receipt({ handover }: { handover: Handover }) {
-  return <div className="receipt" role="status">
-    <strong>{handover.kind === "DEVOLUCION" ? "Devolución registrada" : "Retiro registrado"}</strong>
-    <p>Comprobante <code>{handover.id}</code></p>
-    <p>Confirmado {dateLabel(handover.confirmed_at)} · Operador <code>{handover.operator_id}</code></p>
+  return <div className="receipt workspace-handover-receipt" role="status">
+    <div className="workspace-record-top">
+      <strong>{handover.kind === "DEVOLUCION" ? "Devolución registrada" : "Retiro registrado"}</strong>
+      <WorkspaceBadge tone="good">Entrega confirmada</WorkspaceBadge>
+    </div>
+    <dl className="details workspace-fact-grid">
+      <div><dt>Comprobante</dt><dd><code>{handover.id}</code></dd></div>
+      <div><dt>Fecha de confirmación</dt><dd>{dateLabel(handover.confirmed_at)}</dd></div>
+      <div><dt>Operador</dt><dd><code>{handover.operator_id}</code></dd></div>
+    </dl>
   </div>;
 }
 
@@ -24,9 +31,13 @@ export function AuthorizedHandover({ authorization, kind, onConfirmed, onAborted
   const [delivered, setDelivered] = useState(false);
   const isReturn = kind === "DEVOLUCION";
 
-  return <div className="receipt">
-    <h3>Autorizado para {isReturn ? "devolver" : "entregar"}</h3>
-    <dl className="details">
+  return <div className="receipt workspace-handover-receipt">
+    <div className="workspace-record-top">
+      <h3>Autorizado para {isReturn ? "devolver" : "entregar"}</h3>
+      <WorkspaceBadge tone="pending">Pendiente de confirmación física</WorkspaceBadge>
+    </div>
+    {!pending && <p>Comprueba el objeto y registra la confirmación después de la entrega física.</p>}
+    <dl className="details workspace-fact-grid">
       <div><dt>Autorización</dt><dd><code>{authorization.authorization_id}</code></dd></div>
       <div><dt>Objeto</dt><dd>{authorization.description}</dd></div>
       <div><dt>Ubicación interna</dt><dd>{authorization.location_code}</dd></div>
@@ -48,15 +59,17 @@ export function AuthorizedHandover({ authorization, kind, onConfirmed, onAborted
         onConfirmed(result);
       });
     }} aria-busy={task.busy}>
-      <label className="check">
+      <label className="check workspace-confirmation">
         <input type="checkbox" required checked={delivered} disabled={pending || task.busy}
           onChange={(event) => setDelivered(event.target.checked)} />
         {isReturn ? "Confirmo que ya devolví físicamente el objeto al emisor" : "Confirmo que ya entregué físicamente el objeto"}
       </label>
-      <button type="submit" disabled={task.busy || !delivered}>{pending ? "Reintentar solo el registro"
-        : isReturn ? "Registrar devolución realizada" : "Registrar entrega realizada"}</button>
+      <button type="submit" className="workspace-quiet-action" disabled={task.busy || !delivered}>
+        <WorkspaceGlyph name="check" />
+        {pending ? "Reintentar solo el registro" : isReturn ? "Registrar devolución realizada" : "Registrar entrega realizada"}
+      </button>
     </form>
-    {!pending && !delivered && onAborted && <details>
+    {!pending && !delivered && onAborted && <details className="workspace-action-group">
       <summary>No entregado · anular preparación</summary>
       <form onSubmit={(event) => {
         const data = formData(event);

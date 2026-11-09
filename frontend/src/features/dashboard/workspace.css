@@ -43,7 +43,7 @@
   width: 2.4rem;
   aspect-ratio: 1;
   border-radius: .72rem;
-  color: #154db9;
+  color: var(--work-blue);
   background: #eaf1ff;
 }
 
@@ -76,8 +76,8 @@
   line-height: 1.25;
 }
 .workspace .workspace-nav-button svg { width: 1rem; height: 1rem; }
-.workspace .workspace-nav-button:hover { background: #f0f4fb; color: #0b368c; }
-.workspace .workspace-nav-button[aria-current="page"] { background: #eaf1ff; color: #0b368c; border-color: #c9daf6; }
+.workspace .workspace-nav-button:hover { background: #f0f4fb; color: var(--work-navy); }
+.workspace .workspace-nav-button[aria-current="page"] { background: #eaf1ff; color: var(--work-navy); border-color: #c9daf6; }
 .workspace .workspace-nav-indicator { visibility: hidden; }
 .workspace [aria-current="page"] .workspace-nav-indicator { visibility: visible; }
 
@@ -269,14 +269,14 @@
   font-size: .77rem;
   font-weight: 700;
 }
-.workspace-step-list li[aria-current="step"] { background: #e8f0ff; color: #0b368c; }
+.workspace-step-list li[aria-current="step"] { background: #e8f0ff; color: var(--work-navy); }
 .workspace-step-list li span {
   display: grid;
   place-items: center;
   width: 1.3rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  color: #0b368c;
+  color: var(--work-navy);
   background: #fff;
 }
 .workspace .workspace-action-group {
@@ -314,3 +314,21 @@
   .workspace-nav { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: .7rem; }
   .workspace-hero-icon { display: none; }
 }
+
+.workspace .workspace-hours { display: grid; gap: .55rem; margin: 0; padding: .85rem; }
+.workspace .workspace-hours p { margin: 0; color: var(--work-muted); font-size: .87rem; }
+.workspace .workspace-hours summary { margin-bottom: .45rem; }
+.workspace .workspace-hours details p { margin-bottom: .55rem; }
+.workspace .workspace-subgroup .workspace-action-group { padding: .66rem .75rem; }
+
+.workspace .workspace-handover-receipt { padding: 1rem; }
+.workspace .workspace-handover-receipt h3 { margin: 0; }
+.workspace .workspace-confirmation {
+  align-items: flex-start;
+  padding: .7rem .8rem;
+  color: var(--work-ink);
+  background: #f5f7fc;
+  border: 1px solid var(--work-border);
+  border-radius: .6rem;
+}
+.workspace .workspace-confirmation input { flex: 0 0 auto; margin-top: .18rem; }

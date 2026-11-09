@@ -86,8 +86,9 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
   }
 
   function openCustody(id: string) {
+    focusPanel.current = false;
     setCustody(id);
-    selectPanel("custodies");
+    setPanel("custodies");
   }
 
   const current = panels[panel];
@@ -131,7 +132,7 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
         : panel === "notices" ? <Notifications onOpen={openCustody} />
         : panel === "operations" ? <Operations points={points} />
         : panel === "review" ? <ReviewExceptions actorId={user.id} />
-        : panel === "admin" ? <Administration points={points} /> : <Audit points={points} />}
+        : panel === "admin" ? <Administration points={points} onPointChange={loadPoints} /> : <Audit points={points} />}
     </div>
   </div>;
 }
