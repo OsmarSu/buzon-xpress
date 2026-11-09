@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+
 import logo from "../../assets/buzon-xpress-icono.jpeg";
 
 export function Brand() {
@@ -10,21 +12,42 @@ export function Brand() {
   </span>;
 }
 
+const publicLinks = [
+  ["/#como-funciona", "Cómo funciona"],
+  ["/#puntos", "Puntos y tarifas"],
+  ["/#seguimiento", "Seguimiento"],
+  ["/#conocenos", "Conócenos"],
+  ["/#contacto", "Contacto"],
+];
+
 export function PublicHeader({ focused, signedIn }: { focused?: boolean; signedIn?: boolean }) {
-  return <header className="public-topbar">
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+
+  return <header className="public-topbar" onKeyDown={(event) => {
+    if (event.key === "Escape" && menuOpen && menuButton.current?.getClientRects().length) {
+      event.preventDefault();
+      setMenuOpen(false);
+      menuButton.current.focus();
+    }
+  }}>
     <div className="public-layout public-topbar-inner">
       <a className="public-brand-link" href="/" aria-label="BUZON Xpress, inicio"><Brand /></a>
       {!focused && <>
-        <nav aria-label="Navegación pública" className="public-nav">
-          <a href="/#como-funciona">Cómo funciona</a>
-          <a href="/#puntos">Puntos y tarifas</a>
-          <a href="/#seguimiento">Seguimiento</a>
-          <a href="/#conocenos">Conócenos</a>
-          <a href="/#contacto">Contacto</a>
+        <button type="button" className="public-menu-toggle" ref={menuButton} aria-expanded={menuOpen}
+          aria-controls="public-navigation" onClick={() => setMenuOpen((open) => !open)}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" aria-hidden="true">
+            <path d={menuOpen ? "m6 6 12 12M18 6 6 18" : "M4 6h16M4 12h16M4 18h16"} />
+          </svg>
+          {menuOpen ? "Cerrar" : "Menú"}
+        </button>
+        <nav id="public-navigation" aria-label="Navegación pública" className="public-nav" data-open={menuOpen}>
+          {publicLinks.map(([href, label]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+          <a className="public-nav-action" href={signedIn ? "/cuenta" : "/acceso"}>
+            {signedIn ? "Mi cuenta" : "Iniciar sesión"}
+          </a>
         </nav>
-        <a className="public-nav-action" href={signedIn ? "/cuenta" : "/acceso"}>
-          {signedIn ? "Mi cuenta" : "Iniciar sesión"}
-        </a>
       </>}
     </div>
   </header>;

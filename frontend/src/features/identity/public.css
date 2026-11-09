@@ -96,9 +96,12 @@
 }
 
 .public-brand-link,
-.public-nav a,
-.public-nav-action {
+.public-nav a {
   text-decoration: none;
+}
+
+.public-menu-toggle {
+  display: none;
 }
 
 .public-nav {
@@ -109,8 +112,7 @@
   margin-left: auto;
 }
 
-.public-nav a,
-.public-nav-action {
+.public-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
@@ -119,13 +121,12 @@
   font-weight: 650;
 }
 
-.public-nav a:hover,
-.public-nav-action:hover {
+.public-nav a:hover {
   text-decoration: underline;
   text-underline-offset: .25em;
 }
 
-.public-topbar-inner .public-nav-action {
+.public-nav .public-nav-action {
   padding-inline: .9rem;
   border: 1px solid #d2def6;
   border-radius: .6rem;
@@ -710,6 +711,58 @@
   margin: .4rem 0 0;
 }
 
+@media (max-width: 64rem) {
+  .public-topbar-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .55rem .75rem;
+  }
+
+  .public-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding-inline: .7rem;
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--brand-dark);
+    font-size: .9rem;
+    white-space: nowrap;
+  }
+
+  .public-menu-toggle:hover:not(:disabled),
+  .public-menu-toggle[aria-expanded="true"] {
+    background: #edf3ff;
+  }
+
+  .public-nav {
+    display: none;
+    grid-column: 1 / -1;
+    gap: .15rem;
+    margin-left: 0;
+    padding-block: .5rem .15rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .public-nav[data-open="true"] {
+    display: grid;
+  }
+
+  .public-nav a {
+    padding-inline: .7rem;
+    border-radius: .55rem;
+  }
+
+  .public-nav a:hover {
+    background: #edf3ff;
+  }
+
+  .public-nav .public-nav-action {
+    justify-content: center;
+    margin-top: .3rem;
+  }
+}
+
 @media (max-width: 60rem) {
   .public-hero {
     min-height: 25rem;
@@ -726,31 +779,6 @@
   .public-service-note a {
     grid-column: 2;
     grid-row: 1 / span 2;
-  }
-
-  .public-topbar-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: .3rem .75rem;
-  }
-
-  .public-nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-content: flex-start;
-    gap: .12rem .9rem;
-    margin-left: 0;
-  }
-
-  .public-nav a,
-  .public-topbar-inner .public-nav-action {
-    font-size: .82rem;
-  }
-
-  .public-topbar-inner .public-nav-action {
-    grid-column: 2;
-    grid-row: 1;
-    padding-inline: .65rem;
   }
 }
 
