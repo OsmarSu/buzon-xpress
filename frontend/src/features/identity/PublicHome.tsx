@@ -5,25 +5,58 @@ import vision from "../../assets/buzon-xpress-vision.jpeg";
 import { PublicPoints, PublicTracking } from "../custody/PublicService";
 import { PublicHeader, SiteFooter } from "./SiteChrome";
 
-function PublicIntro({ signedIn, initialReference }: { signedIn: boolean; initialReference: string | null }) {
+function ServiceArt() {
+  return <svg className="public-hero-art" viewBox="0 0 400 356" aria-hidden="true" focusable="false" fill="none">
+    <defs>
+      <linearGradient id="parcel-lid" x1="138" y1="103" x2="334" y2="211" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#eef4ff" /><stop offset="1" stopColor="#9fc3ff" />
+      </linearGradient>
+      <linearGradient id="parcel-front" x1="128" y1="155" x2="235" y2="289" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#8eb6ff" /><stop offset="1" stopColor="#4c81e3" />
+      </linearGradient>
+      <linearGradient id="parcel-side" x1="235" y1="180" x2="339" y2="275" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#5079d0" /><stop offset="1" stopColor="#294d9f" />
+      </linearGradient>
+    </defs>
+    <circle cx="246" cy="170" r="138" fill="#0b6bbf" fillOpacity=".18" />
+    <circle cx="246" cy="170" r="115" stroke="#a7c6fc" strokeOpacity=".28" />
+    <circle cx="246" cy="170" r="154" stroke="#a7c6fc" strokeOpacity=".24" strokeDasharray="3 10" />
+    <path d="M21 246c52 0 60-80 127-80s62 139 142 139c41 0 65-37 82-64" stroke="#bdd5ff" strokeOpacity=".77" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 9" />
+    <circle cx="28" cy="246" r="7" fill="#a7c7ff" />
+    <path d="m91 266 142 71 144-75-144-74-142 78Z" fill="#081f4d" fillOpacity=".65" />
+    <path d="m91 251 142 70 144-74-144-74-142 78Z" fill="#2959aa" stroke="#76a8fa" strokeOpacity=".55" />
+    <path d="m124 150 108-59 109 59-109 61-108-61Z" fill="url(#parcel-lid)" />
+    <path d="m124 150 108 61v96l-108-60v-97Z" fill="url(#parcel-front)" />
+    <path d="m232 211 109-61v96l-109 61v-96Z" fill="url(#parcel-side)" />
+    <path d="m165 128 26-14 110 59v36l-26 14v-35l-110-60Z" fill="#eef4ff" fillOpacity=".87" />
+    <path d="m153 202 44 24v35l-44-25v-34Z" fill="#eff6ff" />
+    <path d="m161 216 27 15m-27-7 19 11" stroke="#426cbb" strokeWidth="2" strokeLinecap="round" />
+    <path d="m246 285 40-22" stroke="#96b8f7" strokeWidth="2" strokeLinecap="round" />
+    <path d="M340 53c0-14 11-25 25-25s25 11 25 25c0 18-25 43-25 43s-25-25-25-43Z" fill="#eff5ff" />
+    <circle cx="365" cy="52" r="9" fill="var(--brand-accent)" />
+    <path d="M62 115v18m-9-9h18m250-87v14m-7-7h14" stroke="#d9e8ff" strokeWidth="2" strokeLinecap="round" />
+  </svg>;
+}
+
+function PublicIntro({ signedIn }: { signedIn: boolean }) {
   return <div className="public-hero">
-    <div className="public-layout public-hero-content">
+    <div className="public-hero-copy">
       <p className="public-eyebrow">Custodia temporal asistida</p>
-      <h1>Deja un objeto.<br /><span>Que lo recojan después.</span></h1>
+      <h1>Intercambia objetos en horarios distintos</h1>
       <p className="public-hero-detail">
         Deja el objeto en un punto atendido. Tu destinatario podrá recogerlo después, dentro del horario del punto,
         con un código temporal.
       </p>
-      <PublicTracking initialReference={initialReference} />
       <div className="public-hero-actions">
         <a className="public-hero-link" href={signedIn ? "/cuenta" : "/registro"}>
           {signedIn ? "Ir a mi cuenta" : "Crear cuenta"}
         </a>
-        <a className="public-hero-secondary" href="#puntos">
-          Ver puntos de servicio <span aria-hidden="true">↓</span>
+        <a className="public-hero-secondary" href="#como-funciona">
+          Ver cómo funciona <span aria-hidden="true">↓</span>
         </a>
       </div>
     </div>
+    <ServiceArt />
   </div>;
 }
 
@@ -96,13 +129,12 @@ export function PublicHome({ signedIn, initialReference }: { signedIn: boolean; 
   return <div className="public-site public-home">
     <a className="buzon-skip" href="#contenido-principal">Saltar al contenido</a>
     <PublicHeader signedIn={signedIn} />
-    <main className="public-main" id="contenido-principal" tabIndex={-1}>
-      <PublicIntro signedIn={signedIn} initialReference={initialReference} />
-      <div className="public-layout public-home-content">
-        <PublicSteps />
-        <PublicPoints />
-        <PublicAbout />
-      </div>
+    <main className="public-layout public-main" id="contenido-principal" tabIndex={-1}>
+      <PublicIntro signedIn={signedIn} />
+      <PublicTracking initialReference={initialReference} />
+      <PublicSteps />
+      <PublicPoints />
+      <PublicAbout />
     </main>
     <SiteFooter />
   </div>;

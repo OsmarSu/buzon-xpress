@@ -19,8 +19,11 @@ export function PublicTracking({ initialReference }: { initialReference: string 
   }, [initialReference]);
 
   return <section id="seguimiento" className="public-tracking" aria-labelledby="tracking-heading">
-    <h2 id="tracking-heading" ref={trackingHeading} tabIndex={-1}>Seguimiento del objeto</h2>
-    <p id="tracking-hint">Consulta el estado, el punto y su horario con la referencia compartida.</p>
+    <div className="public-section-intro">
+      <p className="public-eyebrow">Consulta pública</p>
+      <h2 id="tracking-heading" ref={trackingHeading} tabIndex={-1}>Seguimiento del objeto</h2>
+      <p id="tracking-hint">Consulta el estado, el punto y su horario con la referencia compartida.</p>
+    </div>
     <div className="public-tracking-panel">
       <form aria-busy={tracking.busy} onSubmit={(event) => {
         const reference = value(formData(event), "reference");
