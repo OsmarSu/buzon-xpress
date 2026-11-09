@@ -75,7 +75,8 @@
 }
 
 .public-brand-link,
-.public-nav a {
+.public-nav a,
+.public-nav-action {
   text-decoration: none;
 }
 
@@ -84,9 +85,11 @@
   flex-wrap: wrap;
   gap: .2rem clamp(.7rem, 2vw, 1.9rem);
   align-items: center;
+  margin-left: auto;
 }
 
-.public-nav a {
+.public-nav a,
+.public-nav-action {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
@@ -95,12 +98,13 @@
   font-weight: 650;
 }
 
-.public-nav a:hover {
+.public-nav a:hover,
+.public-nav-action:hover {
   text-decoration: underline;
   text-underline-offset: .25em;
 }
 
-.public-nav .public-nav-action {
+.public-topbar-inner .public-nav-action {
   padding-inline: .9rem;
   border: 1px solid #d2def6;
   border-radius: .6rem;
@@ -438,6 +442,10 @@
   margin: .35rem 0 .65rem;
 }
 
+.public-quote .field > label {
+  font-weight: 650;
+}
+
 .public-quote-fields {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -612,21 +620,27 @@
 
 @media (max-width: 36rem) {
   .public-topbar-inner {
-    align-items: flex-start;
-    gap: .5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .3rem .75rem;
   }
 
   .public-nav {
-    width: 100%;
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-content: space-between;
     gap: .15rem .65rem;
+    margin-left: 0;
   }
 
-  .public-nav a {
+  .public-nav a,
+  .public-topbar-inner .public-nav-action {
     font-size: .82rem;
   }
 
-  .public-nav .public-nav-action {
+  .public-topbar-inner .public-nav-action {
+    grid-column: 2;
+    grid-row: 1;
     padding-inline: .65rem;
   }
 

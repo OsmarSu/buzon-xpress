@@ -103,16 +103,19 @@ export function PublicService({ initialReference, trackingOnly = false }: {
             setQuote(undefined);
             void quoteTask.run(async () => setQuote(await custodyApi.quote(point, size, hours)));
           }}>
-            <Field label="Punto de servicio">
-              <select name="point" required disabled={quoteTask.busy} defaultValue={points.length === 1 ? points[0].id : ""}>
+            <div className="field">
+              <label htmlFor="public-quote-point">Punto de servicio</label>
+              <select id="public-quote-point" name="point" required disabled={quoteTask.busy}
+                defaultValue={points.length === 1 ? points[0].id : ""}>
                 <option value="" disabled>Selecciona un punto</option>
                 {points.map((point) => <option value={point.id} key={point.id}>{point.name}</option>)}
               </select>
-            </Field>
+            </div>
             <div className="public-quote-fields">
-              <Field label="Tamaño">
-                <select name="size" defaultValue="PEQUENO" disabled={quoteTask.busy}><SizeOptions /></select>
-              </Field>
+              <div className="field">
+                <label htmlFor="public-quote-size">Tamaño</label>
+                <select id="public-quote-size" name="size" defaultValue="PEQUENO" disabled={quoteTask.busy}><SizeOptions /></select>
+              </div>
               <Field label="Plazo en horas">
                 <input name="hours" type="number" min={1} step={1} defaultValue={24} disabled={quoteTask.busy} required />
               </Field>

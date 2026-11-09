@@ -83,12 +83,14 @@ function PublicHeader({ focused }: { focused: boolean }) {
   return <header className="public-topbar">
     <div className="public-layout public-topbar-inner">
       <a className="public-brand-link" href="/" aria-label="BUZON Xpress, inicio"><Brand /></a>
-      {!focused && <nav aria-label="Navegación pública" className="public-nav">
-        <a href="#como-funciona">Cómo funciona</a>
-        <a href="#puntos">Puntos y tarifas</a>
-        <a href="#seguimiento">Seguimiento</a>
+      {!focused && <>
+        <nav aria-label="Navegación pública" className="public-nav">
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#puntos">Puntos y tarifas</a>
+          <a href="#seguimiento">Seguimiento</a>
+        </nav>
         <a className="public-nav-action" href="#acceso">Mi cuenta</a>
-      </nav>}
+      </>}
     </div>
   </header>;
 }
