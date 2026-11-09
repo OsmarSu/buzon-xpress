@@ -61,7 +61,7 @@ form {
 }
 
 .field { display: grid; gap: 0.35rem; min-width: 0; }
-.field > span { font-size: 0.925rem; font-weight: 660; }
+.field > span, .field > label { font-size: 0.925rem; font-weight: 660; }
 small { color: var(--muted); }
 
 input, textarea, select, button {

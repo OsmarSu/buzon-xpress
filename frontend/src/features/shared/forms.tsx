@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { cloneElement, isValidElement, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { describeError, mutationSeries } from "../../services/api";
 import { sizeLabel, sizes } from "../../services/custody";
@@ -32,6 +32,14 @@ export function useMutation() {
 }
 
 export function Field({ label, children }: { label: string; children: ReactNode }) {
+  const id = useId();
+  if (isValidElement<{ id?: string }>(children) && children.type === "select") {
+    const controlId = children.props.id ?? id;
+    return <div className="field">
+      <label htmlFor={controlId}>{label}</label>
+      {cloneElement(children, { id: controlId })}
+    </div>;
+  }
   return <label className="field"><span>{label}</span>{children}</label>;
 }
 
