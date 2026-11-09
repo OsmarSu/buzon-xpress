@@ -1,7 +1,15 @@
-.public-site {
-  background: var(--canvas, #f4f6fa);
-  color: var(--ink, #102342);
+.public-site,
+.workspace-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.public-site > main,
+.workspace-shell > main {
+  flex: 1;
 }
 
 .public-layout,
@@ -32,8 +40,7 @@
 }
 
 .public-topbar-inner,
-.workspace-topbar-inner,
-.public-footer-inner {
+.workspace-topbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,23 +62,15 @@
 }
 
 .buzon-brand-mark {
-  display: grid;
+  display: block;
   flex: none;
-  place-items: center;
-  width: 2.3rem;
-  height: 2.3rem;
-  border-radius: .65rem;
-  background: var(--brand-dark, #0b368c);
-  color: #fff;
-}
-
-.buzon-brand-mark svg {
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 2.95rem;
+  height: auto;
+  border-radius: .3rem;
 }
 
 .buzon-wordmark-accent {
-  color: var(--brand, #154db9);
+  color: var(--brand-red);
 }
 
 .public-brand-link,
@@ -118,14 +117,6 @@
   padding-block: clamp(1.4rem, 3.5vw, 3rem) clamp(2.5rem, 5vw, 4.5rem);
 }
 
-.public-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1.95fr) minmax(19rem, 1fr);
-  gap: clamp(1rem, 2.1vw, 1.75rem);
-  align-items: stretch;
-}
-
-.public-intro > *,
 .public-service-grid > *,
 .public-tracking > *,
 .workspace-overview > * {
@@ -142,15 +133,15 @@
   padding: clamp(1.65rem, 3.7vw, 3.55rem);
   overflow: hidden;
   border-radius: var(--radius, 1rem);
-  background: radial-gradient(ellipse at 80% 45%, #2156b5 0%, #163d87 40%, transparent 73%),
-    linear-gradient(125deg, #0b214c 0%, #102f70 62%, #133f94 100%);
+  background: radial-gradient(ellipse at 80% 45%, var(--brand) 0%, var(--brand-dark) 40%, transparent 73%),
+    linear-gradient(125deg, #102342 0%, var(--brand-dark) 100%);
   color: #fff;
 }
 
 .public-hero-copy {
   position: relative;
   z-index: 1;
-  width: min(59%, 29rem);
+  width: min(59%, 40rem);
 }
 
 .public-hero h1 {
@@ -173,8 +164,8 @@
 .public-hero-art {
   position: absolute;
   z-index: 0;
-  inset: 50% 1.1rem auto auto;
-  width: 49%;
+  inset: 50% clamp(.65rem, 4vw, 3rem) auto auto;
+  width: min(44%, 29rem);
   height: auto;
   transform: translateY(-50%);
 }
@@ -199,16 +190,27 @@
   font-size: .7rem;
 }
 
-.public-hero .public-hero-link {
+.public-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem 1.1rem;
+}
+
+.public-hero .public-hero-link,
+.public-hero .public-hero-secondary {
   display: inline-flex;
   align-items: center;
   gap: .45rem;
   min-height: 2.75rem;
-  padding-inline: .85rem;
+  color: #fff;
+  font-weight: 725;
+}
+
+.public-hero .public-hero-link {
+  padding-inline: .95rem;
   border-radius: .55rem;
   background: #fff;
-  color: #12336b;
-  font-weight: 725;
+  color: var(--brand-dark);
   text-decoration: none;
 }
 
@@ -219,12 +221,6 @@
 
 .public-hero .public-hero-link:hover {
   background: #edf4ff;
-}
-
-.public-access-area {
-  display: grid;
-  gap: .75rem;
-  align-content: stretch;
 }
 
 .public-auth-card,
@@ -246,7 +242,6 @@
   justify-content: center;
 }
 
-.public-auth-card h2,
 .public-auth-card h1,
 .public-quote h3,
 .public-point-list h3,
@@ -286,19 +281,11 @@
   border-top: 1px solid var(--border, #dce4f1);
 }
 
-.public-account-actions button.secondary {
-  padding-inline: .6rem;
-  border-color: transparent;
-  background: transparent;
-  color: var(--brand-dark, #0b368c);
-  font-size: .87rem;
-  font-weight: 650;
-}
-
-.public-account-actions button.secondary:hover:not(:disabled) {
-  background: #edf3ff;
-  text-decoration: underline;
-  text-underline-offset: .2em;
+.public-account-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: .92rem;
 }
 
 .public-verify-card button,
@@ -310,6 +297,7 @@
 
 .public-task-page {
   display: grid;
+  align-content: start;
   max-width: 36rem;
   padding-block: clamp(1.5rem, 7vw, 5rem);
 }
@@ -400,6 +388,7 @@
 
 .public-service-grid {
   display: grid;
+  align-items: start;
   grid-template-columns: minmax(0, 1fr) minmax(0, .92fr);
   gap: 1rem;
   margin-top: 1.1rem;
@@ -488,13 +477,58 @@
 }
 
 .public-footer {
-  border-top: 1px solid var(--border, #dce4f1);
-  background: var(--surface, #fff);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.public-footer-inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.6rem clamp(1.25rem, 3vw, 2.6rem);
+  padding-block: clamp(1.6rem, 4vw, 3rem);
+}
+
+.public-footer-inner h2 {
+  margin: 0 0 .6rem;
+  font-size: 1rem;
+  color: var(--brand-dark);
+}
+
+.public-footer-inner .public-brand-link {
+  display: inline-flex;
+  margin-bottom: .7rem;
 }
 
 .public-footer-inner p {
+  margin: 0 0 .55rem;
+  color: var(--muted);
+  font-size: .89rem;
+  overflow-wrap: anywhere;
+}
+
+.public-footer-inner p:last-child {
+  margin-bottom: 0;
+}
+
+.public-footer-inner a:not(.public-brand-link) {
+  display: inline-block;
+  padding-block: .3rem;
+  font-size: .88rem;
+}
+
+.public-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .25rem 1rem;
+  padding-block: .9rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.public-footer-bottom p {
   margin: 0;
-  color: var(--muted, #485976);
 }
 
 .workspace-topbar-inner {
@@ -575,16 +609,8 @@
 }
 
 @media (max-width: 60rem) {
-  .public-intro {
-    grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 1fr);
-  }
-
   .public-hero {
     min-height: 25rem;
-  }
-
-  .public-hero-art {
-    inset-inline-end: .6rem;
   }
 
   .public-service-note {
@@ -602,7 +628,6 @@
 }
 
 @media (max-width: 48rem) {
-  .public-intro,
   .workspace-overview,
   .public-tracking,
   .public-service-grid {
@@ -615,6 +640,10 @@
 
   .public-step-list {
     gap: .65rem;
+  }
+
+  .public-footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -670,10 +699,11 @@
     grid-column: auto;
     grid-row: auto;
   }
+}
 
+@media (max-width: 29rem) {
   .public-footer-inner {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 

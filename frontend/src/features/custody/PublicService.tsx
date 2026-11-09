@@ -9,10 +9,7 @@ const trackingLabels = {
   FINALIZADA: "Finalizada",
 };
 
-export function PublicService({ initialReference, trackingOnly = false }: {
-  initialReference: string | null;
-  trackingOnly?: boolean;
-}) {
+export function PublicService({ initialReference }: { initialReference: string | null }) {
   const [points, setPoints] = useState<Point[]>([]);
   const [result, setResult] = useState<Awaited<ReturnType<typeof custodyApi.tracking>>>();
   const [quote, setQuote] = useState<Quote>();
@@ -26,8 +23,8 @@ export function PublicService({ initialReference, trackingOnly = false }: {
   }
 
   useEffect(() => {
-    if (!trackingOnly) loadPoints();
-  }, [trackingOnly]);
+    loadPoints();
+  }, []);
 
   useEffect(() => {
     if (initialReference) trackingHeading.current?.focus();
@@ -60,14 +57,12 @@ export function PublicService({ initialReference, trackingOnly = false }: {
     </div>
   </section>;
 
-  if (trackingOnly) return trackingSection;
-
   return <div className="public-services">
     <section id="puntos" className="public-points" aria-labelledby="points-heading">
       <div className="public-section-intro">
         <p className="public-eyebrow">Planifica tu visita</p>
         <h2 id="points-heading">Puntos y horarios</h2>
-        <p>Consulta dónde puedes dejar un objeto y calcula cuánto cuesta el plazo que necesitas.</p>
+        <p>Compara ubicaciones, horarios y tarifas según el plazo que necesitas.</p>
       </div>
       <div className="public-service-grid">
         <div className="public-point-list">

@@ -1,7 +1,7 @@
 .workspace {
   --work-ink: var(--ink, #102342);
   --work-muted: var(--muted, #51617b);
-  --work-blue: var(--brand, #154db9);
+  --work-blue: var(--brand, #0b6bbf);
   --work-navy: var(--brand-dark, #0b368c);
   --work-border: var(--border, #d9e2ef);
   --work-paper: var(--surface, #fff);
@@ -94,7 +94,7 @@
   padding: clamp(1.2rem, 3vw, 2.15rem);
   color: #fff;
   border-radius: var(--radius, 1rem);
-  background: radial-gradient(ellipse at 97% 10%, #1a58b8 0, transparent 54%), linear-gradient(115deg,#122b54,#0b368c);
+  background: radial-gradient(ellipse at 97% 10%, var(--brand) 0, transparent 54%), linear-gradient(115deg,#102342,var(--brand-dark));
 }
 .workspace-hero::after {
   content: "";

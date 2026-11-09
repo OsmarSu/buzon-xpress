@@ -2,13 +2,15 @@
   color-scheme: light;
   --ink: #102342;
   --muted: #50617a;
-  --brand: #154db9;
+  --brand: #0b6bbf;
   --brand-dark: #0b368c;
+  --brand-red: #bf0f1e;
+  --brand-accent: #d91438;
   --surface: #ffffff;
-  --canvas: #f4f6fa;
+  --canvas: #f2f2f2;
   --border: #dce4f0;
   --radius: 1.125rem;
-  --focus: #1158c7;
+  --focus: var(--brand);
   --shadow-card: 0 12px 34px rgb(18 39 78 / 0.06);
 
   color: var(--ink);
