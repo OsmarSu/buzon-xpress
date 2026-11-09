@@ -7,7 +7,7 @@ from sqlalchemy.engine import RowMapping
 
 from app.adapters.api.dto import Csrf, Login, Register, ResetComplete, ResetRequest, Resource, Session, TokenAction, User
 from app.adapters.api.limits import IdentityRateLimit
-from app.adapters.api.security import API_PATH, SESSION_COOKIE, ApiSecurity
+from app.adapters.api.security import ApiSecurity
 from app.application.identity import IdentityService, SESSION_TTL
 from app.config import Settings
 
@@ -59,8 +59,8 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
     def complete_password_reset(body: ResetComplete, request: Request, response: Response) -> Resource:
         limit(request, "password-reset-complete", 10)
         user_id = service.complete_password_reset(body.token.get_secret_value(), body.password.get_secret_value())
-        response.delete_cookie(SESSION_COOKIE, path=API_PATH, **security.cookie_flags)
-        security.clear_csrf(response)
+        security.write_session(request, response)
+        security.clear_csrf(request, response)
         return Resource(id=user_id, state="RESTABLECIDA")
 
     @router.post("/login", response_model=Session, dependencies=[Depends(security.csrf)])
@@ -69,8 +69,8 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
         user, token, expires_at = service.login(
             str(body.email), body.password.get_secret_value(), security.session_token(request)
         )
-        response.set_cookie(SESSION_COOKIE, token, max_age=int(SESSION_TTL.total_seconds()), path=API_PATH, **security.cookie_flags)
-        security.clear_csrf(response)
+        security.write_session(request, response, token, max_age=int(SESSION_TTL.total_seconds()))
+        security.clear_csrf(request, response)
         return Session(user=serialize_user(user), expires_at=expires_at)
 
     @router.get("/me", response_model=User)
@@ -80,8 +80,8 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
     @router.post("/logout", response_model=Resource, dependencies=[Depends(security.csrf)])
     def logout(request: Request, response: Response) -> Resource:
         session_id = service.logout(security.session_token(request))
-        response.delete_cookie(SESSION_COOKIE, path=API_PATH, **security.cookie_flags)
-        security.clear_csrf(response)
+        security.write_session(request, response)
+        security.clear_csrf(request, response)
         return Resource(id=session_id, state="REVOCADA")
 
     return router

@@ -68,6 +68,8 @@ Configura `BUZON_SMTP_HOST` y `BUZON_SMTP_FROM`, con `BUZON_SMTP_PORT`, `BUZON_S
 
 Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye las referencias públicas de los logs de acceso.
 
+Si publicas el frontend estático en un origen HTTPS separado, compílalo con `VITE_BUZON_API_ORIGIN` apuntando a la API. Incluye el origen exacto del frontend en `BUZON_CORS_ORIGINS` y en `BUZON_ALLOWED_ORIGINS`. El primer valor de `BUZON_ALLOWED_ORIGINS` es la dirección que se incluye en los correos. La sesión entre sitios usa cookies particionadas.
+
 ### Verificar el diseño y consultar entregables
 
 Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.sh`. Consulta el [plan y los resultados de validación](docs/validacion/01_plan_validacion.md) y los [archivos editables de Scrum y pruebas](entregables/README.md).

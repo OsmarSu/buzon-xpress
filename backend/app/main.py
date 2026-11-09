@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import InterfaceError, OperationalError
@@ -44,6 +45,15 @@ def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = 
             store.engine.dispose()
 
     app = FastAPI(title="BUZON Xpress", version="0.1.0", lifespan=lifespan)
+    if settings.cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(settings.cors_origins),
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PUT", "PATCH"],
+            allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key"],
+            expose_headers=["X-Correlation-ID"],
+        )
     app.include_router(auth_router(service, settings), prefix=API_PATH)
     for router in (in_person_router, custody_router, admin_router, recovery_router, notifications_router, pickup_router):
         app.include_router(router(operations, security), prefix=API_PATH)

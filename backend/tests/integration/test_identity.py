@@ -103,6 +103,49 @@ def mutate(client, route, body=None, *, csrf_token=None, origin=ORIGIN):
     return client.post(API + route, json=body, headers={"Origin": origin, "X-CSRF-Token": csrf_token})
 
 
+def test_approved_frontend_uses_partitioned_cookies(database_url):
+    api_origin = "https://api.example.net"
+    other = "https://other.example.org"
+    settings = Settings(
+        database_url=database_url,
+        session_secret=token_hex(32).encode(),
+        allowed_origins=(ORIGIN, api_origin),
+        public_origin=ORIGIN,
+        cors_origins=(ORIGIN,),
+    )
+    with TestClient(create_app(settings), base_url=api_origin) as client:
+        preflight = {
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type,x-csrf-token,idempotency-key",
+        }
+        denied = client.options(API + "/login", headers={**preflight, "Origin": other})
+        assert denied.status_code == 400
+        assert "access-control-allow-origin" not in denied.headers
+        allowed = client.options(API + "/login", headers={**preflight, "Origin": ORIGIN})
+        assert allowed.status_code == 200
+        assert allowed.headers["access-control-allow-origin"] == ORIGIN
+        assert allowed.headers["access-control-allow-credentials"] == "true"
+
+        def send(route, body=None):
+            issued = client.get(API + "/csrf", headers={"Origin": ORIGIN})
+            return client.post(API + route, json=body, headers={
+                "Origin": ORIGIN, "X-CSRF-Token": issued.json()["csrf_token"],
+            })
+
+        data = account()
+        assert send("/register", data).status_code == 201
+        login = send("/login", {key: data[key] for key in ("email", "password")})
+        assert login.status_code == 200
+        session = next(cookie for cookie in login.headers.get_list("set-cookie") if cookie.startswith("__Host-buzon_session_web="))
+        assert all(flag in session for flag in ("Secure", "HttpOnly", "SameSite=none", "Partitioned", "Path=/"))
+        assert client.get(API + "/me", headers={"Origin": ORIGIN}).status_code == 200
+        assert client.get(API + "/me").status_code == 401
+        logout = send("/logout")
+        assert logout.status_code == 200
+        assert any("Max-Age=0" in cookie and "Partitioned" in cookie for cookie in logout.headers.get_list("set-cookie"))
+        assert client.get(API + "/me", headers={"Origin": ORIGIN}).status_code == 401
+
+
 def test_t01_registration_verification_login_and_revocation(environment, assert_contract):
     client, mailbox, engine = environment
     data = account()

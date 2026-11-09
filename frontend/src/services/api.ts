@@ -1,3 +1,5 @@
+const apiOrigin = import.meta.env?.VITE_BUZON_API_ORIGIN || "";
+
 interface ErrorBody {
   code?: unknown;
   message?: unknown;
@@ -26,7 +28,9 @@ export function describeError(error: unknown): string {
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response;
   try {
-    response = await fetch("/api/v1" + path, { ...init, credentials: "same-origin", cache: "no-store" });
+    response = await fetch(apiOrigin + "/api/v1" + path, {
+      ...init, credentials: apiOrigin ? "include" : "same-origin", cache: "no-store",
+    });
   } catch {
     throw new ApiError(0, "SIN_CONEXION", "No se pudo conectar con BUZON Xpress.");
   }

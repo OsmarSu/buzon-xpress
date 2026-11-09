@@ -26,11 +26,13 @@ class Settings:
     smtp_password: str = ""
     credential_key: bytes = b""
     request_key: bytes = b""
+    cors_origins: tuple[str, ...] = ()
 
     @classmethod
     def from_env(cls) -> "Settings":
         env = environ.get("BUZON_ENV", "piloto")
         origins = tuple(item.strip() for item in environ.get("BUZON_ALLOWED_ORIGINS", "").split(",") if item.strip())
+        cors_origins = tuple(item.strip() for item in environ.get("BUZON_CORS_ORIGINS", "").split(",") if item.strip())
         secret = environ.get("BUZON_SESSION_SECRET", "").encode()
         if not origins or len(secret) < 32:
             raise RuntimeError("Configura BUZON_ALLOWED_ORIGINS y BUZON_SESSION_SECRET (al menos 32 bytes).")
@@ -44,6 +46,8 @@ class Settings:
                 raise RuntimeError("Solo se permite HTTP de loopback en desarrollo y pruebas.")
         if len({urlsplit(origin).scheme for origin in origins}) != 1:
             raise RuntimeError("Separa los orígenes HTTP de desarrollo y HTTPS en entornos distintos.")
+        if any(origin not in origins or not origin.startswith("https://") for origin in cors_origins):
+            raise RuntimeError("BUZON_CORS_ORIGINS debe incluir solo orígenes HTTPS autorizados.")
         credential_key = environ.get("BUZON_CREDENTIAL_HMAC_KEY", "").encode()
         request_key = environ.get("BUZON_REQUEST_HMAC_KEY", "").encode()
         keys = (secret, credential_key, request_key)
@@ -68,4 +72,5 @@ class Settings:
             smtp_password=environ.get("BUZON_SMTP_PASSWORD", ""),
             credential_key=credential_key,
             request_key=request_key,
+            cors_origins=cors_origins,
         )
