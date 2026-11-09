@@ -1,9 +1,12 @@
-import logo from "../../assets/buzon-xpress.jpeg";
+import logo from "../../assets/buzon-xpress-icono.jpeg";
 
 export function Brand() {
   return <span className="buzon-wordmark">
-    <img className="buzon-brand-mark" src={logo} width="335" height="202" alt="" />
-    <span>BUZON <span className="buzon-wordmark-accent">Xpress</span></span>
+    <img className="buzon-brand-mark" src={logo} width="330" height="218" alt="" />
+    <span className="buzon-wordmark-copy">
+      <span>BUZON <span className="buzon-wordmark-accent">Xpress</span></span>
+      <small>Custodia temporal</small>
+    </span>
   </span>;
 }
 
@@ -16,6 +19,8 @@ export function PublicHeader({ focused, signedIn }: { focused?: boolean; signedI
           <a href="/#como-funciona">Cómo funciona</a>
           <a href="/#puntos">Puntos y tarifas</a>
           <a href="/#seguimiento">Seguimiento</a>
+          <a href="/#conocenos">Conócenos</a>
+          <a href="/#contacto">Contacto</a>
         </nav>
         <a className="public-nav-action" href={signedIn ? "/cuenta" : "/acceso"}>
           {signedIn ? "Mi cuenta" : "Iniciar sesión"}
@@ -26,13 +31,14 @@ export function PublicHeader({ focused, signedIn }: { focused?: boolean; signedI
 }
 
 export function SiteFooter() {
-  return <footer className="public-footer">
+  return <footer className="public-footer" id="contacto">
     <div className="public-layout">
       <div className="public-footer-inner">
         <div>
           <a className="public-brand-link" href="/" aria-label="BUZON Xpress, inicio"><Brand /></a>
           <h2>Nosotros</h2>
           <p>Coordinamos el intercambio de objetos mediante custodia temporal en puntos atendidos.</p>
+          <a href="/#conocenos">Nuestra misión y visión <span aria-hidden="true">→</span></a>
         </div>
         <div>
           <h2>Atención y contacto</h2>
