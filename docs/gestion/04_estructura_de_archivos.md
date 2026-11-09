@@ -1,7 +1,7 @@
 # Estructura de archivos y secuencia de desarrollo
 
 ```text
-buzon-xpress-final/
+buzon-xpress/
 ├── README.md                         Orden de lectura y arranque de verificación
 ├── docs/
 │   ├── perfil/ negocio/ metodologia/ Definición del servicio y antecedentes

@@ -18,7 +18,7 @@ BUZON Xpress organiza la custodia temporal y el intercambio asíncrono de objeto
 | Operación y aceptación | [Manual](docs/operacion/01_manual_operativo.md), [plan de validación](docs/validacion/01_plan_validacion.md) y [plan de implementación](docs/gestion/02_plan_implementacion.md) |
 | Documentos para presentar | [Perfil y dossier de la edición 1.0 en Word, PDF y HTML](entregables/README.md) |
 
-La base documental proviene de `../buzon-xpress-reformulado`. El código de `../buzon-xpress` es el antecedente ejecutable de paquetería, útil para evaluar componentes reutilizables. El perfil, la especificación y el contrato de esta carpeta gobiernan la implementación de custodia.
+La base documental proviene de `../buzon-xpress-reformulado`. El código de `../buzon-xpress-original` es el antecedente ejecutable de paquetería, útil para evaluar componentes reutilizables. El perfil, la especificación y el contrato de esta carpeta gobiernan la implementación de custodia.
 
 ## 2. Estructura y verificación
 
