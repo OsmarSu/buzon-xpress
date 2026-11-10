@@ -1,14 +1,14 @@
 # Modelo de datos y arquitectura
 
-Estado: diseño de referencia. Se conserva la base tecnológica React/TypeScript, FastAPI y PostgreSQL. No se impone actualización de versiones ni servicios adicionales. Referentes: Evans, Martin, Fowler, Brown, Codd y Date; ver [aplicación de marcos](../metodologia/01_marcos_y_aplicacion.md).
+Estado: arquitectura de referencia de la implementación actual. La solución usa React/TypeScript, FastAPI, SQLAlchemy, Alembic y PostgreSQL, dentro de una aplicación modular. Los límites y las decisiones se contrastan con Evans, Martin, Fowler, Brown, Codd y Date; ver [aplicación de marcos](../metodologia/01_marcos_y_aplicacion.md).
 
-La línea base 1.1 reconstruye el anexo SQL a partir de este diccionario y las reglas documentadas. Conserva las 156 definiciones de columna y hace explícitas las claves compuestas, la ocupación activa única y la protección de eventos. El ensayo utiliza PostgreSQL 16 aislado. Las transiciones y los permisos pertenecen a la futura aplicación.
+La línea base 1.1 reconstruye el SQL de referencia a partir del diccionario y las reglas documentadas. Conserva 156 definiciones de columna y explicita las claves compuestas, la ocupación activa única y la protección de eventos. La aplicación cuenta con dos revisiones Alembic; el verificador canónico aplica el esquema y sus invariantes en PostgreSQL 16 aislado. Las transiciones y los permisos ya están implementados en los módulos de dominio, aplicación y API. La evidencia y sus límites están en el [registro de pruebas](../validacion/resultados_pruebas.csv).
 
 ## 1. Componentes y dependencias
 
-Se propone una aplicación modular con una base relacional. Los módulos son identidad, custodia e inventario, autorización de entrega, cobros del servicio, comunicaciones y supervisión. Comparten una unidad de despliegue al inicio, con interfaces explícitas.
+La aplicación está organizada en módulos de identidad, custodia e inventario, autorización de entrega, cobros del servicio, comunicaciones y supervisión. Comparten una unidad de despliegue y límites explícitos.
 
-El dominio contiene reglas y estados; la aplicación coordina casos de uso; adaptadores exponen API y persistencia. El ORM, el correo y las cookies no se importan dentro de las entidades del dominio. La separación permite probar decisiones sin una base real y comprobar después integridad con PostgreSQL.
+El código separa reglas y estados del dominio, coordinación de casos de uso, API, persistencia y correo. El ORM, el transporte de correo y las cookies quedan en adaptadores. Las pruebas de reglas usan dobles cuando corresponde; la integridad se comprueba también con PostgreSQL.
 
 ### Contexto C4, representado con Mermaid
 
@@ -118,7 +118,7 @@ Una conciliación documentada puede confirmar una autorización expirada; es una
 
 ## 7. Operación de datos
 
-Las migraciones futuras parten de un entorno vacío o una copia de ensayo. El [SQL](anexos/modelo_propuesto.sql) no modifica ni migra la base del proyecto actual. La migración desde paquetes comerciales requiere inventario, correspondencia de participantes y revisión manual; no reutiliza contraseñas o PIN expuestos.
+Las migraciones Alembic versionadas parten de una base de prueba vacía y se ensayan con aplicación, reversión y nueva aplicación. El [SQL](anexos/modelo_propuesto.sql) es el modelo de referencia usado para verificar las 17 tablas y sus invariantes; no se aplica sobre la base de otro sistema. Una migración de datos comerciales requiere inventario físico, correspondencia de participantes y revisión manual; no reutiliza contraseñas.
 
 Copias y restauración se ensayan antes del piloto. Los eventos no se editan con la cuenta de aplicación; un trigger adicional rechaza UPDATE y DELETE, con límites frente a un propietario de base. La conservación y anonimización requieren una política aprobada para el servicio antes de uso público.
 

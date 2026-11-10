@@ -1,6 +1,6 @@
 # Plan de implementación y transición
 
-Plan de implementación de la línea base. El [registro de pruebas](../validacion/resultados_pruebas.csv) recoge el estado técnico de las entregas. Duración de referencia: seis iteraciones de una semana; ajustar según equipo y disponibilidad del punto.
+Plan original de implementación y transición. Las seis iteraciones semanales son una secuencia de referencia, no el estado actual del trabajo. El sistema ya está implementado en desarrollo; la [matriz de trazabilidad](03_matriz_trazabilidad.md) y el [registro de pruebas](../validacion/resultados_pruebas.csv) documentan su verificación y los pendientes de aceptación del servicio.
 
 ## 1. Orden y dependencias
 
@@ -15,7 +15,7 @@ Plan de implementación de la línea base. El [registro de pruebas](../validacio
 
 No se dedica una iteración completa a una landing sin un flujo comprobable. La primera demostración integral utiliza datos sintéticos y registra, recibe, autoriza y confirma un objeto de prueba.
 
-## 2. Trabajo sobre la base técnica existente
+## 2. Secuencia original sobre la base técnica existente
 
 1. Preparar un repositorio o copia de desarrollo independiente; conservar el original como antecedente.
 2. Sustituir las cuentas locales y los permisos de interfaz por identidad y autorización en servidor.

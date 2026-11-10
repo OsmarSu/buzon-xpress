@@ -14,30 +14,29 @@ buzon-xpress/
 ├── referencias/                       Copias históricas y hashes registrados
 ├── backend/
 │   ├── app/
-│   │   ├── domain/                   Entidades, estados y reglas puras
+│   │   ├── domain/                   Reglas, estados y tipos de valor
 │   │   ├── application/              Casos de uso y unidades de trabajo
 │   │   ├── ports/                    Interfaces de repositorios, reloj y avisos
-│   │   ├── adapters/
-│   │   │   ├── api/                  Rutas FastAPI, autorización y DTO
-│   │   │   ├── storage/              SQLAlchemy y transacciones PostgreSQL
-│   │   │   └── mail/                 Transporte opcional de correo
-│   │   └── jobs/                     Tareas de vencimientos y avisos
-│   ├── migrations/versions/          Futuras revisiones Alembic
-│   └── tests/{unit,integration,contract}/
+│   │   ├── adapters/{api,storage,mail}/ API, persistencia y correo
+│   │   └── jobs/                     Vencimientos y reintentos de avisos
+│   ├── migrations/versions/          Revisiones 0001_identity y 0002_operations
+│   └── tests/                        Pruebas de identidad y operaciones
 ├── frontend/
-│   ├── src/{features,services,components}/
-│   └── tests/
-├── herramientas/                      Generación y verificación documental
-├── infra/                             Ensayo de esquema PostgreSQL
-└── verificar.sh                       Comprobación reproducible de la línea base
+│   ├── src/assets/                   Identidad visual
+│   ├── src/components/               Componentes reutilizables
+│   ├── src/features/                 custody, dashboard, identity, operations,
+│   │                                  shared y supervision
+│   ├── src/services/                 Cliente HTTP
+│   └── tests/                        Pruebas del cliente de API
+├── herramientas/                      Verificación documental
+├── infra/                             Pruebas desechables de PostgreSQL
+└── verificar.sh                       Verificación documental y del modelo SQL
 ```
 
-## Orden y responsabilidad de archivos
+## Estado de implementación y verificación
 
-1. Congelar los requisitos de identidad, sesión y alcance. Definir los DTO y revisar el contrato OpenAPI antes de repartir la implementación. Fijar Python 3.13 y Node.js 24, disponibles en WSL, y guardar las versiones exactas al introducir dependencias del producto.
-2. Crear la migración inicial con Alembic en un entorno aislado. Comparar los cambios con el [SQL de referencia](../ingenieria/anexos/modelo_propuesto.sql) y ensayar restauración. Las credenciales de base y los secretos se cargan por entorno.
-3. Implementar dominio, casos de uso y adaptadores de identidad. La API define un punto de entrada, y la autorización se decide en servidor.
-4. Conectar la UI de acceso al contrato real. Organizar `frontend/src/features` por identidad, custodias, operación y supervisión. `services` contiene cliente HTTP y errores comunes.
-5. Completar una entrega vertical que registre, reciba, verifique y confirme la salida de un objeto sintético. Después se incorporan incidencias, recuperación, avisos y reportes.
+El producto ya tiene API FastAPI, frontend React/TypeScript, persistencia PostgreSQL y dos migraciones Alembic. Los módulos funcionales cubren identidad, custodias e inventario, retiros y devoluciones, cobros del servicio, avisos, incidencias y supervisión. Las rutas y entidades se detallan en la [arquitectura](../ingenieria/03_modelado_datos_arquitectura.md).
 
-Las carpetas del producto son el punto de partida. Los scripts que se ejecutan hoy verifican el diseño y la persistencia de referencia. El [plan de implementación](02_plan_implementacion.md) detalla los criterios de inicio.
+La última verificación automatizada se ejecutó en un clon limpio de `9405ed7`: las migraciones se aplicaron y revirtieron en PostgreSQL 16 desechable, pasaron las pruebas de backend, las pruebas del frontend y la compilación de producción. También se comprobó una restauración local. Las limitaciones por requisito están en el [registro de pruebas](../validacion/resultados_pruebas.csv).
+
+El [plan de implementación](02_plan_implementacion.md) conserva la secuencia y los criterios originalmente propuestos; no es un tablero del trabajo pendiente. Para instalar, iniciar y verificar el entorno actual, seguir los comandos del [README](../../README.md).

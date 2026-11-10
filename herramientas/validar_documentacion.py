@@ -72,7 +72,7 @@ def main():
     for c in clean:
         balance+=(c=='(')-(c==')')
         valid=valid and balance>=0
-    check(valid and balance==0,'Delimitadores SQL equilibrados; sin ejecución en motor')
+    check(valid and balance==0,'Delimitadores SQL equilibrados en análisis léxico')
     spec=yaml.safe_load((ROOT/'docs/ingenieria/anexos/openapi.yaml').read_text())
     validate(spec)
     checks.append(f"Contrato conforme al esquema OpenAPI {spec['openapi']}")
@@ -157,7 +157,7 @@ def main():
         '# Verificación de la línea base 1.1', '',
         f'Estado documental **{status}**.', '',
         'La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.',
-        'El ensayo de restricciones en PostgreSQL se ejecuta con [verificar-esquema.sh](../../infra/verificar-esquema.sh).',
+        'La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (17 tablas) antes de validar la documentación.',
         'La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.', '',
         '## Comprobaciones', '',
         *[f'- {message}' for message in checks],

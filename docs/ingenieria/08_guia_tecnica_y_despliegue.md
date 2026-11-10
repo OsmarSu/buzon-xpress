@@ -1,10 +1,10 @@
 # Guía técnica, entornos y despliegue
 
-La implementación de desarrollo se ejecuta con el [README](../../README.md). Esta guía conserva los criterios de entorno y preparación del piloto.
+El [README](../../README.md) contiene los comandos para instalar, probar y ejecutar la aplicación. Esta guía describe la arquitectura desplegada en desarrollo y separa esa evidencia de los requisitos que faltan para un piloto operativo.
 
-## 1. Base tecnológica y estructura prevista
+## 1. Base tecnológica y estructura implementada
 
-Se conserva la familia tecnológica ya utilizada: React y TypeScript para interfaz, FastAPI para API, SQLAlchemy y PostgreSQL para persistencia y Alembic para migraciones. La implementación deberá fijar versiones compatibles y archivos de dependencias reproducibles; este documento no ordena actualizar a las últimas versiones.
+La aplicación usa React y TypeScript, FastAPI, SQLAlchemy, PostgreSQL y Alembic. El backend requiere Python 3.13; el frontend se instala con Node.js 24 y npm. `backend/uv.lock` y `frontend/package-lock.json` registran las dependencias reproducibles; las restricciones de versión también se declaran en los manifiestos.
 
 ```text
 backend/app/
@@ -25,26 +25,26 @@ frontend/src/
 
 La estructura separa reglas, aplicación, persistencia e interfaz. Una carpeta por cada libro o patrón no aporta valor por sí sola; la revisión debe comprobar dependencias y responsabilidades.
 
-## 2. Configuración prevista
+## 2. Configuración implementada
 
-| Parámetro propuesto | Uso y control |
+| Parámetro | Uso y control |
 |---|---|
-| `BUZON_DATABASE_URL` | Conexión del entorno; sin credenciales predeterminadas de producción. |
-| `BUZON_SESSION_SECRET` | Protección del contexto de sesión; fuera del código y los exportables. |
-| `BUZON_CREDENTIAL_HMAC_KEY` | Verificador de códigos de retiro, separado de la base. |
-| `BUZON_REQUEST_HMAC_KEY` | Resumen protegido de peticiones idempotentes. |
-| `BUZON_ALLOWED_ORIGINS` | Orígenes explícitos para la interfaz desplegada. |
-| `BUZON_SMTP_HOST` y credenciales asociadas | Correo opcional; nunca obligatorio para operar la bandeja. |
-| `BUZON_TIMEZONE` | Presentación horaria; persistencia en UTC. |
-| `BUZON_ENV` | Distinguir desarrollo, pruebas y piloto. |
+| `BUZON_DATABASE_URL` | Conexión PostgreSQL con el controlador `psycopg`; obligatoria. |
+| `BUZON_SESSION_SECRET` | Secreto de sesión de al menos 32 bytes, fuera del código. |
+| `BUZON_CREDENTIAL_HMAC_KEY` | Clave HMAC independiente para credenciales de retiro. |
+| `BUZON_REQUEST_HMAC_KEY` | Clave HMAC independiente para solicitudes idempotentes. |
+| `BUZON_ALLOWED_ORIGINS` | Orígenes HTTPS permitidos; en desarrollo, HTTP solo en loopback. El primero se usa como origen público. |
+| `BUZON_CORS_ORIGINS` | Orígenes HTTPS adicionales para el frontend estático separado. |
+| `BUZON_SMTP_HOST`, `BUZON_SMTP_PORT`, `BUZON_SMTP_FROM`, `BUZON_SMTP_USER`, `BUZON_SMTP_PASSWORD` | Transporte de correo opcional; la bandeja de avisos sigue disponible sin SMTP. |
+| `BUZON_ENV` | Distingue desarrollo, pruebas y piloto. |
 
-Los nombres son convenciones propuestas para el nuevo código. No se proporciona un archivo con secretos de ejemplo que pueda confundirse con configuración real. El entorno de prueba no usa cuentas o contactos de usuarios reales.
+La configuración se valida en `backend/app/config.py`. En piloto se exigen tres secretos distintos de al menos 32 bytes. No se guardan secretos reales en el repositorio; las pruebas usan credenciales sintéticas y una base aislada.
 
 ## 3. Entornos y datos
 
 Desarrollo: datos sintéticos y servicios locales disponibles. Pruebas: base separada y descartable identificada explícitamente; una prueba no puede aceptar por omisión la URL del punto piloto. Ensayo: versión identificada, personal informado y bultos de prueba. Piloto: solo después de validar requisitos y procedimiento.
 
-El [SQL de referencia](anexos/modelo_propuesto.sql) describe un esquema inicial vacío. Se transforma en una migración revisada y se comprueba en una base aislada. No ejecutar como actualización de la base antecedente. Las cuentas iniciales se crean mediante un procedimiento controlado, sin contraseñas universales publicadas.
+El [SQL de referencia](anexos/modelo_propuesto.sql) describe el esquema relacional. Las migraciones `0001_identity` y `0002_operations` crean la estructura de la aplicación; `./infra/probar-sistema.sh` las aplica, revierte y reaplica en PostgreSQL 16 desechable. No usar este esquema para actualizar directamente la base antecedente. La primera cuenta administradora se habilita mediante el procedimiento documentado en el README, sin una contraseña universal.
 
 La cuenta de aplicación tiene permisos mínimos; la de migración se usa solo para cambios controlados. Los eventos son de adición y se protegen además con trigger. Documentar quién puede administrar o restaurar la base: la protección no impide que su propietario deshabilite controles.
 
@@ -77,6 +77,8 @@ Una restauración puede retroceder registros respecto a una entrega humana ya re
 
 La rotación de claves de códigos y sesión requiere invalidar o gestionar credenciales afectadas de forma explícita. Las revisiones de base no se revierten borrando evidencia; se planifica un cambio compatible o una restauración controlada y conciliada.
 
-## 7. Evidencia requerida antes de afirmar implementación
+## 7. Estado técnico y condiciones previas al piloto
 
-Código y dependencias reproducibles; migraciones ejecutadas en prueba; contratos verificados; pruebas funcionales y negativas; ensayo operativo; copia restaurada; configuración sin secretos en repositorio; y documentación de fallas. Estos entregables pertenecen al trabajo futuro del [plan](../gestion/02_plan_implementacion.md).
+La implementación y su configuración reproducible están comprobadas en el entorno local. `./verificar.sh` valida el esquema en PostgreSQL 16 y revisa la línea base documental; el [registro de pruebas](../validacion/resultados_pruebas.csv) conserva los resultados por caso. El ensayo actual incluye restauración local, pero no establece recuperación ante desastres para una operación real.
+
+Antes de un piloto quedan pendientes la aceptación con participantes, confirmar punto, horario y responsables reales, validar SMTP del punto, definir política de conservación de datos y medir copia, RPO y RTO en la infraestructura que se vaya a usar. El [plan de implementación](../gestion/02_plan_implementacion.md) conserva la secuencia propuesta y los criterios de transición.

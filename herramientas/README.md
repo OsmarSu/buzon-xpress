@@ -17,7 +17,7 @@ uv venv --python 3.13
 uv pip sync --python .venv/bin/python herramientas/requirements.lock.txt
 ```
 
-La revisión comprueba enlaces locales, hashes de referencias históricas, correspondencia, requisitos, rutas, diagramas y exportables. Valida OpenAPI 3.1 con un validador de esquema. El ensayo de SQL crea una base desechable en memoria sin puertos expuestos y verifica restricciones de ocupación, coherencia, entrega y auditoría. Las pruebas funcionales del producto están registradas en el plan y se ejecutarán con la implementación.
+La revisión comprueba enlaces locales, hashes de referencias históricas, correspondencia, requisitos, rutas, diagramas y exportables. Valida OpenAPI 3.1 con un validador de esquema. El ensayo de SQL crea una base desechable en memoria sin puertos expuestos y verifica restricciones de ocupación, coherencia, entrega y auditoría. La implementación actual se verifica con las pruebas reproducibles del [README principal](../README.md). El estado por caso se mantiene en el [registro de resultados](../docs/validacion/resultados_pruebas.csv): hay casos aprobados, parciales y uno pendiente de aceptación con participantes.
 
 ## Regenerar documentos
 

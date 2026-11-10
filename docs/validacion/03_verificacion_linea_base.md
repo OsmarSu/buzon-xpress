@@ -3,7 +3,7 @@
 Estado documental **APROBADA_CON_OBSERVACIONES**.
 
 La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.
-El ensayo de restricciones en PostgreSQL se ejecuta con [verificar-esquema.sh](../../infra/verificar-esquema.sh).
+La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (17 tablas) antes de validar la documentación.
 La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.
 
 ## Comprobaciones
@@ -42,7 +42,7 @@ La matriz de producto registra los casos aprobados, parciales y pendientes con e
 - Diecisiete tablas en SQL y diccionario
 - Tablas de la matriz presentes en el modelo
 - Referencias de tablas SQL resueltas
-- Delimitadores SQL equilibrados; sin ejecución en motor
+- Delimitadores SQL equilibrados en análisis léxico
 - Contrato conforme al esquema OpenAPI 3.1.0
 - Referencias internas OpenAPI resueltas
 - Operaciones OpenAPI únicas y parámetros de ruta completos

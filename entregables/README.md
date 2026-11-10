@@ -9,7 +9,9 @@ Estas exportaciones corresponden a la edición documental 1.0. El índice, el SQ
 
 El dossier reúne los documentos principales y las láminas de interfaz. El SQL, OpenAPI, catálogos, plantillas y fuentes editables permanecen en el árbol del proyecto. Los antecedentes históricos no se mezclan con el dossier vigente.
 
-La fuente canónica es Markdown. Los Word y PDF se regeneran con [las herramientas](../herramientas/README.md). El alcance es una propuesta documental; los resultados de las pruebas y del piloto están pendientes de ejecución.
+La fuente canónica es Markdown y el estado del software se mantiene en el [README principal](../README.md), la [matriz de trazabilidad](../docs/gestion/03_matriz_trazabilidad.md) y el [registro de pruebas](../docs/validacion/resultados_pruebas.csv). El perfil y el dossier Word/PDF son exportaciones de la edición documental 1.0: describen la propuesta de negocio y el estado de validación que tenían al generarse; no son un informe de estado del código actual. La demanda, la evaluación económica y la aceptación del piloto siguen pendientes.
+
+El plan Scrum editable se actualizó para cuatro Developers y se revisó con la verificación local de `9405ed7` (2026-11-10). El libro de pruebas editable conserva resultados de `4fde715` (2026-11-08); es una fotografía de esa revisión, no un tablero vivo. El registro de pruebas en CSV es la fuente vigente por caso.
 
 ## Gestión del desarrollo y validación
 

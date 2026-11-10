@@ -1,6 +1,8 @@
 # Matriz de trazabilidad
 
-Estado: diseño; todas las pruebas de producto están pendientes de ejecución. Generada desde la especificación; los artefactos son diseños, no capacidades implementadas.
+Estado: matriz de trazabilidad de la solución implementada. Relaciona requisitos, casos de uso, datos, pantallas, API y pruebas; no equivale a la aceptación del servicio ni a la autorización de un piloto.
+
+La verificación local más reciente del código en `9405ed7` (2026-11-10) ejecutó la suite de backend con PostgreSQL 16 desechable, carga y restauración local. En un clon limpio, el frontend pasó sus cinco pruebas y compiló para producción. Los resultados por caso conservan su versión y fecha de evidencia en el [registro de pruebas](../validacion/resultados_pruebas.csv); los ensayos con personas y en el punto de servicio siguen pendientes o parciales.
 
 ## Objetivos del perfil
 
@@ -40,18 +42,18 @@ Estado: diseño; todas las pruebas de producto están pendientes de ejecución. 
 
 | Requisito | Categoría | Prueba | Estado |
 |---|---|---|---|
-| RNF-01 | Usabilidad | T-19 | Meta pendiente de medir. |
-| RNF-02 | Desempeño | T-20 | Meta pendiente de medir. |
-| RNF-03 | Seguridad | T-21 | Meta pendiente de medir. |
-| RNF-04 | Confiabilidad | T-22 | Meta pendiente de medir. |
-| RNF-05 | Recuperación | T-23 | Meta pendiente de medir. |
-| RNF-06 | Mantenibilidad | T-24 | Meta pendiente de medir. |
-| RNF-07 | Accesibilidad | T-25 | Meta pendiente de medir. |
-| RNF-08 | Observabilidad | T-26 | Meta pendiente de medir. |
-| RNF-09 | Comunicaciones | T-27 | Meta pendiente de medir. |
-| RNF-10 | Concurrencia | T-28 | Meta pendiente de medir. |
-| RNF-11 | Restricción | T-29 | Meta pendiente de medir. |
-| RNF-12 | Privacidad | T-30 | Meta pendiente de medir. |
+| RNF-01 | Usabilidad | T-19 | Pendiente: falta el ensayo con cinco participantes del servicio. |
+| RNF-02 | Desempeño | T-20 | Parcial: medición local de `/reports`; faltan otras consultas y el entorno piloto. |
+| RNF-03 | Seguridad | T-21 | Aprobada en las comprobaciones técnicas locales registradas. |
+| RNF-04 | Confiabilidad | T-22 | Parcial: se verificó una reversión transaccional; faltan otros flujos de salida. |
+| RNF-05 | Recuperación | T-23 | Parcial: restauración local verificada; falta medirla en la infraestructura del punto. |
+| RNF-06 | Mantenibilidad | T-24 | Parcial: comprobaciones técnicas; falta completar aislamiento y pruebas unitarias de transiciones. |
+| RNF-07 | Accesibilidad | T-25 | Parcial: revisión inicial en Edge; falta cubrir teclado, contraste y lectores de pantalla. |
+| RNF-08 | Observabilidad | T-26 | Parcial: correlación y proyección verificadas; falta revisar el despliegue y sus logs. |
+| RNF-09 | Comunicaciones | T-27 | Parcial: bandeja y STARTTLS local comprobados; falta medir el transporte del punto. |
+| RNF-10 | Concurrencia | T-28 | Aprobada en la prueba local de recepción simultánea. |
+| RNF-11 | Restricción | T-29 | Aprobada para el recorrido sintético; falta repetirlo con personal y equipos del piloto. |
+| RNF-12 | Privacidad | T-30 | Parcial: proyecciones revisadas; faltan política de conservación y respuesta de alta duplicada. |
 
 ## Control de cambios
 
