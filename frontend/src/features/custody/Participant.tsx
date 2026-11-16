@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { custodyApi, custodyPath, dateLabel, sizeLabel, stateLabel, type Credential, type Custody, type Point, type Quote, type Registered, type Size } from "../../services/custody";
 import { WorkspaceBadge, WorkspaceEmpty, WorkspaceGlyph, WorkspaceHeading } from "../dashboard/Workspace";
 import { CustodyExceptions } from "../operations/Exceptions";
-import { Field, formData, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, SizeGuide, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
 
 function CustodyStateBadge({ state }: { state: Custody["state"] }) {
   const tone = state === "EN_CUSTODIA" ? "info"
@@ -28,10 +28,10 @@ export function CustodySummary({ custody, point }: { custody: Custody; point?: P
 
 function PublicReference({ reference, onDismiss }: { reference: string; onDismiss: () => void }) {
   return <div className="receipt">
-    <strong>Referencia pública nueva</strong>
-    <p>Guárdala para consultar el estado. La guía privada y el código de retiro son distintos.</p>
+    <strong>Nuevo código público de seguimiento</strong>
+    <p>Compártelo para consultar el estado, el punto y su horario. La guía privada identifica el registro; el código de retiro se utiliza para recoger el objeto.</p>
     <p><code>{reference}</code></p>
-    <button type="button" className="secondary" onClick={onDismiss}>Ocultar referencia</button>
+    <button type="button" className="secondary" onClick={onDismiss}>Ocultar código de seguimiento</button>
   </div>;
 }
 
@@ -47,7 +47,7 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
 
   return <section aria-labelledby="register-custody-heading">
     <WorkspaceHeading id="register-custody-heading" title="Registrar un objeto"
-      description="Indica el punto y el destinatario. La ubicación y el importe final se confirman al recibir el bulto." />
+      description="Elige el punto y el destinatario. El registro no reserva espacio; el operador confirma la ubicación y el importe al recibir el objeto." />
     {points.length ? <form onSubmit={(event) => {
       const form = event.currentTarget;
       const fields = formData(event);
@@ -64,7 +64,7 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
         form.reset();
       });
     }} aria-busy={task.busy}>
-      <Field label="Punto de servicio">
+      <Field label="Punto de servicio" hint={"Punto donde presentarás el objeto para su recepción."}>
         <select value={pointId} required disabled={task.busy}
           onChange={(event) => { setPoint(event.target.value); setQuote(undefined); }}>
           <option value="">Elige un punto activo</option>
@@ -74,17 +74,18 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
       {selectedPoint && <div className="workspace-context">
         <WorkspaceGlyph name="pin" /><p>{selectedPoint.address}</p>
       </div>}
-      <Field label="Tamaño declarado">
+      <Field label="Tamaño declarado" hint={"El operador comprobará la categoría al recibir el objeto."}>
         <select value={size} disabled={task.busy}
           onChange={(event) => { setSize(event.target.value as Size); setQuote(undefined); }}><SizeOptions /></select>
       </Field>
-      <Field label="Contacto exacto del destinatario registrado">
-        <input name="recipient" autoComplete="off" required maxLength={254} />
+      <SizeGuide />
+      <Field label="Correo o teléfono del destinatario" hint={"Usa el contacto exacto de su cuenta. Debe estar registrado y tener su contacto comprobado."} example={"Si su cuenta usa persona@correo.com, escribe esa dirección completa."}>
+        <input name="recipient" autoComplete="off" required maxLength={254} placeholder="Correo o teléfono registrado" />
       </Field>
-      <Field label="Descripción externa del objeto">
-        <textarea name="description" required maxLength={255} />
+      <Field label="Descripción externa del objeto" hint={"Describe lo que se puede observar sin abrir el objeto."} example={"Caja mediana de cartón sellada con cinta azul, sin daños visibles."}>
+        <textarea name="description" required maxLength={255} placeholder="Tipo de objeto, embalaje y condición visible" />
       </Field>
-      <Field label="Horas para cotizar (referencia)">
+      <Field label="Horas para cotizar (referencia)" example={"24 equivale a un día. La cotización orienta el importe; el plazo se confirma al recibir el objeto."}>
         <input type="number" min={1} step={1} value={hours} disabled={task.busy}
           onChange={(event) => { setHours(event.target.value); setQuote(undefined); }} />
       </Field>
@@ -135,7 +136,7 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
           setNotice("Registro cancelado.");
         });
       }}>
-        <Field label="Motivo de la cancelación"><input name="reason" required maxLength={255} /></Field>
+        <Field label="Motivo de la cancelación" example={"Ya no necesito dejar el objeto en custodia."}><input name="reason" required maxLength={255} /></Field>
         <button type="submit" disabled={task.busy}>Cancelar registro</button>
       </form>
     </details>}
@@ -170,14 +171,14 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
     </details>}
 
     <details className="workspace-action-group" open={reference ? true : undefined}>
-      <summary>Renovar referencia pública</summary>
+      <summary>Renovar código público de seguimiento</summary>
       <p>Esta acción invalida el enlace público anterior.</p>
       {confirmRotation ? <div className="actions"><button type="button" disabled={task.busy} onClick={() => void task.run(async () => {
         setReference((await custodyApi.rotate(custody.id)).public_reference);
         setConfirmRotation(false);
-      })}>Confirmar nueva referencia</button>
+      })}>Confirmar nuevo código de seguimiento</button>
         <button type="button" className="secondary" disabled={task.busy}
-          onClick={() => setConfirmRotation(false)}>Conservar referencia</button>
+          onClick={() => setConfirmRotation(false)}>Conservar código de seguimiento</button>
       </div> : <button type="button" className="secondary" disabled={task.busy} onClick={() => setConfirmRotation(true)}>
           Preparar renovación
         </button>}
@@ -233,11 +234,11 @@ export function Participant({ points, openId, setOpenId, verified }: {
   const visible = items.filter((item) => !filter || item.state === filter);
   return <div className="dashboard-grid">
     <section aria-labelledby="mine-heading">
-      <WorkspaceHeading id="mine-heading" title="Mis custodias" description="Encuentra tus registros por estado y abre su detalle."
+      <WorkspaceHeading id="mine-heading" title="Consultar mis registros" description="Filtra por estado y selecciona un registro para abrir su detalle."
         action={<button type="button" className="secondary workspace-quiet-action" disabled={listTask.busy} onClick={load}>
           <WorkspaceGlyph name="refresh" /> Actualizar custodias
         </button>} />
-      <Field label="Filtrar por estado">
+      <Field label="Filtrar por estado" hint={"Elige un estado para acotar la lista o conserva Todos los estados."}>
         <select value={filter} onChange={(event) => setFilter(event.target.value)}>
           <option value="">Todos los estados</option>
           {Object.entries(stateLabel).map(([state, label]) => <option key={state} value={state}>{label}</option>)}

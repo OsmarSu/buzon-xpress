@@ -29,9 +29,9 @@ Condiciones | Tamaños y plazos | Responsable de atención
 
 ## 3. UI-02: seguimiento público
 
-Entrada: referencia pública opaca, distinta de guía y credencial. Salida: recibido / pendiente / finalizado, nombre y horario del punto y fecha general si corresponde. No muestra nombre, teléfono, descripción, ubicación interna, código o cronología privada.
+Entrada: código público de seguimiento opaco, distinto de guía y credencial. Salida: recibido / pendiente / finalizado, nombre y horario del punto y fecha general si corresponde. No muestra nombre, teléfono, descripción, ubicación interna, código o cronología privada.
 
-Estados: referencia vacía, no encontrada, consulta limitada y servicio no disponible. “Acceder a mi cuenta” permite ver detalles si existe autorización.
+Estados: código vacío, no encontrado, consulta limitada y servicio no disponible. “Acceder a mi cuenta” permite ver detalles si existe autorización.
 
 ## 4. UI-03 y UI-04: acceso y cuenta
 
@@ -41,7 +41,7 @@ El error de acceso es genérico. Se indica sesión vencida y se ofrece recuperar
 
 ## 5. UI-05 y UI-06: mis custodias y registro
 
-Lista con pestañas “Deposité” y “Recibiré”; filtros por estado y fecha. Cada tarjeta muestra referencia privada, punto, estado y plazo. Los totales se calculan con datos reales y tienen periodo.
+Lista con pestañas “Deposité” y “Recibiré”; filtros por estado y fecha. Cada tarjeta muestra guía privada, punto, estado y plazo. Los totales se calculan con datos reales y tienen periodo.
 
 Formulario: punto, contacto exacto del destinatario, descripción externa y tamaño. Resumen antes de crear. La advertencia de capacidad queda junto al botón: “El espacio se confirma al recibir el objeto”. No aparece un selector de casillero para usuarios.
 

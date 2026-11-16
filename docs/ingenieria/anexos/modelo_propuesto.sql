@@ -1,6 +1,6 @@
 -- BUZON Xpress reformulado. Esquema de referencia para una base nueva.
 -- Reconstrucción a partir del diccionario y las reglas de la línea base 1.0.
--- Las transiciones y autorizaciones requieren implementación en la aplicación.
+-- Las transiciones y autorizaciones se implementan y verifican en la aplicación.
 
 BEGIN;
 
@@ -17,7 +17,16 @@ CREATE TABLE users (
     password_reset_hash CHAR(64), -- Hash de enlace de recuperación de cuenta.
     password_reset_expires_at TIMESTAMPTZ, -- Vigencia de recuperación de cuenta.
     is_active BOOLEAN NOT NULL DEFAULT TRUE, -- Habilitación de cuenta.
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- Alta.
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Alta.
+    mfa_enabled BOOLEAN NOT NULL DEFAULT FALSE, -- Segundo factor TOTP confirmado.
+    mfa_secret_ciphertext TEXT, -- Secreto TOTP cifrado con clave externa a la base.
+    mfa_pending_secret_ciphertext TEXT, -- Secreto de enrolamiento cifrado, todavía sin activar.
+    mfa_pending_expires_at TIMESTAMPTZ, -- Límite de diez minutos del enrolamiento.
+    mfa_last_counter BIGINT, -- Último intervalo TOTP aceptado para rechazar repetición.
+    mfa_failed_attempts INTEGER NOT NULL DEFAULT 0 CHECK (mfa_failed_attempts BETWEEN 0 AND 5), -- Fallos persistidos por cuenta.
+    mfa_locked_until TIMESTAMPTZ, -- Bloqueo temporal tras cinco códigos inválidos.
+    mfa_version INTEGER NOT NULL DEFAULT 0 CHECK (mfa_version >= 0), -- Invalida desafíos al cambiar el segundo factor.
+    CONSTRAINT users_mfa_enabled_secret CHECK (NOT mfa_enabled OR mfa_secret_ciphertext IS NOT NULL)
 );
 
 CREATE TABLE sessions (
@@ -27,6 +36,26 @@ CREATE TABLE sessions (
     expires_at TIMESTAMPTZ NOT NULL, -- Límite absoluto de sesión.
     revoked_at TIMESTAMPTZ, -- Revocación explícita.
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- Inicio.
+);
+
+CREATE TABLE mfa_login_challenges (
+    id UUID PRIMARY KEY, -- Identificador del desafío de acceso.
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE, -- Una comprobación de acceso pendiente por cuenta.
+    token_hash CHAR(64) NOT NULL UNIQUE, -- Hash del token aleatorio; no contiene el token original.
+    expires_at TIMESTAMPTZ NOT NULL, -- Límite de cinco minutos.
+    used_at TIMESTAMPTZ, -- Consumo único de la comprobación correcta.
+    attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts BETWEEN 0 AND 5), -- Intentos consumidos en este desafío.
+    mfa_version INTEGER NOT NULL, -- Versión MFA que debe seguir vigente.
+    previous_session_hash CHAR(64), -- Sesión anterior a revocar cuando se complete el acceso.
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- Inicio de la comprobación.
+);
+
+CREATE TABLE mfa_recovery_codes (
+    id UUID PRIMARY KEY, -- Identificador del código de respaldo.
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Cuenta propietaria del respaldo.
+    code_hash CHAR(64) NOT NULL, -- HMAC de un código aleatorio de 128 bits; el original se muestra una vez.
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Generación del conjunto de respaldos.
+    UNIQUE (user_id, code_hash)
 );
 
 CREATE TABLE service_points (
@@ -74,7 +103,7 @@ CREATE TABLE tariff_versions (
 CREATE TABLE custody_orders (
     id UUID PRIMARY KEY, -- Operación de custodia.
     tracking_number VARCHAR(32) NOT NULL UNIQUE, -- Guía privada, insuficiente para retirar.
-    public_reference_hash CHAR(64) NOT NULL UNIQUE, -- Hash de referencia pública aleatoria.
+    public_reference_hash CHAR(64) NOT NULL UNIQUE, -- Hash de código público de seguimiento aleatorio.
     sender_id UUID NOT NULL REFERENCES users(id), -- Emisor de la operación.
     recipient_id UUID NOT NULL REFERENCES users(id), -- Destinatario autorizado.
     point_id UUID NOT NULL REFERENCES service_points(id), -- Mismo punto para recepción y entrega.

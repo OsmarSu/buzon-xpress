@@ -1,6 +1,6 @@
 # BUZON Xpress
 
-**Versión de desarrollo 1.2**
+**Versión de desarrollo 1.3**
 
 Base documental 1.1.
 
@@ -69,12 +69,73 @@ npm run dev
 
 Abre `http://127.0.0.1:5173`. Registra la primera cuenta y obtén su ID en «Mi cuenta». Con el contacto comprobado, habilita la primera administración con `uv run --locked python -m app.jobs.bootstrap_admin UUID_DE_LA_CUENTA` desde `backend/` y con la misma URL de base. Para una comprobación presencial documentada, agrega `--comprobacion-presencial`. El comando exige acceso a la base, se permite una sola vez mientras exista un administrador activo y revoca las sesiones previas de la cuenta. Inicia sesión de nuevo y crea punto, ubicaciones, tarifa y asignaciones.
 
-Configura `BUZON_SMTP_HOST` y `BUZON_SMTP_FROM`, con `BUZON_SMTP_PORT`, `BUZON_SMTP_USER` y `BUZON_SMTP_PASSWORD` según el transporte. Ejecuta `uv run --locked python -m app.jobs.maintenance --loop` desde `backend/` con la misma configuración para procesar vencimientos y reintentos de correo. Sin transporte configurado, los avisos quedan disponibles en la bandeja y el contacto se comprueba por procedimiento presencial.
+Para correo real con Gmail configura `BUZON_MAIL_PROVIDER=gmail`, `BUZON_SMTP_USER` y `BUZON_SMTP_PASSWORD` con una contraseña de aplicación de Google. El remitente usa esa cuenta, `smtp.gmail.com` y STARTTLS en 587 (o TLS implícito en 465). Google exige verificación en dos pasos para crear una [contraseña de aplicación](https://support.google.com/accounts/answer/185833?hl=es). La cuenta y la credencial pertenecen al servidor; el navegador no las recibe.
 
-Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye las referencias públicas de los logs de acceso.
+En la instalación WSL existente puedes guardar y validar la credencial fuera del repositorio con `python3 infra/configurar-gmail.py --restart`. El comando pide la contraseña de forma oculta, autentica con Google, guarda el entorno con permisos 600 y reinicia API y avisos. No envía un mensaje de prueba. Para otro entorno, utiliza `--env-file RUTA`.
+
+El modo `BUZON_MAIL_PROVIDER=smtp` conserva un transporte SMTP de pruebas. Ejecuta `uv run --locked python -m app.jobs.maintenance --loop` desde `backend/` con la misma configuración para procesar vencimientos y reintentos. Sin transporte, la bandeja sigue disponible y la comprobación presencial se registra por el procedimiento autorizado.
+
+El usuario activa MFA desde «Mi cuenta» con su contraseña y una aplicación autenticadora compatible con TOTP. Debe confirmar el primer código y guardar los códigos de recuperación de un solo uso. El acceso de una cuenta con MFA no emite sesión hasta comprobar el segundo factor. La recuperación de contraseña conserva MFA.
+
+Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`, además de una clave Fernet estable y separada en `BUZON_MFA_ENCRYPTION_KEY` para cifrar los secretos TOTP. Conservar esa clave fuera del repositorio junto con el procedimiento de recuperación de la base. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye las códigos públicos de seguimiento de los logs de acceso.
 
 Si publicas el frontend estático en un origen HTTPS separado, compílalo con `VITE_BUZON_API_ORIGIN` apuntando a la API. Incluye el origen exacto del frontend en `BUZON_CORS_ORIGINS` y en `BUZON_ALLOWED_ORIGINS`. El primer valor de `BUZON_ALLOWED_ORIGINS` es la dirección que se incluye en los correos. La sesión entre sitios usa cookies particionadas.
 
 ### Verificar el diseño y consultar entregables
 
 Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.sh`. Consulta el [plan y los resultados de validación](docs/validacion/01_plan_validacion.md) y los [archivos editables de Scrum y pruebas](entregables/README.md).
+
+## 3. Aplicación Android
+
+La versión móvil 0.2.2 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
+
+Desde WSL:
+
+```bash
+cd /home/oswi/Proyectos/buzon-xpress/mobile
+npm ci
+npm run check
+npm run export:android
+npm start -- --tunnel --go
+```
+
+Abre el enlace o escanea el código del servidor con una versión de [Expo Go compatible con SDK 57 para Android](https://expo.dev/go). La conexión requiere que el servidor de desarrollo y los servicios publicados estén activos. No hace falta iniciar un emulador ni usar la GPU para este recorrido.
+
+La exportación Android genera el paquete de JavaScript y recursos; **no es un APK instalable**. El perfil `preview` de `mobile/eas.json` genera el APK firmado con Expo Build. El proyecto está vinculado a [@oswidev/buzon-xpress](https://expo.dev/accounts/oswidev/projects/buzon-xpress). Para volver a compilar desde `mobile/`:
+
+```bash
+npx --yes eas-cli@latest login --device
+npx --yes eas-cli@latest build --platform android --profile preview
+```
+
+El APK 0.2.2 (código 4) se generó el 15 de noviembre de 2026: [descargar actualización](https://expo.dev/artifacts/eas/oXSNGSp8j9w3mpAOU3wFhdJmHhVZK9fTqXeqHj2JSRI.apk) · [compilación en Expo](https://expo.dev/accounts/oswidev/projects/buzon-xpress/builds/ec07076a-8f0a-42c7-bdaa-09939357a87a). La copia local está en `mobile/dist/apk/buzon-xpress-0.2.2.apk`, fuera de Git. Tamaño: 106 973 802 bytes. Admite Android 7.0 / API 24 o posterior y declara destino API 36. Se verificaron el ZIP, identificador, versión, ausencia de depuración, módulo nativo del teclado, SVG y fuente Ionicons. Google Apksig 9.5.1 validó la firma v2 y el mismo certificado de 0.2.1, por lo que se instala como actualización. SHA-256 del APK: `88cbd9849c279091ef5439609133adef1a8944c9d4a67137e9ccc09f977a23ed`. El archivo de Expo tiene retención temporal; conservar la copia local.
+
+La cuenta debe tener cuota disponible en su plan. El perfil `production` prepara un AAB para Google Play; no publica automáticamente en la tienda. El APK incorpora el código de la app y no necesita Metro para abrirse, pero sí requiere conexión a la API publicada para consultar o modificar datos. La prueba en teléfono físico, TalkBack y los recorridos de instalación siguen pendientes antes de una distribución final.
+
+La lista `.easignore` de la raíz limita la carga al código, recursos, configuración y pruebas de `mobile/`. Se comprobó el archivo que prepara EAS: no incluye backend, base de datos, contraseñas, archivos de entorno ni documentos. La credencial de Expo permanece en el perfil del usuario; no se guarda en el repositorio.
+
+
+Para revisar la interfaz localmente sin cerrar la sesión del sitio:
+
+```bash
+cd /home/oswi/Proyectos/buzon-xpress/mobile
+npm run export:web
+npm run preview
+```
+
+La previsualización se sirve en `http://127.0.0.1:8082` y conecta a la API mediante un proxy local. En esa vista la sesión permanece solo en memoria; en Android se conserva con SecureStore. La contraseña y los códigos temporales no se guardan en el dispositivo. La app vuelve a consultar la cuenta al regresar del correo y oculta el código de retiro al pasar a segundo plano.
+
+El transporte móvil usa sesiones opacas revocables de ocho horas, separadas de las cookies del navegador, y conserva los límites de intentos y MFA. Los cinco endpoints bajo `/api/v1/mobile/auth` no reciben cookies ni `Origin`, ni emiten cookies. Las operaciones de negocio comprueban el portador y sus permisos. El contrato actualizado contiene 54 operaciones.
+
+La navegación utiliza rutas en `src/app/`. La pantalla inicial es **Consultar seguimiento**. Sin sesión se muestra solo esta consulta y el botón **Iniciar sesión** a la derecha de la cabecera. Custodias, Puntos, Avisos y Cuenta requieren sesión también al abrir enlaces directos. Después de acceder aparecen las cinco pestañas: Seguimiento, Custodias, Puntos, Avisos y Cuenta.
+
+Los iconos de las barras se dibujan con SVG nativo y no requieren cargar una tipografía. La fuente Ionicons usada en el resto de la app queda integrada en los recursos Android como `ionicons` mediante el plugin de Expo Font. Se verificaron el archivo TTF, su definición XML y el registro nativo de la familia. Las pestañas reservan espacio para el área segura y para sus títulos completos, incluido Seguimiento a 320 píxeles.
+
+
+La verificación del 15 de noviembre de 2026 aprobó doce pruebas del cliente móvil, ESLint sin advertencias, TypeScript, los 21 controles de Expo Doctor y las exportaciones Android y web. `npm ci` se comprobó desde el archivo de bloqueo y `npm audit` no informó vulnerabilidades. La revisión visual a 320 y 390 píxeles comprobó acceso, retorno a Custodias, avisos, reapertura del mismo detalle y cierre de sesión con la base publicada, sin crear operaciones de negocio. Es evidencia de la previsualización de React Native, no de ejecución física en Android.
+
+Las sobrescrituras de `minimatch`, `uuid` y `decode-uri-component` mantienen versiones corregidas. `scripts/prepare-dependencies.mjs` adapta la importación de `query-string` 7 al decodificador corregido; se ejecuta al instalar y tiene prueba de parámetros, acentos y datos malformados. Conservar la prueba al actualizar Expo Router. El icono Android adapta el logotipo existente a un PNG cuadrado con margen, sin redibujar la identidad.
+
+La revisión visual 0.2.2 comprobó el nombre Código público de seguimiento, cabecera sin símbolo, medidas legibles a 320 píxeles y ausencia del apartado Fotografías del recorrido en el pie web. En la previsualización móvil se verificaron búsqueda y detalle de Puntos, cotización real, traslado y reapertura del prerregistro con punto, tamaño y horas conservados, acceso y cierre de sesión. Un formulario de registro con ventana reducida permitió enfocar Repetir contraseña sin tapar el control. Esta evidencia de navegador no reproduce un teclado Android; su comprobación física y TalkBack quedan pendientes de instalar el APK actualizado.
+
+La revisión 0.2.2 incorpora desplazamiento automático del campo enfocado sobre el teclado, también dentro de ventanas de custodia. Puntos permite buscar, consultar horarios, cotizar y abrir el prerregistro con punto, tamaño y horas conservados. El seguimiento se identifica como **Código público de seguimiento**, separado de la guía privada y del código de retiro. La cabecera conserva solo el nombre escrito. Los tamaños declaran máximos con embalaje en largo × ancho × alto: pequeño 30 × 20 × 15 cm, mediano 50 × 40 × 30 cm y grande 70 × 50 × 50 cm. El personal confirma la categoría en recepción.

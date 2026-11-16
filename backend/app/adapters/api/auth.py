@@ -5,10 +5,14 @@ from uuid import uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.engine import RowMapping
 
-from app.adapters.api.dto import Csrf, Login, Register, ResetComplete, ResetRequest, Resource, Session, TokenAction, User
+from app.adapters.api.dto import (
+    Csrf, Login, Register, ResetComplete, ResetRequest, Resource, Session, TokenAction, User,
+    MfaChallenge, MfaStatus, MfaPassword, MfaCode, MfaVerify, MfaManage, MfaSetup, MfaRecovery,
+)
 from app.adapters.api.limits import IdentityRateLimit
 from app.adapters.api.security import ApiSecurity
 from app.application.identity import IdentityService, SESSION_TTL
+from app.application.mfa import MfaService
 from app.config import Settings
 
 
@@ -18,13 +22,15 @@ def serialize_user(user: RowMapping) -> User:
         full_name=user["full_name"],
         role=user["role"],
         contact_verified=user["contact_verified_at"] is not None,
+        mfa_enabled=bool(user["mfa_enabled"]),
     )
 
 
-def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
+def auth_router(service: IdentityService, settings: Settings, *, limits: IdentityRateLimit | None = None) -> APIRouter:
     router = APIRouter(prefix="/auth", tags=["Identidad"])
     security = ApiSecurity(service, settings)
-    limits = IdentityRateLimit()
+    limits = limits or IdentityRateLimit()
+    mfa = MfaService(service, settings)
 
     def limit(request: Request, operation: str, maximum: int) -> None:
         origin = request.client.host if request.client is not None else "unknown"
@@ -63,12 +69,18 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
         security.clear_csrf(request, response)
         return Resource(id=user_id, state="RESTABLECIDA")
 
-    @router.post("/login", response_model=Session, dependencies=[Depends(security.csrf)])
-    def login(body: Login, request: Request, response: Response) -> Session:
+    @router.post("/login", response_model=Session | MfaChallenge, dependencies=[Depends(security.csrf)])
+    def login(body: Login, request: Request, response: Response) -> Session | MfaChallenge:
         limit(request, "login", 10)
-        user, token, expires_at = service.login(
-            str(body.email), body.password.get_secret_value(), security.session_token(request)
-        )
+        email_key = hmac.new(settings.session_secret, b"login-rate-v1:" + str(body.email).casefold().encode(), sha256).hexdigest()
+        limits.check("login-account", email_key, 10)
+        user = service.authenticate(str(body.email), body.password.get_secret_value())
+        if user["mfa_enabled"]:
+            challenge = mfa.begin_login(user, security.session_token(request))
+            security.write_session(request, response)
+            security.clear_csrf(request, response)
+            return MfaChallenge(**challenge)
+        user, token, expires_at = service.issue_session(user, security.session_token(request))
         security.write_session(request, response, token, max_age=int(SESSION_TTL.total_seconds()))
         security.clear_csrf(request, response)
         return Session(user=serialize_user(user), expires_at=expires_at)
@@ -83,5 +95,49 @@ def auth_router(service: IdentityService, settings: Settings) -> APIRouter:
         security.write_session(request, response)
         security.clear_csrf(request, response)
         return Resource(id=session_id, state="REVOCADA")
+
+    @router.post("/mfa/verify", response_model=Session, dependencies=[Depends(security.csrf)])
+    def verify_mfa(body: MfaVerify, request: Request, response: Response) -> Session:
+        limit(request, "mfa-verify", 20)
+        user, token, expires_at = mfa.verify_login(body.challenge_token.get_secret_value(), body.code.get_secret_value())
+        security.write_session(request, response, token, max_age=int(SESSION_TTL.total_seconds()))
+        security.clear_csrf(request, response)
+        return Session(user=serialize_user(user), expires_at=expires_at)
+
+    @router.get("/mfa", response_model=MfaStatus)
+    def mfa_status(request: Request) -> MfaStatus:
+        return MfaStatus(**mfa.status(security.actor(request)))
+
+    def mfa_actor(request: Request, operation: str, maximum: int):
+        limit(request, operation, maximum * 2)
+        actor = security.actor(request)
+        limits.check(operation + "-account", str(actor["id"]), maximum)
+        return actor
+
+    @router.post("/mfa/setup", response_model=MfaSetup, dependencies=[Depends(security.csrf)])
+    def setup_mfa(body: MfaPassword, request: Request) -> MfaSetup:
+        actor = mfa_actor(request, "mfa-setup", 5)
+        return MfaSetup(**mfa.begin_setup(actor, body.password.get_secret_value()))
+
+    @router.post("/mfa/confirm", response_model=MfaRecovery, dependencies=[Depends(security.csrf)])
+    def confirm_mfa(body: MfaCode, request: Request) -> MfaRecovery:
+        actor = mfa_actor(request, "mfa-confirm", 10)
+        return MfaRecovery(**mfa.confirm_setup(actor, body.code.get_secret_value(), security.session_token(request) or ""))
+
+    @router.post("/mfa/disable", response_model=Resource, dependencies=[Depends(security.csrf)])
+    def disable_mfa(body: MfaManage, request: Request) -> Resource:
+        actor = mfa_actor(request, "mfa-disable", 8)
+        return Resource(**mfa.manage(
+            actor, body.password.get_secret_value(), body.code.get_secret_value(),
+            security.session_token(request) or "", disable=True,
+        ))
+
+    @router.post("/mfa/recovery-codes", response_model=MfaRecovery, dependencies=[Depends(security.csrf)])
+    def rotate_recovery_codes(body: MfaManage, request: Request) -> MfaRecovery:
+        actor = mfa_actor(request, "mfa-recovery-codes", 8)
+        return MfaRecovery(**mfa.manage(
+            actor, body.password.get_secret_value(), body.code.get_secret_value(),
+            security.session_token(request) or "", disable=False,
+        ))
 
     return router

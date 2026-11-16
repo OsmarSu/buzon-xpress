@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "BUZON Xpress",
+    "slug": "buzon-xpress",
+    "version": "0.2.2",
+    "orientation": "portrait",
+    "scheme": "buzonxpress",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "bo.buzonxpress.app",
+      "versionCode": 4,
+      "allowBackup": false,
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": [],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
+      "icon": "./assets/app-icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/app-icon.png",
+        "backgroundColor": "#e9e8e5"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "ionicons",
+                "fontDefinitions": [
+                  {
+                    "path": "./node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf",
+                    "weight": 400
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "owner": "oswidev",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5d40c588-8adc-4602-a65a-d1fed81dae49"
+      }
+    }
+  }
+}

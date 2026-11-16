@@ -59,8 +59,8 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
           form.reset();
         });
       }}>
-        <Field label="Tipo de incidencia"><input name="kind" maxLength={40} required /></Field>
-        <Field label="Hechos observados"><textarea name="description" maxLength={1000} required /></Field>
+        <Field label="Tipo de incidencia" example={"Embalaje dañado o diferencia en la descripción."}><input name="kind" maxLength={40} required /></Field>
+        <Field label="Hechos observados" example={"Al revisar el objeto se observó una abertura en el embalaje. Describe hechos verificables y evita datos personales innecesarios."}><textarea name="description" maxLength={1000} required /></Field>
         <label className="check"><input type="checkbox" name="blocking" /> Señalar posible impedimento de entrega</label>
         <button type="submit" disabled={incidentTask.busy}>Registrar incidencia</button>
       </form>
@@ -86,16 +86,16 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
           form.reset();
         });
       }}>
-        <Field label="Propósito">
+        <Field label="Propósito" hint={"Selecciona qué necesita resolver la recuperación asistida."}>
           <select value={purpose} disabled={recoveryTask.busy}
             onChange={(event) => setPurpose(event.target.value as keyof typeof reasons)}>
             {Object.entries(reasons).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
           </select>
         </Field>
-        {purpose === "CAMBIAR_DESTINATARIO" && <Field label="Identificador autorizado del nuevo destinatario">
+        {purpose === "CAMBIAR_DESTINATARIO" && <Field label="Identificador autorizado del nuevo destinatario" hint={"La persona lo encuentra en Mi cuenta → Identificador de mi cuenta."}>
           <input name="recipient" required maxLength={36} />
         </Field>}
-        <Field label="Evidencia y fundamento"><textarea name="evidence" maxLength={1000} required /></Field>
+        <Field label="Evidencia y fundamento" example={"Indica qué se solicita, por qué y qué evidencia se comprobó. Otra persona autorizada revisará esta información."}><textarea name="evidence" maxLength={1000} required /></Field>
         <button type="submit" disabled={recoveryTask.busy}>Crear solicitud</button>
       </form>
       <Status {...recoveryTask} />
@@ -138,7 +138,7 @@ export function Returns({ custody, onAuthorized, onReturned }: {
         onAuthorized(result);
       });
     }}>
-      <Field label="Identificador de solicitud aprobada"><input name="recovery" required maxLength={36} /></Field>
+      <Field label="Identificador de solicitud aprobada" hint={"Copia el identificador del expediente cuya devolución fue aprobada."}><input name="recovery" required maxLength={36} /></Field>
       <label className="check"><input type="checkbox" required /> Comprobación visual del emisor completada</label>
       <button type="submit" disabled={task.busy}>Preparar devolución</button>
     </form>
@@ -176,7 +176,7 @@ function ResolveIncident() {
       event.preventDefault();
       void task.run(async () => setItem(await apiRequest<IncidentDetail>(endpoint)));
     }}>
-      <Field label="Identificador de incidencia"><input required maxLength={36} value={id} disabled={task.busy}
+      <Field label="Identificador de incidencia" hint={"Copia el identificador del registro de la incidencia que revisarás."}><input required maxLength={36} value={id} disabled={task.busy}
         onChange={(event) => { setId(event.target.value); setItem(undefined); }} /></Field>
       <button type="submit" className="secondary" disabled={task.busy}>Consultar incidencia</button>
     </form>
@@ -196,7 +196,7 @@ function ResolveIncident() {
         setItem({ ...item, ...result, resolution_note: reason });
       });
     }}>
-      <Field label="Fundamento de la resolución"><textarea name="reason" required maxLength={1000} /></Field>
+      <Field label="Fundamento de la resolución" example={"Diferencia revisada junto al objeto y al registro original; se documentó el resultado de la comprobación."}><textarea name="reason" required maxLength={1000} /></Field>
       <label className="check workspace-confirmation"><input type="checkbox" required /> Comprobé el inventario y la diferencia</label>
       <button type="submit" disabled={task.busy}>Resolver incidencia</button>
     </form>}
@@ -219,7 +219,7 @@ function DecideRecovery({ actorId }: { actorId: string }) {
       event.preventDefault();
       void task.run(async () => setItem(await apiRequest<RecoveryDetail>(endpoint)));
     }}>
-      <Field label="Identificador de solicitud"><input required maxLength={36} value={id} disabled={task.busy}
+      <Field label="Identificador de solicitud" hint={"Copia el identificador obtenido al crear la solicitud de recuperación."}><input required maxLength={36} value={id} disabled={task.busy}
         onChange={(event) => { setId(event.target.value); setItem(undefined); }} /></Field>
       <button type="submit" className="secondary" disabled={task.busy}>Consultar expediente</button>
     </form>
@@ -241,12 +241,12 @@ function DecideRecovery({ actorId }: { actorId: string }) {
         setItem({ ...item, ...result, decision_note: note });
       });
     }}>
-      <Field label="Decisión">
+      <Field label="Decisión" hint={"Selecciona una decisión después de revisar la evidencia."}>
         <select name="decision" required defaultValue="">
           <option value="">Elige una decisión</option><option value="APROBAR">Aprobar</option><option value="RECHAZAR">Rechazar</option>
         </select>
       </Field>
-      <Field label="Justificación de la decisión"><textarea name="note" required maxLength={1000} /></Field>
+      <Field label="Justificación de la decisión" example={"Explica qué evidencia respalda la aprobación o el rechazo de esta solicitud."}><textarea name="note" required maxLength={1000} /></Field>
       <label className="check workspace-confirmation"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
       <button type="submit" disabled={task.busy}>Registrar decisión</button>
     </form>}

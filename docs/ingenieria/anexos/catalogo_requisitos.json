@@ -1,14 +1,16 @@
 {
-  "version": "1.0",
+  "version": "1.2",
   "requirements": [
     {
       "id": "RF-01",
       "priority": "P0",
-      "statement": "Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; una sesión revocada deja de autorizar peticiones.",
+      "statement": "Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; permitir MFA TOTP con enrolamiento confirmado y códigos de recuperación de un solo uso. Una sesión revocada deja de autorizar peticiones.",
       "use_case": "CU-01",
       "tables": [
         "users",
-        "sessions"
+        "sessions",
+        "mfa_login_challenges",
+        "mfa_recovery_codes"
       ],
       "screens": [
         "UI-03",
@@ -17,10 +19,16 @@
       "paths": [
         "/auth/register",
         "/auth/login",
-        "/auth/logout"
+        "/auth/logout",
+        "/auth/mfa",
+        "/auth/mfa/setup",
+        "/auth/mfa/confirm",
+        "/auth/mfa/verify",
+        "/auth/mfa/disable",
+        "/auth/mfa/recovery-codes"
       ],
       "test": "T-01",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-02",
@@ -40,12 +48,12 @@
         "/auth/me"
       ],
       "test": "T-02",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-03",
       "priority": "P0",
-      "statement": "Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía y referencia pública diferentes.",
+      "statement": "Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código público de seguimiento diferentes.",
       "use_case": "CU-02",
       "tables": [
         "custody_orders",
@@ -58,7 +66,7 @@
         "/custodies"
       ],
       "test": "T-03",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-04",
@@ -78,7 +86,7 @@
         "/custodies/{custody_id}/receive"
       ],
       "test": "T-04",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-05",
@@ -96,7 +104,7 @@
         "/inventory"
       ],
       "test": "T-05",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-06",
@@ -117,7 +125,7 @@
         "/public-tracking/{reference}"
       ],
       "test": "T-06",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-07",
@@ -134,7 +142,7 @@
         "/custodies/{custody_id}/credentials"
       ],
       "test": "T-07",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-08",
@@ -153,7 +161,7 @@
         "/custodies/{custody_id}/verify"
       ],
       "test": "T-08",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-09",
@@ -173,7 +181,7 @@
         "/custodies/{custody_id}/handover"
       ],
       "test": "T-09",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-10",
@@ -193,7 +201,7 @@
         "/custodies/{custody_id}/return-handover"
       ],
       "test": "T-10",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-11",
@@ -210,7 +218,7 @@
         "/notifications"
       ],
       "test": "T-11",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "PARCIAL"
     },
     {
       "id": "RF-12",
@@ -231,7 +239,7 @@
         "/custodies/{custody_id}/extend"
       ],
       "test": "T-12",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-13",
@@ -251,7 +259,7 @@
         "/custodies/{custody_id}/extend"
       ],
       "test": "T-13",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-14",
@@ -271,7 +279,7 @@
         "/recovery-requests/{request_id}/decision"
       ],
       "test": "T-14",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-15",
@@ -288,7 +296,7 @@
         "/audit/events"
       ],
       "test": "T-15",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-16",
@@ -311,7 +319,7 @@
         "/admin/tariffs"
       ],
       "test": "T-16",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-17",
@@ -331,7 +339,7 @@
         "/reports"
       ],
       "test": "T-17",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     },
     {
       "id": "RF-18",
@@ -351,7 +359,7 @@
         "/custodies/{custody_id}/abort-handover"
       ],
       "test": "T-18",
-      "status": "PENDIENTE_IMPLEMENTACION_Y_PRUEBA"
+      "status": "APROBADA"
     }
   ],
   "quality": [
@@ -360,84 +368,84 @@
       "category": "Usabilidad",
       "statement": "Cuatro de cinco participantes completan las tareas críticas sin ayuda; registrar errores y limitaciones de la muestra.",
       "test": "T-19",
-      "status": "META_NO_MEDIDA"
+      "status": "PENDIENTE"
     },
     {
       "id": "RNF-02",
       "category": "Desempeño",
       "statement": "P95 de consultas privadas menor o igual a 500 ms en servidor de prueba identificado, con 10 000 custodias sintéticas y 20 usuarios concurrentes. No incluye trabajo humano ni entrega de correo.",
       "test": "T-20",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-03",
       "category": "Seguridad",
-      "statement": "Cookies de sesión HttpOnly, Secure en HTTPS y SameSite, defensa CSRF en mutaciones, expiración, autorización y límites de intentos probados.",
+      "statement": "Cookies de sesión HttpOnly, Secure en HTTPS y SameSite, defensa CSRF en mutaciones, expiración, autorización y límites de intentos probados. Con MFA activo, la contraseña no crea sesión sin segundo factor; secretos TOTP cifrados, códigos de recuperación protegidos y rechazo de reuso.",
       "test": "T-21",
-      "status": "META_NO_MEDIDA"
+      "status": "APROBADA"
     },
     {
       "id": "RNF-04",
       "category": "Confiabilidad",
       "statement": "En pruebas de falla de persistencia, ningún retiro o recepción queda parcialmente confirmado en la base de datos.",
       "test": "T-22",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-05",
       "category": "Recuperación",
       "statement": "Metas propuestas RPO 24 horas y RTO 4 horas, sujetas a un ensayo real de copia y restauración.",
       "test": "T-23",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-06",
       "category": "Mantenibilidad",
       "statement": "Casos de uso comprobables con repositorios en memoria; el dominio no importa FastAPI ni SQLAlchemy.",
       "test": "T-24",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-07",
       "category": "Accesibilidad",
       "statement": "Navegación crítica por teclado, foco visible, etiquetas y estados con texto; contraste revisado contra criterios seleccionados de WCAG 2.2.",
       "test": "T-25",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-08",
       "category": "Observabilidad",
       "statement": "Correlación entre petición, evento e incidencia, sin códigos, contraseñas o sesiones en logs.",
       "test": "T-26",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-09",
       "category": "Comunicaciones",
       "statement": "Aviso interno creado en la transacción; primer intento de correo en dos minutos en entorno controlado, con estado de error visible.",
       "test": "T-27",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     },
     {
       "id": "RNF-10",
       "category": "Concurrencia",
       "statement": "Veinte solicitudes simultáneas sobre una única ubicación disponible producen una sola asignación exitosa.",
       "test": "T-28",
-      "status": "META_NO_MEDIDA"
+      "status": "APROBADA"
     },
     {
       "id": "RNF-11",
       "category": "Restricción",
       "statement": "Uso desde navegador y equipos existentes; ningún flujo exige periférico o dispositivo externo.",
       "test": "T-29",
-      "status": "META_NO_MEDIDA"
+      "status": "APROBADA"
     },
     {
       "id": "RNF-12",
       "category": "Privacidad",
       "statement": "Vistas por participación y punto, información pública mínima y exportaciones sin secretos. Política de conservación documentada antes del piloto.",
       "test": "T-30",
-      "status": "META_NO_MEDIDA"
+      "status": "PARCIAL"
     }
   ],
   "rules": [

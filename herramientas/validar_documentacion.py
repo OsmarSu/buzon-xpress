@@ -58,7 +58,7 @@ def main():
     sql=(ROOT/'docs/ingenieria/anexos/modelo_propuesto.sql').read_text()
     tables=set(re.findall(r'CREATE TABLE (\w+)',sql))
     dictionary=(ROOT/'docs/ingenieria/03_modelado_datos_arquitectura.md').read_text()
-    check(len(tables)==17 and all(f'### Tabla `{t}`' in dictionary for t in tables),'Diecisiete tablas en SQL y diccionario')
+    check(len(tables)==19 and all(f'### Tabla `{t}`' in dictionary for t in tables),'Diecinueve tablas en SQL y diccionario')
     missing_tables=[(r['id'],t) for r in catalog['requirements'] for t in r['tables'] if t not in tables]
     check(not missing_tables,'Tablas de la matriz presentes en el modelo')
     referenced=set(re.findall(r'REFERENCES (\w+)\(',sql))
@@ -157,7 +157,7 @@ def main():
         '# Verificación de la línea base 1.1', '',
         f'Estado documental **{status}**.', '',
         'La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.',
-        'La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (17 tablas) antes de validar la documentación.',
+        'La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (19 tablas) antes de validar la documentación.',
         'La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.', '',
         '## Comprobaciones', '',
         *[f'- {message}' for message in checks],

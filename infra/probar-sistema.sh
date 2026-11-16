@@ -50,9 +50,12 @@ if [[ "${BUZON_PROBAR_RESTAURACION:-0}" == 1 ]]; then
                    (SELECT count(*) FROM custody_orders),
                    (SELECT count(*) FROM handovers),
                    (SELECT count(*) FROM custody_events),
-                   (SELECT count(*) FROM notifications);"
+                   (SELECT count(*) FROM notifications),
+                   (SELECT count(*) FROM mfa_login_challenges),
+                   (SELECT count(*) FROM mfa_recovery_codes),
+                   (SELECT md5(COALESCE(string_agg(mfa_secret_ciphertext, '' ORDER BY id), '')) FROM users);"
     source_counts=$(docker exec "$container" psql -At -U postgres -d "$db_name" -c "$counts")
     restored_counts=$(docker exec "$container" psql -At -U postgres -d "$restore_name" -c "$counts")
     [[ -n "$source_counts" && "$source_counts" == "$restored_counts" ]]
-    printf 'Restauración PostgreSQL local verificada en %s s. Revisión y cinco conteos coinciden.\n' "$((SECONDS - start))"
+    printf 'Restauración PostgreSQL local verificada en %s s. Revisión, siete conteos y verificador cifrado MFA coinciden.\n' "$((SECONDS - start))"
 fi

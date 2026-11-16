@@ -77,7 +77,7 @@ export function AuthorizedHandover({ authorization, kind, onConfirmed, onAborted
           authorization_id: authorization.authorization_id, physically_delivered: false, reason: value(data, "reason"),
         })));
       }}>
-        <Field label="Motivo de anulación"><textarea name="reason" required maxLength={500} /></Field>
+        <Field label="Motivo de anulación" example={"No se realizó la entrega porque se detectó una diferencia al comprobar el objeto."}><textarea name="reason" required maxLength={500} /></Field>
         <button type="submit" className="secondary" disabled={task.busy}>Anular porque no se entregó</button>
       </form>
     </details>}

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Connection, MetaData, Table, create_engine, select, update
+from sqlalchemy import Connection, MetaData, Table, create_engine, delete, func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import RowMapping
 
@@ -15,6 +15,8 @@ class IdentityStore:
         self.sessions = Table("sessions", metadata, autoload_with=self.engine)
         self.points = Table("service_points", metadata, autoload_with=self.engine)
         self.assignments = Table("staff_assignments", metadata, autoload_with=self.engine)
+        self.mfa_challenges = Table("mfa_login_challenges", metadata, autoload_with=self.engine)
+        self.mfa_recovery = Table("mfa_recovery_codes", metadata, autoload_with=self.engine)
 
     def transaction(self):
         return self.engine.begin()
@@ -38,6 +40,7 @@ class IdentityStore:
                     users.c.id == user["id"],
                     users.c.password_hash == user["password_hash"],
                     users.c.is_active.is_(True),
+                    users.c.mfa_enabled.is_(False),
                 ).with_for_update()
             ).scalar_one_or_none()
             if locked is None:
@@ -127,6 +130,7 @@ class IdentityStore:
             .where(sessions.c.user_id == user_id, sessions.c.revoked_at.is_(None))
             .values(revoked_at=now)
         )
+        self.delete_mfa_challenges(connection, user_id)
 
     def has_active_assignment(self, user_id: UUID, point_id: UUID) -> bool:
         assignments, points = self.assignments, self.points
@@ -138,3 +142,71 @@ class IdentityStore:
         )
         with self.engine.connect() as connection:
             return connection.execute(query).scalar_one_or_none() is not None
+
+
+    def lock_user(self, connection: Connection, user_id: UUID) -> RowMapping | None:
+        return connection.execute(select(self.users).where(
+            self.users.c.id == user_id, self.users.c.is_active.is_(True),
+        ).with_for_update()).mappings().one_or_none()
+
+    def update_user(self, connection: Connection, user_id: UUID, values: dict[str, Any]) -> None:
+        connection.execute(update(self.users).where(self.users.c.id == user_id).values(**values))
+
+    def delete_mfa_challenges(self, connection: Connection, user_id: UUID) -> None:
+        connection.execute(delete(self.mfa_challenges).where(self.mfa_challenges.c.user_id == user_id))
+
+    def add_mfa_challenge(self, connection: Connection, values: dict[str, Any]) -> None:
+        self.delete_mfa_challenges(connection, values["user_id"])
+        connection.execute(self.mfa_challenges.insert().values(**values))
+
+    def lock_challenge_user(self, connection: Connection, digest: str) -> RowMapping | None:
+        identifier = select(self.mfa_challenges.c.user_id).where(
+            self.mfa_challenges.c.token_hash == digest
+        ).scalar_subquery()
+        return connection.execute(select(self.users).where(
+            self.users.c.id == identifier, self.users.c.is_active.is_(True),
+        ).with_for_update()).mappings().one_or_none()
+
+    def mfa_challenge(self, connection: Connection, digest: str) -> RowMapping | None:
+        return connection.execute(select(self.mfa_challenges).where(
+            self.mfa_challenges.c.token_hash == digest,
+        ).with_for_update()).mappings().one_or_none()
+
+    def update_mfa_challenge(self, connection: Connection, identifier: UUID, values: dict[str, Any]) -> None:
+        connection.execute(update(self.mfa_challenges).where(
+            self.mfa_challenges.c.id == identifier,
+        ).values(**values))
+
+    def replace_recovery_codes(self, connection: Connection, user_id: UUID, digests: list[str]) -> None:
+        connection.execute(delete(self.mfa_recovery).where(self.mfa_recovery.c.user_id == user_id))
+        if digests:
+            from uuid import uuid4
+            connection.execute(self.mfa_recovery.insert(), [
+                {"id": uuid4(), "user_id": user_id, "code_hash": digest} for digest in digests
+            ])
+
+    def consume_recovery_code(self, connection: Connection, user_id: UUID, digest: str) -> bool:
+        return connection.execute(delete(self.mfa_recovery).where(
+            self.mfa_recovery.c.user_id == user_id, self.mfa_recovery.c.code_hash == digest,
+        ).returning(self.mfa_recovery.c.id)).scalar_one_or_none() is not None
+
+    def recovery_count(self, user_id: UUID) -> int:
+        with self.engine.connect() as connection:
+            return connection.execute(select(func.count()).select_from(self.mfa_recovery).where(
+                self.mfa_recovery.c.user_id == user_id,
+            )).scalar_one()
+
+    def revoke_other_sessions(
+        self, connection: Connection, user_id: UUID, current_hash: str, now: datetime,
+    ) -> None:
+        connection.execute(update(self.sessions).where(
+            self.sessions.c.user_id == user_id, self.sessions.c.token_hash != current_hash,
+            self.sessions.c.revoked_at.is_(None),
+        ).values(revoked_at=now))
+
+    def insert_session(self, connection: Connection, values: dict[str, Any], previous_hash: str | None, now: datetime) -> None:
+        if previous_hash:
+            connection.execute(update(self.sessions).where(
+                self.sessions.c.token_hash == previous_hash, self.sessions.c.revoked_at.is_(None),
+            ).values(revoked_at=now))
+        connection.execute(self.sessions.insert().values(**values))

@@ -62,7 +62,7 @@ Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación
 2. El servidor comprueba la relación y evita exponer un directorio de cuentas.
 3. La pantalla explica que la capacidad se confirma al recibir y muestra condiciones.
 4. El emisor confirma los datos.
-5. El servidor crea custodia `REGISTRADA`, guía privada, referencia pública independiente y evento.
+5. El servidor crea custodia `REGISTRADA`, guía privada, código público de seguimiento independiente y evento.
 6. El emisor recibe constancia del registro y puede consultar o cancelar antes de recepción.
 
 **Garantía de éxito:** existe una operación pendiente sin asignación de espacio. **Garantía mínima:** un error no inventa una guía ni muestra recepción exitosa.
@@ -88,7 +88,7 @@ Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación
 
 ## 5. CU-04 — Conocer el estado permitido
 
-**Actor y alcance:** el visitante consulta el seguimiento público. El emisor, el destinatario y el personal asignado consultan el detalle privado dentro de su alcance. **Precondiciones:** sesión autorizada para el detalle privado o referencia pública aleatoria para el seguimiento. **Disparador:** consultar estado.
+**Actor y alcance:** el visitante consulta el seguimiento público. El emisor, el destinatario y el personal asignado consultan el detalle privado dentro de su alcance. **Precondiciones:** sesión autorizada para el detalle privado o código público de seguimiento aleatorio para el seguimiento. **Disparador:** consultar estado.
 
 **Escenario principal:**
 

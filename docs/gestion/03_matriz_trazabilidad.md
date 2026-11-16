@@ -2,7 +2,7 @@
 
 Estado: matriz de trazabilidad de la solución implementada. Relaciona requisitos, casos de uso, datos, pantallas, API y pruebas; no equivale a la aceptación del servicio ni a la autorización de un piloto.
 
-La verificación local más reciente del código en `9405ed7` (2026-11-10) ejecutó la suite de backend con PostgreSQL 16 desechable, carga y restauración local. En un clon limpio, el frontend pasó sus cinco pruebas y compiló para producción. Los resultados por caso conservan su versión y fecha de evidencia en el [registro de pruebas](../validacion/resultados_pruebas.csv); los ensayos con personas y en el punto de servicio siguen pendientes o parciales.
+La verificación del árbol de trabajo basado en `196af44` (2026-11-13) aprobó 43 pruebas de backend, carga de 10.000 custodias con 20 usuarios, restauración local con datos MFA, cinco pruebas del cliente y compilación de producción. El acceso MFA se recorrió en navegador con cuenta sintética. Los resultados por caso y su versión están en el [registro de pruebas](../validacion/resultados_pruebas.csv); los ensayos con participantes y en el punto siguen pendientes o parciales.
 
 ## Objetivos del perfil
 
@@ -19,7 +19,7 @@ La verificación local más reciente del código en `9405ed7` (2026-11-10) ejecu
 
 | Requisito | Caso | Datos | Pantalla | API | Prueba |
 |---|---|---|---|---|---|
-| RF-01 | CU-01 | users, sessions | UI-03, UI-04 | /auth/register; /auth/login; /auth/logout | T-01 |
+| RF-01 | CU-01 | users, sessions, mfa_login_challenges, mfa_recovery_codes | UI-03, UI-04 | /auth/register; /auth/login; /auth/logout; /auth/mfa; /auth/mfa/setup; /auth/mfa/confirm; /auth/mfa/verify; /auth/mfa/disable; /auth/mfa/recovery-codes | T-01 |
 | RF-02 | CU-01 | users, staff_assignments, sessions | UI-03, UI-08 | /auth/me | T-02 |
 | RF-03 | CU-02 | custody_orders, custody_events | UI-06 | /custodies | T-03 |
 | RF-04 | CU-03 | custody_orders, storage_assignments, storage_locations, service_payments | UI-08 | /custodies/{custody_id}/receive | T-04 |
@@ -50,7 +50,7 @@ La verificación local más reciente del código en `9405ed7` (2026-11-10) ejecu
 | RNF-06 | Mantenibilidad | T-24 | Parcial: comprobaciones técnicas; falta completar aislamiento y pruebas unitarias de transiciones. |
 | RNF-07 | Accesibilidad | T-25 | Parcial: revisión inicial en Edge; falta cubrir teclado, contraste y lectores de pantalla. |
 | RNF-08 | Observabilidad | T-26 | Parcial: correlación y proyección verificadas; falta revisar el despliegue y sus logs. |
-| RNF-09 | Comunicaciones | T-27 | Parcial: bandeja y STARTTLS local comprobados; falta medir el transporte del punto. |
+| RNF-09 | Comunicaciones | T-27 | Parcial: bandeja y transporte Gmail real comprobados; falta medir el primer intento del aviso operativo en el punto. |
 | RNF-10 | Concurrencia | T-28 | Aprobada en la prueba local de recepción simultánea. |
 | RNF-11 | Restricción | T-29 | Aprobada para el recorrido sintético; falta repetirlo con personal y equipos del piloto. |
 | RNF-12 | Privacidad | T-30 | Parcial: proyecciones revisadas; faltan política de conservación y respuesta de alta duplicada. |

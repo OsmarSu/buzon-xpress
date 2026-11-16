@@ -12,8 +12,8 @@
   "functional_requirements": 18,
   "quality_requirements": 12,
   "business_rules": 14,
-  "tables": 17,
-  "api_operations": 43,
+  "tables": 19,
+  "api_operations": 54,
   "planned_product_tests": 30,
   "product_tests_executed": 29
 }

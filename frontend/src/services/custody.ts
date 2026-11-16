@@ -116,7 +116,12 @@ export const stateLabel: Record<CustodyState, string> = {
   CANCELADA: "Cancelada",
 };
 
-export const sizeLabel: Record<Size, string> = { PEQUENO: "Pequeño", MEDIANO: "Mediano", GRANDE: "Grande" };
+export const sizeLabel: Record<Size, string> = {
+  PEQUENO: "Pequeño · hasta 30 × 20 × 15 cm",
+  MEDIANO: "Mediano · hasta 50 × 40 × 30 cm",
+  GRANDE: "Grande · hasta 70 × 50 × 50 cm",
+};
+export const sizeMeasurementNote = "Medidas máximas con embalaje, en largo × ancho × alto. Elige el menor tamaño que admita el objeto.";
 
 export function dateLabel(value: string) {
   return new Intl.DateTimeFormat("es-BO", {

@@ -6,6 +6,25 @@ from app.config import Settings
 from app.ports.mail import MailUnavailable
 
 
+def send_message(settings: Settings, message: EmailMessage) -> None:
+    """TLS validado tanto para Gmail como para el transporte SMTP configurable."""
+    try:
+        if settings.smtp_port == 465:
+            channel = smtplib.SMTP_SSL(settings.smtp_host, settings.smtp_port, timeout=8, context=ssl.create_default_context())
+        else:
+            channel = smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=8)
+        with channel as server:
+            if settings.smtp_port != 465:
+                server.ehlo()
+                server.starttls(context=ssl.create_default_context())
+                server.ehlo()
+            if settings.smtp_user:
+                server.login(settings.smtp_user, settings.smtp_password)
+            server.send_message(message)
+    except (OSError, smtplib.SMTPException) as error:
+        raise MailUnavailable from error
+
+
 class SmtpIdentityMail:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -32,11 +51,4 @@ class SmtpIdentityMail:
         message["To"] = recipient
         message["Subject"] = subject
         message.set_content(body)
-        try:
-            with smtplib.SMTP(self.settings.smtp_host, self.settings.smtp_port, timeout=5) as server:
-                server.starttls(context=ssl.create_default_context())
-                if self.settings.smtp_user:
-                    server.login(self.settings.smtp_user, self.settings.smtp_password)
-                server.send_message(message)
-        except (OSError, smtplib.SMTPException) as error:
-            raise MailUnavailable from error
+        send_message(self.settings, message)

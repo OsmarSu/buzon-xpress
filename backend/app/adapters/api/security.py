@@ -13,6 +13,7 @@ from app.domain.identity import IdentityError
 API_PATH = "/api/v1"
 SESSION_COOKIE = "buzon_session"
 OPAQUE = re.compile(r"[A-Za-z0-9_-]{43}")
+MOBILE_BEARER = re.compile(r"Bearer (mob_[A-Za-z0-9_-]{43})")
 
 
 class ApiSecurity:
@@ -52,6 +53,12 @@ class ApiSecurity:
             response.raw_headers[-1] = (header, cookie + b"; Partitioned")
 
     def session_token(self, request: Request) -> str | None:
+        authorization = request.headers.get("authorization")
+        if authorization is not None:
+            match = MOBILE_BEARER.fullmatch(authorization)
+            if not match:
+                raise IdentityError(401, "SESION_INVALIDA", "La sesión falta, expiró o fue revocada.")
+            return match.group(1)
         return self.cookie_value(request, self._session_name(request))
 
     def write_session(self, request: Request, response: Response, token: str = "", max_age: int = 0) -> None:
@@ -66,6 +73,10 @@ class ApiSecurity:
         return hmac.new(self.settings.session_secret, message, sha256).hexdigest()
 
     def csrf(self, request: Request) -> None:
+        if request.headers.get("authorization") is not None:
+            # Explicit mobile credentials are never read from browser cookies.
+            self.actor(request)
+            return
         if request.headers.get("origin") not in self.settings.allowed_origins:
             raise IdentityError(403, "ORIGEN_NO_AUTORIZADO", "El origen de la petición no está autorizado.")
         context = self.cookie_value(request, self._csrf_name(request))

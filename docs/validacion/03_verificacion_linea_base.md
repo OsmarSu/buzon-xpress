@@ -3,7 +3,7 @@
 Estado documental **APROBADA_CON_OBSERVACIONES**.
 
 La verificación reúne la especificación, el contrato OpenAPI, el diccionario, los entregables y la trazabilidad.
-La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (17 tablas) antes de validar la documentación.
+La ejecución de `./verificar.sh` aplica el SQL de referencia y sus invariantes a PostgreSQL 16 desechable (19 tablas) antes de validar la documentación.
 La matriz de producto registra los casos aprobados, parciales y pendientes con evidencia técnica.
 
 ## Comprobaciones
@@ -39,7 +39,7 @@ La matriz de producto registra los casos aprobados, parciales y pendientes con e
 - Ocho documentos principales con equivalente reformulado
 - Catálogo: 18 RF, 12 RNF y 14 reglas
 - Doce casos de uso expandidos
-- Diecisiete tablas en SQL y diccionario
+- Diecinueve tablas en SQL y diccionario
 - Tablas de la matriz presentes en el modelo
 - Referencias de tablas SQL resueltas
 - Delimitadores SQL equilibrados en análisis léxico

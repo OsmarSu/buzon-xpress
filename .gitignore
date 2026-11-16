@@ -15,3 +15,13 @@ dist/
 Desktop.ini
 Thumbs.db
 *:Zone.Identifier
+
+# Bloqueos temporales de documentos
+.~lock.*#
+~$*
+
+# Binarios Android y claves de firma locales
+*.apk
+*.aab
+*.jks
+*.keystore

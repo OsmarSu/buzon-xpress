@@ -403,7 +403,7 @@ def test_every_documented_operation_is_registered(scenario):
     documented = {(API + path, method) for path, entry in expected.items() for method in entry if method in methods}
     registered = {(path, method) for path, entry in live.items() for method in entry if method in methods}
     assert documented == registered
-    assert len(registered) == 43
+    assert len(registered) == 54
 
 
 @pytest.mark.skipif(environ.get("BUZON_PRUEBA_CARGA") != "1", reason="Ensayo explícito de 10 000 custodias.")

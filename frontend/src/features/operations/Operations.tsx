@@ -48,16 +48,16 @@ function Reception({ custody, inventory, onReceive }: {
         ...payment(data),
       })));
     }} aria-busy={task.busy}>
-      <Field label="Condición externa del objeto">
+      <Field label="Condición externa del objeto" example={"Caja sellada, con una marca superficial en la esquina superior. Describe lo observado al recibirla."}>
         <textarea name="condition" required maxLength={255} />
       </Field>
-      <Field label="Ubicación disponible">
+      <Field label="Ubicación disponible" hint={"Selecciona un espacio libre del tamaño declarado."}>
         <select name="location" required disabled={!available.length}>
           <option value="">Elige una ubicación</option>
           {available.map((item) => <option key={item.id} value={item.id}>{item.code}</option>)}
         </select>
       </Field>
-      <Field label="Plazo inicial en horas">
+      <Field label="Plazo inicial en horas" example={"24 equivale a un día; 48, a dos días. Usa horas enteras."}>
         <input type="number" min={1} step={1} value={hours} disabled={task.busy}
           onChange={(event) => { setHours(event.target.value); setQuote(undefined); }} />
       </Field>
@@ -95,7 +95,7 @@ function Extension({ custody, onUpdate }: { custody: Custody; onUpdate: (next: C
         setNotice("Prórroga registrada.");
       });
     }} aria-busy={task.busy}>
-      <Field label="Horas adicionales">
+      <Field label="Horas adicionales" example={"12 agrega doce horas al plazo vigente. Revisa la cotización antes de registrar la prórroga."}>
         <input type="number" min={1} step={1} value={hours} disabled={task.busy}
           onChange={(event) => { setHours(event.target.value); setQuote(undefined); }} />
       </Field>
@@ -154,7 +154,7 @@ function Pickup({ custody, onUpdate, onInventoryChange, onRefresh }: {
         onUpdate({ ...custody, state: "RETIRO_EN_CURSO", version: result.version });
       });
     }} aria-busy={task.busy}>
-      <Field label="Código de retiro de seis dígitos">
+      <Field label="Código de retiro de seis dígitos" hint={"Lo proporciona el destinatario desde su cuenta al recoger el objeto."}>
         <input type="password" name="code" inputMode="numeric" autoComplete="off" pattern="[0-9]{6}" required maxLength={6} />
       </Field>
       <label className="check"><input type="checkbox" required /> Comprobación visual del destinatario completada</label>
@@ -202,7 +202,7 @@ export function Operations({ points }: { points: Point[] }) {
           setInventory(locations);
         });
       }}>
-        <Field label="Punto de trabajo">
+        <Field label="Punto de trabajo" hint={"Selecciona el punto donde estás autorizado a atender."}>
           <select name="point" required disabled={pointTask.busy} defaultValue="">
             <option value="">Elige un punto</option>
             {points.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
@@ -234,10 +234,10 @@ export function Operations({ points }: { points: Point[] }) {
             setCustody(result);
           });
         }}>
-          <Field label="Buscar por">
+          <Field label="Buscar por" hint={"Elige el tipo de dato que vas a pegar en el campo siguiente."}>
             <select name="mode"><option value="tracking">Guía privada</option><option value="id">Identificador de custodia</option></select>
           </Field>
-          <Field label="Guía o identificador"><input name="query" required autoComplete="off" maxLength={128} /></Field>
+          <Field label="Guía o identificador" example={"Con Guía privada, pega el valor que comienza por BZX-. Con Identificador de custodia, copia el identificador completo de su detalle."}><input name="query" required autoComplete="off" maxLength={128} /></Field>
           <button type="submit" disabled={custodyTask.busy}>Consultar custodia del punto</button>
         </form>
         <Status {...custodyTask} message={message} />

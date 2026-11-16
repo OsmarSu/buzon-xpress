@@ -155,7 +155,7 @@ class CustodyOperations:
                 .where(orders.c.public_reference_hash == public_reference_hash(reference))
             ).mappings().one_or_none()
         if row is None:
-            raise IdentityError(404, "REFERENCIA_NO_ENCONTRADA", "No se encontró la referencia pública.")
+            raise IdentityError(404, "REFERENCIA_NO_ENCONTRADA", "No se encontró el código público de seguimiento.")
         state = row["state"]
         if state == "REGISTRADA":
             public = "PENDIENTE"

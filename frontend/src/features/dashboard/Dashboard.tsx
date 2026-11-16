@@ -17,27 +17,27 @@ const panels: Record<Panel, {
   label: string; title: string; description: string; icon: WorkspaceIcon;
 }> = {
   custodies: {
-    label: "Mis custodias", title: "Tus envíos y retiros", icon: "box",
-    description: "Registra un objeto para otra persona o consulta el siguiente paso de una custodia existente.",
+    label: "Mis custodias", title: "Mis custodias", icon: "box",
+    description: "Una custodia es el registro de un objeto y su estado. Crea un registro o abre uno existente para consultar sus detalles y acciones.",
   },
   notices: {
-    label: "Avisos", title: "Actualizaciones de tus custodias", icon: "notice",
+    label: "Avisos", title: "Avisos", icon: "notice",
     description: "Revisa recepciones, plazos y retiros desde una sola bandeja.",
   },
   operations: {
-    label: "Terminal de operación", title: "Atención del punto", icon: "operation",
+    label: "Terminal de operación", title: "Terminal de operación", icon: "operation",
     description: "Elige el punto donde estás atendiendo. Luego localiza la custodia para recibir, verificar o confirmar.",
   },
   review: {
-    label: "Resolver incidencias", title: "Incidencias y recuperaciones", icon: "incident",
+    label: "Resolver incidencias", title: "Resolver incidencias", icon: "incident",
     description: "Consulta el expediente y su evidencia antes de registrar una resolución o decidir una solicitud.",
   },
   admin: {
-    label: "Administración", title: "Configuración del servicio", icon: "settings",
+    label: "Administración", title: "Administración", icon: "settings",
     description: "Mantén al día los puntos, sus ubicaciones, el personal autorizado y las versiones de tarifa.",
   },
   audit: {
-    label: "Auditoría e indicadores", title: "Supervisión del punto", icon: "audit",
+    label: "Auditoría e indicadores", title: "Auditoría e indicadores", icon: "audit",
     description: "Selecciona un punto para consultar su historial. Define el periodo para obtener indicadores comparables.",
   },
 };
@@ -73,7 +73,8 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
 
   useEffect(() => {
     if (focusPanel.current) {
-      heading.current?.focus();
+      heading.current?.focus({ preventScroll: true });
+      heading.current?.closest(".workspace-hero")?.scrollIntoView({ block: "start" });
       focusPanel.current = false;
     }
   }, [panel]);

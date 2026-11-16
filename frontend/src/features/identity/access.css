@@ -1,0 +1,670 @@
+.public-task-page.access-task-page {
+  max-width: none;
+  padding-block: clamp(1.5rem, 4.5vw, 4rem);
+}
+
+.access-task-page.access-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(26rem, .94fr);
+  align-content: stretch;
+  gap: 0;
+}
+
+.access-split > .access-story { grid-area: 1 / 1; }
+.access-split > .access-panel { grid-area: 1 / 2; }
+
+.access-story {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 39rem;
+  overflow: hidden;
+  padding: clamp(1.7rem, 3.7vw, 3.5rem);
+  border-radius: 1.4rem 0 0 1.4rem;
+  background: radial-gradient(circle at 100% 5%, #2364a8 0, transparent 43%), linear-gradient(150deg, #102342, #0b368c);
+  color: #e2edff;
+}
+
+.access-story::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -8rem;
+  bottom: -11rem;
+  width: 26rem;
+  height: 26rem;
+  border: 1px solid #ffffff16;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3rem #ffffff05, 0 0 0 6rem #ffffff04;
+  pointer-events: none;
+}
+
+.access-story .public-eyebrow {
+  color: #bfd9ff;
+  letter-spacing: .13em;
+}
+
+.access-story h2 {
+  max-width: 13ch;
+  margin: 1rem 0 1.2rem;
+  color: #fff;
+  font-size: clamp(2.3rem, 3.55vw, 3.7rem);
+  line-height: 1.04;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.access-story-copy > p:last-child {
+  max-width: 37ch;
+  color: #d6e5fb;
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.access-journey {
+  display: grid;
+  gap: 1.1rem;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.access-journey li {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+}
+
+.access-journey li > span {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid #ffffff2b;
+  border-radius: .7rem;
+  background: #ffffff0b;
+  color: #dceaff;
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+}
+
+.access-journey h3 {
+  margin: .1rem 0 .3rem;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.access-journey p {
+  max-width: 38ch;
+  margin: 0;
+  color: #c8dbf5;
+  font-size: .9rem;
+  line-height: 1.55;
+}
+
+.access-story-bottom {
+  margin-top: auto;
+  padding-top: 1.3rem;
+  border-top: 1px solid #ffffff26;
+  font-size: .85rem;
+}
+
+.access-story-bottom p {
+  color: #c8dbf5;
+}
+
+.access-story-bottom strong {
+  display: block;
+  margin-bottom: .2rem;
+  color: #fff;
+}
+
+.access-story-bottom a {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  color: #fff;
+}
+
+.access-panel {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  padding: clamp(1.6rem, 4vw, 3.4rem);
+  border: 1px solid var(--border);
+  border-radius: 0 1.4rem 1.4rem 0;
+  background: #fff;
+  animation: access-enter 300ms ease both;
+}
+
+.access-panel .access-form-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.access-form-card h1 {
+  font-size: clamp(1.9rem, 2.5vw, 2.5rem);
+  letter-spacing: -.04em;
+}
+
+.access-form-intro {
+  margin-bottom: .7rem;
+}
+
+.access-form-intro > p:last-child {
+  margin: .75rem 0 .25rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.access-form-card form {
+  gap: .95rem;
+}
+
+.access-form-card form > button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: .65rem;
+  min-height: 3.1rem;
+  margin-top: .3rem;
+  border-radius: .7rem;
+}
+
+.access-form-card form > button > span:last-child:not(.access-spinner) {
+  margin-left: auto;
+}
+
+.access-registration-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: .8rem;
+}
+
+.access-form-card input {
+  min-height: 3rem;
+  border-color: #b3c0d4;
+  background: #fbfcff;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.access-form-card input:focus {
+  border-color: var(--brand);
+  background: #fff;
+}
+
+.access-form-card input::placeholder {
+  font-size: .9rem;
+}
+
+.access-password {
+  position: relative;
+  min-width: 0;
+}
+
+.access-password input {
+  padding-right: 5.3rem;
+}
+
+.access-form-card .access-password-toggle {
+  position: absolute;
+  top: .2rem;
+  right: .2rem;
+  width: auto;
+  min-height: 2.6rem;
+  padding: .4rem .65rem;
+  border: 0;
+  background: transparent;
+  color: var(--brand-dark);
+  font-size: .79rem;
+  font-weight: 700;
+}
+
+.access-form-card .access-password-toggle:hover {
+  background: #eaf1fc;
+}
+
+.access-form-note {
+  margin: .05rem 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.6;
+}
+
+.access-form-card .access-account-actions {
+  display: grid;
+  gap: .35rem;
+  margin-top: 1.4rem;
+  padding-top: 1rem;
+}
+
+.access-account-actions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.access-account-actions a {
+  min-height: 2.4rem;
+  padding-block: .3rem;
+}
+
+.access-security-note {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  margin-top: .9rem;
+  padding: .85rem;
+  border-radius: .65rem;
+  background: #f1f5fc;
+}
+
+.access-security-note > span {
+  color: var(--brand);
+}
+
+.access-security-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .8rem;
+  line-height: 1.6;
+}
+
+.access-form-card > .public-return-link {
+  margin-top: 1.2rem;
+  font-size: .85rem;
+}
+
+.access-task-page.access-utility {
+  width: min(38rem, calc(100% - 2rem));
+}
+
+.access-utility .access-panel {
+  border-radius: var(--radius);
+  padding: clamp(1.3rem, 4vw, 2rem);
+}
+
+.access-utility .public-auth-card {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.access-challenge-symbol {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: .6rem 0 1rem;
+  border-radius: 1rem;
+  background: #eaf3ff;
+  color: var(--brand-dark);
+  font-size: 1.4rem;
+}
+
+.access-form-card input.access-otp-input {
+  font: 650 1.5rem / 1.5 ui-monospace, monospace;
+  letter-spacing: .35em;
+}
+
+.access-challenge-options {
+  display: grid;
+  justify-items: start;
+  gap: .3rem;
+  margin-top: 1.25rem;
+}
+
+.access-text-button {
+  width: auto;
+  min-height: 2.5rem;
+  padding: .35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--brand-dark);
+  font-size: .9rem;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.access-text-button:not(:disabled):hover {
+  background: transparent;
+  color: var(--brand);
+}
+
+.access-expired {
+  padding: .85rem 1rem;
+  border: 1px solid #efd2b0;
+  border-radius: .7rem;
+  background: #fff6e9;
+  color: #704316;
+}
+
+.access-spinner {
+  display: inline-block;
+  flex: none;
+  width: .95rem;
+  height: .95rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -.1em;
+  animation: access-spin 800ms linear infinite;
+}
+
+.access-skeleton {
+  position: relative;
+  display: grid;
+  gap: .8rem;
+  overflow: hidden;
+  padding-block: .5rem;
+}
+
+.access-skeleton > span:not(.access-screenreader) {
+  display: block;
+  border-radius: .5rem;
+  background: #eaf0f8;
+}
+
+.access-skeleton::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(100deg, transparent 25%, #ffffffa8 50%, transparent 75%);
+  transform: translateX(-100%);
+  animation: access-shimmer 1.7s ease-in-out infinite;
+}
+
+.access-skeleton-line { width: 40%; height: .8rem; }
+.access-skeleton-field { height: 3rem; }
+.access-skeleton-button { height: 3.1rem; margin-top: .5rem; }
+
+.access-screenreader {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.account-security {
+  margin-bottom: 1.25rem;
+}
+
+.account-security-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.account-security-heading h2 {
+  margin: 0;
+}
+
+.account-security > p:not(.status, .error) {
+  max-width: 75ch;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.access-security-state {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .4rem .7rem;
+  border: 1px solid #cfdef2;
+  border-radius: 999px;
+  background: #f0f5fd;
+  color: #31527f;
+  font-size: .78rem;
+  font-weight: 650;
+}
+
+.access-security-state[data-enabled="true"] {
+  border-color: #c7e3d7;
+  background: #eef8f3;
+  color: #235a44;
+}
+
+.access-security-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: .5rem;
+}
+
+.access-security-actions p {
+  margin: .35rem 0 0;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.access-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .65rem;
+}
+
+.access-inline-actions button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+}
+
+.access-security-form {
+  padding-top: .6rem;
+}
+
+.access-security-form h3 {
+  margin-top: .35rem;
+}
+
+.access-security-form p {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.access-mfa-enrollment,
+.access-recovery-codes {
+  margin-top: .5rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid #d1def2;
+  border-radius: .85rem;
+  background: #f7faff;
+}
+
+.access-enrollment-steps {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.access-enrollment-steps h3,
+.access-recovery-codes h3 {
+  margin: 0 0 .65rem;
+}
+
+.access-enrollment-steps p,
+.access-recovery-codes p {
+  max-width: 72ch;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.access-setup-secret {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-block: .8rem;
+  padding: .8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  background: #fff;
+  color: var(--brand-dark);
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.8;
+  letter-spacing: .08em;
+  user-select: all;
+}
+
+.access-authenticator-link {
+  display: block;
+  width: fit-content;
+  padding-block: .6rem;
+  font-size: .9rem;
+}
+
+.access-enrollment-steps small {
+  display: block;
+  margin-block: .3rem .75rem;
+}
+
+.access-enrollment-steps form {
+  max-width: 32rem;
+}
+
+.access-recovery-codes ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+  width: min(100%, 36rem);
+  margin: 1rem 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.access-recovery-codes li {
+  min-width: 0;
+  padding: .65rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: .5rem;
+  background: #fff;
+}
+
+.access-recovery-codes code {
+  color: var(--brand-dark);
+  font-size: .9rem;
+  user-select: all;
+}
+
+@keyframes access-enter {
+  from { opacity: 0; transform: translateY(.4rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes access-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes access-shimmer {
+  to { transform: translateX(100%); }
+}
+
+@media (max-width: 63rem) {
+  .access-task-page.access-split {
+    grid-template-columns: minmax(0, 1fr) minmax(23rem, 1fr);
+  }
+
+  .access-story,
+  .access-panel {
+    padding: 1.6rem;
+  }
+
+  .access-registration-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 51rem) {
+  .access-task-page.access-split {
+    max-width: 40rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+  }
+
+  .access-split > .access-story,
+  .access-split > .access-panel {
+    grid-area: auto;
+  }
+
+  .access-story {
+    order: 2;
+    min-height: 0;
+    border-radius: 1.1rem;
+  }
+
+  .access-panel {
+    order: 1;
+    padding: 1.8rem;
+    border-radius: 1.1rem;
+  }
+
+  .access-story h2 {
+    max-width: 17ch;
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  .access-story-copy > p:last-child,
+  .access-journey p {
+    max-width: 45ch;
+  }
+}
+
+@media (max-width: 34rem) {
+  .access-panel,
+  .access-story {
+    padding: 1.2rem;
+  }
+
+  .access-task-page.access-split {
+    padding-block: 1.1rem 2rem;
+  }
+
+  .access-inline-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .access-inline-actions button {
+    width: 100%;
+  }
+
+  .access-recovery-codes ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .access-panel,
+  .access-spinner,
+  .access-skeleton::after {
+    animation: none;
+  }
+
+  .access-form-card input {
+    transition: none;
+  }
+}

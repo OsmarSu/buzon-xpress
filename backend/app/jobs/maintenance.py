@@ -2,14 +2,13 @@ import argparse
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from email.message import EmailMessage
-import smtplib
-import ssl
 from time import sleep
 from uuid import uuid4
 
 from sqlalchemy import Text, cast, create_engine, exists, func, or_, select
 
 from app.adapters.storage.operations import OperationsStore
+from app.adapters.mail.smtp import send_message
 from app.config import Settings
 from app.ports.mail import MailUnavailable
 
@@ -84,14 +83,7 @@ def smtp_sender(settings: Settings):
         sender_host = settings.smtp_sender.rsplit("@", 1)[-1]
         message["Message-ID"] = f"<buzon-{notice_id}@{sender_host}>"
         message.set_content(body.replace("/#custodia=", f"{settings.public_origin}/#custodia="))
-        try:
-            with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=5) as server:
-                server.starttls(context=ssl.create_default_context())
-                if settings.smtp_user:
-                    server.login(settings.smtp_user, settings.smtp_password)
-                server.send_message(message)
-        except (OSError, smtplib.SMTPException) as error:
-            raise MailUnavailable from error
+        send_message(settings, message)
 
     return send
 

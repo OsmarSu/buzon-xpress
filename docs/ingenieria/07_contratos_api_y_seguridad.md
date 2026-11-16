@@ -8,7 +8,7 @@ Prefijo `/api/v1`. JSON UTF-8; identificadores UUID; fechas ISO 8601 con zona UT
 
 El servidor obtiene actor desde cookie de sesión protegida. Las mutaciones incluyen `X-CSRF-Token`; el navegador lo obtiene mediante `/auth/csrf`, ligado a su contexto. Se valida origen y contexto también en acceso y registro. La autenticación web no reside en `localStorage`.
 
-La referencia pública se muestra al crear la custodia y solo se conserva su hash. Si se pierde, un participante puede rotarla mediante la operación privada correspondiente; la referencia anterior deja de funcionar. Una repetición idempotente de creación devuelve la custodia existente sin volver a mostrar una referencia que ya no se conserva en texto.
+El código público de seguimiento se muestra al crear la custodia y solo se conserva su hash. Si se pierde, un participante puede renovarlo mediante la operación privada correspondiente; el código anterior deja de funcionar. Una repetición idempotente de creación devuelve la custodia existente sin volver a mostrar un código que ya no se conserva en texto.
 
 ## 2. Contratos principales
 
@@ -17,6 +17,9 @@ La referencia pública se muestra al crear la custodia y solo se conserva su has
 | `POST /auth/register`, `/auth/login`, `/auth/logout` | Cuenta general, sesión y revocación. El registro público no concede rol de personal. |
 | `POST /auth/verify-contact` | Consume enlace de verificación de correo; la alternativa presencial queda registrada por personal autorizado. |
 | `POST /auth/password-reset/request`, `/complete` | Respuesta genérica al solicitar; enlace breve de uso único y revocación de sesiones al cambiar contraseña. |
+| `GET /auth/mfa`, `POST /auth/mfa/setup`, `/confirm` | Estado y enrolamiento TOTP con contacto comprobado, contraseña y confirmación del primer código. |
+| `POST /auth/mfa/verify` | Completa un desafío breve de acceso con TOTP o código de recuperación; la contraseña por sí sola no abre sesión cuando MFA está activo. |
+| `POST /auth/mfa/disable`, `/recovery-codes` | Reautenticación y segundo factor; revoca otras sesiones y desafíos previos. |
 | `GET /points`, `/points/{point_id}/quote` | Horarios y cotización por tamaño/plazo. Una cotización no reserva capacidad. |
 | `POST /custodies` | Cuenta activa y comprobada; participantes y punto válidos. |
 | `GET /custodies`, `/custodies/{custody_id}` | Participantes o personal dentro de su alcance. |
@@ -34,9 +37,11 @@ La referencia pública se muestra al crear la custodia y solo se conserva su has
 | `/admin/points`, `/admin/locations`, `/admin/staff-assignments`, `/admin/tariffs` | Administración con auditoría; deshabilitar no elimina inventario. |
 | `GET /notifications`, `POST /notifications/{notification_id}/read` | Bandeja propia, sin códigos. |
 | `GET /audit/events`, `/reports` | Auditor o administrador con alcance y periodo. |
-| `GET /public-tracking/{reference}` | Información mínima por referencia aleatoria independiente de la guía. |
+| `GET /public-tracking/{reference}` | Información mínima por código público de seguimiento aleatorio independiente de la guía. |
 
 El YAML especifica las rutas de comprobación presencial, consulta y resolución de incidencias, consulta de expedientes y cambio de estado de ubicaciones. El detalle de expedientes requiere un administrador asignado al punto. La matriz funcional enlaza los caminos principales; las operaciones auxiliares conservan los mismos permisos.
+
+Los códigos TOTP usados no se aceptan de nuevo. Los desafíos caducan a los cinco minutos y los intentos fallidos se cuentan por cuenta en PostgreSQL. Los códigos de recuperación se muestran una vez, se protegen con HMAC y se consumen de forma transaccional. Restablecer la contraseña conserva MFA.
 
 ## 3. Recepción y precio
 
@@ -73,7 +78,7 @@ El cuerpo tiene código estable, mensaje y correlación. No se devuelven trazas,
 
 | Amenaza | Control diseñado | Evidencia prevista |
 |---|---|---|
-| Consulta por teléfono revela objeto y PIN. | Referencia pública separada, datos mínimos y tasa limitada. | T-06, T-30. |
+| Consulta por teléfono revela objeto y PIN. | Código público de seguimiento separado, datos mínimos y tasa limitada. | T-06, T-30. |
 | Cambiar identificador accede a custodia ajena. | Autorización por participación y punto en servidor. | T-02. |
 | Fuerza bruta de código. | HMAC, vigencia, contador persistido y límites por cuenta y origen. | T-07, T-08. |
 | Dos operadores entregan el mismo bulto. | Autorización retenida, estado en curso y comprobante único. | T-09, T-18, T-28. |
@@ -84,3 +89,11 @@ El cuerpo tiene código estable, mensaje y correlación. No se devuelven trazas,
 | Exposición por auditoría. | Historial sin secretos y exportación restringida. | T-15, T-26, T-30. |
 
 La seguridad física del espacio y la conducta del personal quedan en el manual. No se promete impedir materialmente una extracción realizada al margen del proceso.
+
+## Transporte de la primera fase Android
+
+La aplicación móvil utiliza las mismas cuentas y permisos. `/mobile/auth/login` devuelve una sesión opaca `mob_` únicamente después de comprobar contraseña y, cuando corresponde, MFA. El acceso móvil con segundo factor emite un desafío `mfc_` que no se canjea en el flujo web. El token se guarda con SecureStore en Android y el servidor conserva solo su hash, con la misma expiración de ocho horas y revocación por cierre de sesión o recuperación.
+
+Los endpoints de identidad nativa no reciben `Origin` ni `Cookie` y no escriben cookies. Las peticiones privadas llevan `Authorization: Bearer` y vuelven a comprobar la sesión y autorización; esa credencial explícita sustituye el antifalsificador del transporte web. Las cookies del sitio conservan su comprobación de origen y CSRF. Los límites de acceso por cuenta y dirección se comparten entre ambos transportes.
+
+La previsualización local de `mobile/` usa un proxy en loopback y mantiene su token solo en memoria. No se habilita otro origen web en producción. La primera fase no incorpora inicio con Google, notificaciones push, persistencia de códigos de retiro ni funciones operativas sin conexión.

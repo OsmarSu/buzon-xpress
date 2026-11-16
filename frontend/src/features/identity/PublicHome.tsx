@@ -1,7 +1,10 @@
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 import logo from "../../assets/buzon-xpress-logo.jpeg";
 import vision from "../../assets/buzon-xpress-vision.jpeg";
+import registrationPhoto from "../../assets/servicio-registro.jpg";
+import receptionPhoto from "../../assets/servicio-recepcion.jpg";
+import pickupPhoto from "../../assets/servicio-retiro.jpg";
 import { PublicPoints, PublicTracking } from "../custody/PublicService";
 import { PublicHeader, SiteFooter } from "./SiteChrome";
 
@@ -39,7 +42,13 @@ function ServiceArt() {
 }
 
 function PublicIntro({ signedIn }: { signedIn: boolean }) {
-  return <div className="public-hero">
+  return <section className="public-chapter public-intro" id="inicio" data-public-section tabIndex={-1} aria-labelledby="intro-heading">
+    <div className="public-layout public-intro-content">
+      <div className="public-chapter-topline" data-reveal>
+        <h2 id="intro-heading">Inicio</h2>
+        <span>01 / BUZON Xpress</span>
+      </div>
+      <div className="public-hero" data-reveal>
     <div className="public-hero-copy">
       <p className="public-eyebrow">Custodia temporal asistida</p>
       <h1>Intercambia objetos en horarios distintos</h1>
@@ -56,49 +65,62 @@ function PublicIntro({ signedIn }: { signedIn: boolean }) {
         </a>
       </div>
     </div>
-    <ServiceArt />
+        <ServiceArt />
+      </div>
+      <a href="#como-funciona" className="public-next-section">Descubre el servicio <span aria-hidden="true">↓</span></a>
+    </div>
+  </section>;
+}
+
+function StepPhoto({ src, alt }: { src: string; alt: string }) {
+  const [ready, setReady] = useState(false);
+  const [failed, setFailed] = useState(false);
+  return <div className="public-step-media" data-ready={ready} data-failed={failed}>
+    <img src={src} alt={alt} loading="lazy" decoding="async" width="900" height="1100"
+      onLoad={() => setReady(true)} onError={() => { setReady(true); setFailed(true); }} />
+    {failed && <span className="public-image-fallback">Imagen del servicio no disponible</span>}
   </div>;
 }
 
 function PublicSteps() {
-  return <section className="public-steps" id="como-funciona" aria-labelledby="steps-heading">
-    <div className="public-section-intro">
-      <p className="public-eyebrow">El recorrido</p>
-      <h2 id="steps-heading">De la entrega al retiro</h2>
-    </div>
-    <ol className="public-step-list">
-      <li>
-        <span className="public-step-number" aria-hidden="true">01</span>
-        <h3>Registra el objeto</h3>
-        <p>Elige el punto, indica el contacto del destinatario y declara el tamaño. Podrás cancelar antes de depositarlo.</p>
-      </li>
-      <li>
-        <span className="public-step-number" aria-hidden="true">02</span>
-        <h3>Déjalo en el punto</h3>
-        <p>El operador comprueba la capacidad, confirma el costo y registra el cobro y la ubicación al recibir el objeto.</p>
-      </li>
-      <li>
-        <span className="public-step-number" aria-hidden="true">03</span>
-        <h3>Retira con un código</h3>
-        <p>El destinatario genera su código temporal. El operador lo verifica y deja constancia de la entrega realizada.</p>
-      </li>
-    </ol>
-    <div className="public-service-note">
-      <strong>Antes de ir al punto</strong>
-      <p>Consulta el horario y cotiza según el tamaño y el plazo. El espacio se confirma cuando el operador recibe el objeto.</p>
-      <a href="#puntos">Consultar puntos <span aria-hidden="true">→</span></a>
+  return <section className="public-chapter public-steps" id="como-funciona" data-public-section tabIndex={-1} aria-labelledby="steps-heading">
+    <div className="public-layout public-chapter-content">
+      <div className="public-section-intro" data-reveal>
+        <p className="public-eyebrow">02 / El recorrido</p>
+        <h2 id="steps-heading">Cómo funciona</h2>
+      </div>
+      <ol className="public-step-list">
+        <li data-reveal>
+          <StepPhoto src={registrationPhoto} alt="Persona registrando información de un objeto en una computadora" />
+          <div className="public-step-caption"><span className="public-step-number" aria-hidden="true">01</span><h3>Registra el objeto</h3></div>
+        </li>
+        <li data-reveal>
+          <StepPhoto src={receptionPhoto} alt="Preparación de un paquete para dejarlo en un punto de recepción" />
+          <div className="public-step-caption"><span className="public-step-number" aria-hidden="true">02</span><h3>Déjalo en el punto</h3></div>
+        </li>
+        <li data-reveal>
+          <StepPhoto src={pickupPhoto} alt="Entrega de un paquete entre dos personas" />
+          <div className="public-step-caption"><span className="public-step-number" aria-hidden="true">03</span><h3>Retira con un código</h3></div>
+        </li>
+      </ol>
+      <div className="public-service-note" data-reveal>
+        <strong>Una visita bien planificada</strong>
+        <p>El espacio y el importe se confirman al recibir el objeto.</p>
+        <a href="#puntos">Ver puntos y tarifas <span aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>;
 }
 
 function PublicAbout() {
-  return <section className="public-about" id="conocenos" aria-labelledby="about-heading">
-    <div className="public-section-intro">
-      <p className="public-eyebrow">Conócenos</p>
+  return <section className="public-chapter public-about" id="conocenos" data-public-section tabIndex={-1} aria-labelledby="about-heading">
+    <div className="public-layout public-chapter-content">
+    <div className="public-section-intro" data-reveal>
+      <p className="public-eyebrow">05 / Nuestra razón de ser</p>
       <h2 id="about-heading">Nosotros</h2>
     </div>
     <div className="public-about-grid">
-      <article className="public-about-card">
+      <article className="public-about-card" data-reveal>
         <img className="public-about-logo" src={logo} alt="BUZON Xpress" width="1052" height="1008" loading="lazy" />
         <div className="public-about-copy">
           <h3>Nuestra misión</h3>
@@ -106,7 +128,7 @@ function PublicAbout() {
           <p>El personal de cada punto registra la recepción, mantiene el objeto en custodia y verifica el código antes del retiro.</p>
         </div>
       </article>
-      <article className="public-about-card">
+      <article className="public-about-card" data-reveal>
         <figure className="public-about-vision">
           <img src={vision} alt="Ilustración de una futura red de puntos de servicio en Bolivia" width="1200" height="800" loading="lazy" />
           <figcaption>Visión de marca · ilustración conceptual</figcaption>
@@ -118,22 +140,38 @@ function PublicAbout() {
         </div>
       </article>
     </div>
+    </div>
   </section>;
 }
 
 export function PublicHome({ signedIn, initialReference }: { signedIn: boolean; initialReference: string | null }) {
   useLayoutEffect(() => {
-    document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    const frame = requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".public-home [data-reveal]").forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
   }, []);
 
   return <div className="public-site public-home">
     <a className="buzon-skip" href="#contenido-principal">Saltar al contenido</a>
     <PublicHeader signedIn={signedIn} />
-    <main className="public-layout public-main" id="contenido-principal" tabIndex={-1}>
+    <main className="public-main" id="contenido-principal" tabIndex={-1}>
       <PublicIntro signedIn={signedIn} />
-      <PublicTracking initialReference={initialReference} />
       <PublicSteps />
       <PublicPoints />
+      <PublicTracking initialReference={initialReference} />
       <PublicAbout />
     </main>
     <SiteFooter />

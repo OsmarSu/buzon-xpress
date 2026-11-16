@@ -3,6 +3,7 @@ from os import environ
 from urllib.parse import urlsplit
 
 from sqlalchemy.engine import make_url
+from cryptography.fernet import Fernet
 
 
 def database_url() -> str:
@@ -27,6 +28,8 @@ class Settings:
     credential_key: bytes = b""
     request_key: bytes = b""
     cors_origins: tuple[str, ...] = ()
+    mfa_encryption_key: bytes = b""
+    mail_provider: str = "smtp"
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -55,8 +58,38 @@ class Settings:
             raise RuntimeError("Configura tres secretos distintos de al menos 32 bytes para el piloto.")
         if any(key and len(key) < 32 for key in (credential_key, request_key)):
             raise RuntimeError("Las claves HMAC configuradas requieren al menos 32 bytes.")
-        sender = environ.get("BUZON_SMTP_FROM", "")
-        smtp_host = environ.get("BUZON_SMTP_HOST", "")
+        mfa_key = environ.get("BUZON_MFA_ENCRYPTION_KEY", "").encode()
+        if mfa_key:
+            try:
+                Fernet(mfa_key)
+            except (ValueError, TypeError):
+                raise RuntimeError("BUZON_MFA_ENCRYPTION_KEY debe ser una clave Fernet válida.") from None
+            if mfa_key == secret:
+                raise RuntimeError("La clave de cifrado MFA debe ser distinta del secreto de sesión.")
+        elif not local:
+            raise RuntimeError("Configura BUZON_MFA_ENCRYPTION_KEY para conservar el segundo factor de forma segura.")
+
+        sender = environ.get("BUZON_SMTP_FROM", "").strip()
+        smtp_host = environ.get("BUZON_SMTP_HOST", "").strip()
+        smtp_user = environ.get("BUZON_SMTP_USER", "").strip()
+        smtp_password = environ.get("BUZON_SMTP_PASSWORD", "")
+        provider = environ.get("BUZON_MAIL_PROVIDER", "smtp" if smtp_host else (
+            "gmail" if smtp_user or smtp_password else "none"
+        )).casefold()
+        if provider not in {"gmail", "smtp", "none"}:
+            raise RuntimeError("BUZON_MAIL_PROVIDER admite gmail, smtp o none.")
+        smtp_port = int(environ.get("BUZON_SMTP_PORT", "587"))
+        if provider == "gmail":
+            smtp_password = smtp_password.replace(" ", "")
+            if not smtp_user or "@" not in smtp_user or len(smtp_password) != 16 or not smtp_password.isascii() or not smtp_password.isalnum():
+                raise RuntimeError("Gmail requiere BUZON_SMTP_USER y una contraseña de aplicación de 16 caracteres.")
+            if sender and sender.casefold() != smtp_user.casefold():
+                raise RuntimeError("En Gmail, BUZON_SMTP_FROM debe coincidir con BUZON_SMTP_USER.")
+            if smtp_port not in {465, 587}:
+                raise RuntimeError("Gmail usa el puerto 587 con STARTTLS o 465 con TLS directo.")
+            smtp_host, sender = "smtp.gmail.com", smtp_user
+        elif provider == "none":
+            smtp_host, sender, smtp_user, smtp_password = "", "", "", ""
         if smtp_host and not sender:
             raise RuntimeError("Configura BUZON_SMTP_FROM para habilitar el correo.")
         return cls(
@@ -66,11 +99,13 @@ class Settings:
             public_origin=origins[0],
             secure_cookies=all(origin.startswith("https://") for origin in origins),
             smtp_host=smtp_host,
-            smtp_port=int(environ.get("BUZON_SMTP_PORT", "587")),
+            smtp_port=smtp_port,
             smtp_sender=sender,
-            smtp_user=environ.get("BUZON_SMTP_USER", ""),
-            smtp_password=environ.get("BUZON_SMTP_PASSWORD", ""),
+            smtp_user=smtp_user,
+            smtp_password=smtp_password,
             credential_key=credential_key,
             request_key=request_key,
             cors_origins=cors_origins,
+            mfa_encryption_key=mfa_key,
+            mail_provider=provider,
         )

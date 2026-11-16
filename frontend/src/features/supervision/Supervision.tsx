@@ -3,7 +3,8 @@ import { useState, type ReactNode } from "react";
 import { ApiError, request } from "../../services/api";
 import { custodyApi, dateLabel, sizeLabel, sizes, type Location, type Point } from "../../services/custody";
 import { WorkspaceBadge, WorkspaceEmpty, WorkspaceHeading } from "../dashboard/Workspace";
-import { Field, formData, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, SizeGuide, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
+import { dailyScheduleFields, hoursFromForm, scheduleFields } from "../shared/hours";
 
 type Method = "POST" | "PUT" | "PATCH";
 interface Command {
@@ -21,7 +22,7 @@ function PointField({ points }: { points: Point[] }) {
   const manual = !points.length || selection === "manual";
 
   return <>
-    {points.length > 0 && <Field label="Punto de servicio">
+    {points.length > 0 && <Field label="Punto de servicio" hint={"Elige el punto al que se aplicará esta operación."}>
       <select name={manual ? undefined : "point_id"} value={selection} required
         onChange={(event) => setSelection(event.target.value)}>
         <option value="">Elige un punto</option>
@@ -29,7 +30,7 @@ function PointField({ points }: { points: Point[] }) {
         <option value="manual">Introducir otro identificador</option>
       </select>
     </Field>}
-    {manual && <Field label="Identificador del punto">
+    {manual && <Field label="Identificador del punto" hint={"Copia el identificador completo del punto que quieres gestionar."} example={"Usa esta opción cuando el punto no aparezca en la lista. Necesitas un identificador de punto ya existente."}>
       <input name="point_id" required maxLength={36} />
     </Field>}
   </>;
@@ -65,27 +66,10 @@ function requiredPoint(data: FormData) {
   return value(data, "point_id");
 }
 
-const scheduleFields = [
-  ["weekdays", "Lunes a viernes"], ["saturday", "Sábado"], ["sunday", "Domingo"],
-] as const;
-
-function openingHours(data: FormData): Record<string, unknown> {
-  const advanced = value(data, "opening_hours");
-  if (advanced) {
-    try {
-      const hours: unknown = JSON.parse(advanced);
-      if (hours && typeof hours === "object" && !Array.isArray(hours)) return hours as Record<string, unknown>;
-    } catch {
-      // Invalid JSON and the wrong JSON type share the same correction.
-    }
-    throw new ApiError(422, "HORARIO_INVALIDO", 'Escribe un objeto JSON, por ejemplo {"lunes":"09:00–17:00"}.');
-  }
-
-  const hours = Object.fromEntries(scheduleFields
-    .map(([field, label]) => [label, value(data, field)])
-    .filter(([, schedule]) => schedule));
+function openingHours(data: FormData): Record<string, string> {
+  const hours = hoursFromForm(data);
   if (!Object.keys(hours).length) {
-    throw new ApiError(422, "HORARIO_INVALIDO", "Completa al menos un horario o usa el formato avanzado.");
+    throw new ApiError(422, "HORARIO_INVALIDO", "Indica al menos un horario de atención.");
   }
   return hours;
 }
@@ -97,20 +81,21 @@ function pointBody(data: FormData) {
 
 function PointFields() {
   return <>
-    <Field label="Nombre del punto"><input name="name" required maxLength={120} /></Field>
-    <Field label="Dirección"><input name="address" required maxLength={255} /></Field>
+    <Field label="Nombre del punto" example={"BUZON Xpress Miraflores. Usa un nombre que permita reconocer el punto."} hint={"Nombre que se mostrará al público."}><input name="name" required maxLength={120} placeholder="Ej. BUZON Xpress Miraflores" /></Field>
+    <Field label="Dirección" example={"Zona Miraflores, avenida principal, local 4. Añade una referencia útil para encontrar el punto."}><input name="address" required maxLength={255} placeholder="Zona, calle y referencia" /></Field>
     <fieldset className="workspace-hours">
       <legend>Horario publicado</legend>
       <p>Indica los intervalos de atención. Los días vacíos se omiten.</p>
-      {scheduleFields.map(([field, label]) => <Field key={field} label={label}>
+      {scheduleFields.map(([field, label]) => <Field key={field} label={label} example="09:00–13:00 y 14:00–18:00. Deja vacío un día sin atención.">
         <input name={field} placeholder="09:00–17:00" maxLength={80} />
       </Field>)}
       <details>
-        <summary>Horario avanzado</summary>
-        <p>Usa esta opción para horarios distintos por día. Si la completas, reemplaza los intervalos anteriores.</p>
-        <Field label="Horario personalizado en formato JSON">
-          <textarea name="opening_hours" placeholder={'{"lunes":"09:00–17:00"}'} />
-        </Field>
+        <summary>Horarios por día</summary>
+        <p>Si los horarios cambian según el día, completa estos campos. Se usarán en lugar de los intervalos generales. Deja vacíos los días sin atención.</p>
+        {dailyScheduleFields.map(([field, label]) => <Field key={field} label={label}
+          example="09:00–13:00 y 14:00–18:00. Deja vacío si ese día no hay atención.">
+          <input name={field} placeholder="09:00–17:00" maxLength={80} />
+        </Field>)}
       </details>
     </fieldset>
     <label className="check"><input type="checkbox" name="active" defaultChecked /> Punto habilitado</label>
@@ -146,14 +131,14 @@ function localDateTime(date: string) {
 
 function TariffFields() {
   return <>
-    <Field label="Inicio de vigencia · hora de La Paz"><input type="datetime-local" name="valid_from" required /></Field>
+    <Field label="Inicio de vigencia · hora de La Paz" hint={"Fecha y hora desde las que se aplicará la nueva tarifa."}><input type="datetime-local" name="valid_from" required /></Field>
     {sizes.map((size) => <fieldset key={size}>
       <legend>{sizeLabel[size]}</legend>
-      <Field label="Horas cubiertas por la tarifa base"><input name={size + "_base_hours"} type="number" min={1} step={1} required /></Field>
-      <Field label="Horas de cada bloque adicional"><input name={size + "_block_hours"} type="number" min={1} step={1} required /></Field>
-      <Field label="Importe base BOB"><input name={size + "_base_amount"} inputMode="decimal" placeholder="0.00"
+      <Field label="Horas cubiertas por la tarifa base" example={"Con 24, el importe base cubre las primeras 24 horas."}><input name={size + "_base_hours"} type="number" min={1} step={1} required /></Field>
+      <Field label="Horas de cada bloque adicional" example={"Con 12, cada bloque adicional cubre otras 12 horas."}><input name={size + "_block_hours"} type="number" min={1} step={1} required /></Field>
+      <Field label="Importe base BOB" hint={"En bolivianos: usa punto y dos decimales."} example={"Escribe 12.50 para un importe de doce bolivianos con cincuenta centavos."}><input name={size + "_base_amount"} inputMode="decimal" placeholder="0.00"
         pattern="[0-9]+\.[0-9]{2}" required /></Field>
-      <Field label="Importe por bloque adicional BOB"><input name={size + "_block_amount"} inputMode="decimal" placeholder="0.00"
+      <Field label="Importe por bloque adicional BOB" hint={"En bolivianos: usa punto y dos decimales."} example={"Escribe 3.00 para cobrar tres bolivianos por cada bloque adicional."}><input name={size + "_block_amount"} inputMode="decimal" placeholder="0.00"
         pattern="[0-9]+\.[0-9]{2}" required /></Field>
     </fieldset>)}
   </>;
@@ -164,6 +149,7 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
     <WorkspaceHeading id="admin-heading" title="Administración de puntos y personal"
       description="Elige qué parte del servicio quieres configurar. Cada cambio se aplica al punto indicado." />
     <div className="workspace-subgroups">
+      <div className="workspace-config-column">
       <section className="workspace-subgroup" aria-labelledby="point-settings-heading">
         <h3 id="point-settings-heading">Puntos y horarios</h3>
         <p>Publica los datos y horarios que verá el público.</p>
@@ -189,24 +175,26 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
           body: { point_id: requiredPoint(data), code: value(data, "code"), size_category: value(data, "size") },
         })}>
           <PointField points={points} />
-          <Field label="Código interno de ubicación"><input name="code" maxLength={24} required /></Field>
-          <Field label="Tamaño"><select name="size"><SizeOptions /></select></Field>
+          <Field label="Código interno de ubicación" hint={"Etiqueta que identifica un espacio dentro del punto."} example={"P-03 puede identificar el tercer espacio para objetos pequeños."}><input name="code" maxLength={24} required placeholder="Ej. P-03" /></Field>
+          <Field label="Tamaño" hint={"Categoría de objetos que admite esta ubicación."}><select name="size"><SizeOptions /></select></Field><SizeGuide />
         </CommandForm>
 
         <CommandForm heading="Cambiar estado de una ubicación" button="Guardar estado" command={(data) => ({
           path: "/admin/locations/" + encodeURIComponent(value(data, "id")), method: "PATCH",
           body: { state: value(data, "state"), expected_version: Number(value(data, "version")), reason: value(data, "reason") },
         })}>
-          <Field label="Identificador de ubicación"><input name="id" required maxLength={36} /></Field>
-          <Field label="Versión consultada"><input type="number" name="version" min={1} step={1} required /></Field>
-          <Field label="Nuevo estado"><select name="state">
+          <Field label="Identificador de ubicación" hint={"Cópialo de Consultar identificadores y versiones de ubicaciones."} example={"Selecciona el punto en esa consulta y copia el identificador completo de la ubicación que vas a cambiar."}><input name="id" required maxLength={36} /></Field>
+          <Field label="Versión consultada" hint={"Usa la versión actual que aparece junto a la ubicación."} example={"Si la consulta muestra versión 2, escribe 2. Vuelve a consultar si otra persona modificó la ubicación."}><input type="number" name="version" min={1} step={1} required /></Field>
+          <Field label="Nuevo estado" hint={"Estado que tendrá la ubicación cuando se guarde el cambio."}><select name="state">
             <option value="DISPONIBLE">Disponible</option><option value="BLOQUEADA">Bloqueada</option>
             <option value="FUERA_SERVICIO">Fuera de servicio</option>
           </select></Field>
-          <Field label="Motivo del cambio"><textarea name="reason" required maxLength={500} /></Field>
+          <Field label="Motivo del cambio" example={"Estante en mantenimiento hasta completar su revisión."}><textarea name="reason" required maxLength={500} /></Field>
         </CommandForm>
 
       </section>
+      </div>
+      <div className="workspace-config-column">
       <section className="workspace-subgroup" aria-labelledby="staff-settings-heading">
         <h3 id="staff-settings-heading">Personal y contactos</h3>
         <p>Gestiona asignaciones y comprobaciones presenciales.</p>
@@ -216,8 +204,8 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
           body: { point_id: requiredPoint(data), user_id: value(data, "user"), role: value(data, "role"), is_active: data.has("active") },
         })}>
           <PointField points={points} />
-          <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
-          <Field label="Rol"><select name="role">
+          <Field label="Identificador autorizado de la cuenta" hint={"La persona lo encuentra en Mi cuenta → Identificador de mi cuenta."} example={"Copia el identificador completo que te proporcione la persona autorizada."}><input name="user" maxLength={36} required /></Field>
+          <Field label="Rol" example={"Operador: atención del punto. Auditor: consulta de eventos e indicadores. Administrador: configuración y supervisión."}><select name="role">
             <option value="OPERADOR">Operador</option><option value="ADMIN">Administrador</option><option value="AUDITOR">Auditor</option>
           </select></Field>
           <label className="check"><input type="checkbox" name="active" defaultChecked /> Asignación activa</label>
@@ -227,8 +215,8 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
           path: "/admin/users/" + encodeURIComponent(value(data, "user")) + "/verify-contact",
           body: { reason: value(data, "reason") },
         })}>
-          <Field label="Identificador autorizado de la cuenta"><input name="user" maxLength={36} required /></Field>
-          <Field label="Evidencia mínima de comprobación"><textarea name="reason" maxLength={500} required /></Field>
+          <Field label="Identificador autorizado de la cuenta" hint={"La persona lo encuentra en Mi cuenta → Identificador de mi cuenta."} example={"Copia el identificador completo que te proporcione la persona autorizada."}><input name="user" maxLength={36} required /></Field>
+          <Field label="Evidencia mínima de comprobación" hint={"Describe cómo se comprobó el contacto con la persona presente."} example={"Cuenta presente en el punto y contacto comprobado con su titular. Registra solo la evidencia necesaria."}><textarea name="reason" maxLength={500} required /></Field>
         </CommandForm>
 
       </section>
@@ -255,6 +243,7 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
           <PointField points={points} /><TariffFields />
         </CommandForm>
       </section>
+      </div>
     </div>
   </section>;
 }
@@ -321,7 +310,7 @@ export function Audit({ points }: { points: Point[] }) {
         <button type="submit" disabled={audit.busy}>Consultar eventos</button>
       </form>
       <Status {...audit} />
-      {events && <Field label="Filtrar eventos consultados por tipo o correlación">
+      {events && <Field label="Filtrar eventos consultados por tipo o correlación" example={"Escribe una parte del tipo de evento o pega su identificador de correlación."}>
         <input value={filter} onChange={(event) => setFilter(event.target.value)} />
       </Field>}
       <ul className="items workspace-records">{visible?.map((event) => <li key={event.id}>
@@ -347,8 +336,8 @@ export function Audit({ points }: { points: Point[] }) {
         }))));
       }}>
         <PointField points={points} />
-        <Field label="Desde · fecha incluida en La Paz"><input type="date" name="from" required /></Field>
-        <Field label="Hasta · fecha no incluida en La Paz"><input type="date" name="to" required /></Field>
+        <Field label="Desde · fecha incluida en La Paz" hint={"Se incluyen los registros desde el inicio de este día."}><input type="date" name="from" required /></Field>
+        <Field label="Hasta · fecha no incluida en La Paz" hint={"El periodo termina al comenzar este día."} example={"Para incluir todo el 7 de noviembre, selecciona el 8 de noviembre como fecha final."}><input type="date" name="to" required /></Field>
         <button type="submit" disabled={reportTask.busy}>Consultar indicadores</button>
       </form>
       <Status {...reportTask} />

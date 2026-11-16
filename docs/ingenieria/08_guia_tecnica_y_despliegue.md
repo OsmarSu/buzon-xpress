@@ -36,6 +36,8 @@ La estructura separa reglas, aplicación, persistencia e interfaz. Una carpeta p
 | `BUZON_ALLOWED_ORIGINS` | Orígenes HTTPS permitidos; en desarrollo, HTTP solo en loopback. El primero se usa como origen público. |
 | `BUZON_CORS_ORIGINS` | Orígenes HTTPS adicionales para el frontend estático separado. |
 | `BUZON_SMTP_HOST`, `BUZON_SMTP_PORT`, `BUZON_SMTP_FROM`, `BUZON_SMTP_USER`, `BUZON_SMTP_PASSWORD` | Transporte de correo opcional; la bandeja de avisos sigue disponible sin SMTP. |
+| `BUZON_MFA_ENCRYPTION_KEY` | Clave Fernet estable y separada para cifrar TOTP; obligatoria en piloto. |
+| `BUZON_MAIL_PROVIDER` | `gmail`, `smtp` o `none`; Gmail requiere contraseña de aplicación y cuenta remitente. |
 | `BUZON_ENV` | Distingue desarrollo, pruebas y piloto. |
 
 La configuración se valida en `backend/app/config.py`. En piloto se exigen tres secretos distintos de al menos 32 bytes. No se guardan secretos reales en el repositorio; las pruebas usan credenciales sintéticas y una base aislada.
@@ -44,7 +46,7 @@ La configuración se valida en `backend/app/config.py`. En piloto se exigen tres
 
 Desarrollo: datos sintéticos y servicios locales disponibles. Pruebas: base separada y descartable identificada explícitamente; una prueba no puede aceptar por omisión la URL del punto piloto. Ensayo: versión identificada, personal informado y bultos de prueba. Piloto: solo después de validar requisitos y procedimiento.
 
-El [SQL de referencia](anexos/modelo_propuesto.sql) describe el esquema relacional. Las migraciones `0001_identity` y `0002_operations` crean la estructura de la aplicación; `./infra/probar-sistema.sh` las aplica, revierte y reaplica en PostgreSQL 16 desechable. No usar este esquema para actualizar directamente la base antecedente. La primera cuenta administradora se habilita mediante el procedimiento documentado en el README, sin una contraseña universal.
+El [SQL de referencia](anexos/modelo_propuesto.sql) describe el esquema relacional. Las migraciones `0001_identity`, `0002_operations` y `0003_mfa` crean la estructura de la aplicación; `./infra/probar-sistema.sh` las aplica, revierte y reaplica en PostgreSQL 16 desechable. No usar este esquema para actualizar directamente la base antecedente. La primera cuenta administradora se habilita mediante el procedimiento documentado en el README, sin una contraseña universal.
 
 La cuenta de aplicación tiene permisos mínimos; la de migración se usa solo para cambios controlados. Los eventos son de adición y se protegen además con trigger. Documentar quién puede administrar o restaurar la base: la protección no impide que su propietario deshabilite controles.
 
@@ -82,3 +84,15 @@ La rotación de claves de códigos y sesión requiere invalidar o gestionar cred
 La implementación y su configuración reproducible están comprobadas en el entorno local. `./verificar.sh` valida el esquema en PostgreSQL 16 y revisa la línea base documental; el [registro de pruebas](../validacion/resultados_pruebas.csv) conserva los resultados por caso. El ensayo actual incluye restauración local, pero no establece recuperación ante desastres para una operación real.
 
 Antes de un piloto quedan pendientes la aceptación con participantes, confirmar punto, horario y responsables reales, validar SMTP del punto, definir política de conservación de datos y medir copia, RPO y RTO en la infraestructura que se vaya a usar. El [plan de implementación](../gestion/02_plan_implementacion.md) conserva la secuencia propuesta y los criterios de transición.
+
+## 8. Distribución Android de la primera fase
+
+La app 0.2.2 en `mobile/` comparte la API publicada y sus permisos. El perfil `preview` de `eas.json` solicita un APK firmado de distribución interna; `production` solicita un AAB y no realiza una publicación en tienda. Los comandos vigentes están en el [README](../../README.md). La cuenta de Expo y su cuota se consultan antes de iniciar nuevas compilaciones; no se contrataron servicios de pago.
+
+La carga de código se limita con `.easignore` en la raíz del repositorio y se verifica con `eas build:inspect --platform android --profile preview --stage archive`. El archivo inspeccionado incluye solo la app y sus pruebas. La contraseña de Gmail, credenciales de la base, sesiones del servidor y configuración de producción no forman parte del paquete. Expo conserva la firma Android en la cuenta propietaria; los secretos de acceso no se añaden a Git.
+
+Antes de compartir un APK se comprueban su finalización, identificador `bo.buzonxpress.app`, versión, integridad y firma. Un APK compilado no constituye aceptación en dispositivo: aún se deben ejecutar instalación, apertura, acceso, MFA cuando corresponda, restauración y cierre de sesión, pérdida de conexión, retorno desde segundo plano, código de retiro y TalkBack. El backend publicado debe estar activo para las funciones de negocio, aunque el APK abra sin el servidor de desarrollo.
+
+La revisión 0.2.1 reemplaza los iconos de navegación por SVG y enlaza la tipografía restante en los recursos Android, por lo que requiere un nuevo APK. Conserva el identificador y la firma de la entrega anterior y aumenta el código de versión a 3. La pantalla pública inicial consulta únicamente seguimiento; la navegación restante se presenta después de autenticar y comprueba sesión en las rutas privadas.
+
+La actualización 0.2.2 aumenta el código Android a 4 e incorpora react-native-keyboard-controller 1.21.9, compatible con SDK 57. El cambio nativo requiere instalar el nuevo APK. Los campos dentro de pantallas y ventanas de custodia usan el mismo desplazamiento automático sobre el teclado. Puntos añade búsqueda, detalle, cotización y traslado de selección al prerregistro. Mantiene firma, paquete y API; no requiere migración de datos. La web se compila y publica por separado.

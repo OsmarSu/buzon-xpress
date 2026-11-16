@@ -1,0 +1,23 @@
+# Expo Build solo necesita la aplicación móvil.
+/*
+!/mobile
+/mobile/*
+!/mobile/src
+!/mobile/assets
+/mobile/assets/*
+!/mobile/assets/logo.jpeg
+!/mobile/assets/app-icon.png
+!/mobile/scripts
+!/mobile/tests
+!/mobile/package.json
+!/mobile/package-lock.json
+!/mobile/app.json
+!/mobile/eas.json
+!/mobile/tsconfig.json
+!/mobile/eslint.config.js
+/mobile/**/.env*
+/mobile/**/*.jks
+/mobile/**/*.key
+/mobile/**/*.pem
+/mobile/**/node_modules/
+/mobile/**/dist/

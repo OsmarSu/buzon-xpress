@@ -2,7 +2,7 @@
 
 Estado: arquitectura de referencia de la implementación actual. La solución usa React/TypeScript, FastAPI, SQLAlchemy, Alembic y PostgreSQL, dentro de una aplicación modular. Los límites y las decisiones se contrastan con Evans, Martin, Fowler, Brown, Codd y Date; ver [aplicación de marcos](../metodologia/01_marcos_y_aplicacion.md).
 
-La línea base 1.1 reconstruye el SQL de referencia a partir del diccionario y las reglas documentadas. Conserva 156 definiciones de columna y explicita las claves compuestas, la ocupación activa única y la protección de eventos. La aplicación cuenta con dos revisiones Alembic; el verificador canónico aplica el esquema y sus invariantes en PostgreSQL 16 aislado. Las transiciones y los permisos ya están implementados en los módulos de dominio, aplicación y API. La evidencia y sus límites están en el [registro de pruebas](../validacion/resultados_pruebas.csv).
+La línea base 1.1 reconstruye el SQL de referencia a partir del diccionario y las reglas documentadas. Conserva 177 definiciones de columna y explicita las claves compuestas, la ocupación activa única y la protección de eventos. La aplicación cuenta con tres revisiones Alembic; el verificador canónico aplica el esquema y sus invariantes en PostgreSQL 16 aislado. Las transiciones y los permisos ya están implementados en los módulos de dominio, aplicación y API. La evidencia y sus límites están en el [registro de pruebas](../validacion/resultados_pruebas.csv).
 
 ## 1. Componentes y dependencias
 
@@ -60,6 +60,8 @@ flowchart TB
 ```mermaid
 erDiagram
     users ||--o{ sessions : mantiene
+    users ||--o{ mfa_login_challenges : comprueba
+    users ||--o{ mfa_recovery_codes : recupera
     users ||--o{ staff_assignments : recibe
     service_points ||--o{ staff_assignments : habilita
     service_points ||--o{ storage_locations : organiza
@@ -116,9 +118,11 @@ La entrega física y una transacción SQL no son atómicas. Una autorización ca
 
 Una conciliación documentada puede confirmar una autorización expirada; es una excepción del caso de uso de recuperación, nunca del endpoint ordinario. Su aprobador debe ser distinto del solicitante y el historial conserva ambas fechas: hecho declarado y confirmación persistida.
 
+Los secretos TOTP se cifran con una clave Fernet externa a PostgreSQL. Los desafíos de acceso tienen expiración, contador de intentos y versión MFA. Los códigos de recuperación se conservan como HMAC y se consumen dentro de una transacción. Activar o administrar MFA exige sesión y reautenticación; los cambios revocan las otras sesiones y los desafíos anteriores.
+
 ## 7. Operación de datos
 
-Las migraciones Alembic versionadas parten de una base de prueba vacía y se ensayan con aplicación, reversión y nueva aplicación. El [SQL](anexos/modelo_propuesto.sql) es el modelo de referencia usado para verificar las 17 tablas y sus invariantes; no se aplica sobre la base de otro sistema. Una migración de datos comerciales requiere inventario físico, correspondencia de participantes y revisión manual; no reutiliza contraseñas.
+Las migraciones Alembic versionadas parten de una base de prueba vacía y se ensayan con aplicación, reversión y nueva aplicación. El [SQL](anexos/modelo_propuesto.sql) es el modelo de referencia usado para verificar las 19 tablas y sus invariantes; no se aplica sobre la base de otro sistema. Una migración de datos comerciales requiere inventario físico, correspondencia de participantes y revisión manual; no reutiliza contraseñas.
 
 Copias y restauración se ensayan antes del piloto. Los eventos no se editan con la cuenta de aplicación; un trigger adicional rechaza UPDATE y DELETE, con límites frente a un propietario de base. La conservación y anonimización requieren una política aprobada para el servicio antes de uso público.
 
@@ -145,6 +149,14 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 | `password_reset_expires_at` | `TIMESTAMPTZ` | Vigencia de recuperación de cuenta. |
 | `is_active` | `BOOLEAN NOT NULL DEFAULT TRUE` | Habilitación de cuenta. |
 | `created_at` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Alta. |
+| `mfa_enabled` | `BOOLEAN NOT NULL DEFAULT FALSE` | Segundo factor TOTP confirmado. |
+| `mfa_secret_ciphertext` | `TEXT` | Secreto TOTP cifrado con clave externa a la base. |
+| `mfa_pending_secret_ciphertext` | `TEXT` | Secreto de enrolamiento cifrado, todavía sin activar. |
+| `mfa_pending_expires_at` | `TIMESTAMPTZ` | Límite de diez minutos del enrolamiento. |
+| `mfa_last_counter` | `BIGINT` | Último intervalo TOTP aceptado para rechazar repetición. |
+| `mfa_failed_attempts` | `INTEGER NOT NULL DEFAULT 0 CHECK (mfa_failed_attempts BETWEEN 0 AND 5)` | Fallos persistidos por cuenta. |
+| `mfa_locked_until` | `TIMESTAMPTZ` | Bloqueo temporal tras cinco códigos inválidos. |
+| `mfa_version` | `INTEGER NOT NULL DEFAULT 0 CHECK (mfa_version >= 0)` | Invalida desafíos al cambiar el segundo factor. |
 
 ### Tabla `sessions`
 
@@ -156,6 +168,29 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 | `expires_at` | `TIMESTAMPTZ NOT NULL` | Límite absoluto de sesión. |
 | `revoked_at` | `TIMESTAMPTZ` | Revocación explícita. |
 | `created_at` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Inicio. |
+
+### Tabla `mfa_login_challenges`
+
+| Campo | Definición SQL | Propósito |
+|---|---|---|
+| `id` | `UUID PRIMARY KEY` | Identificador del desafío de acceso. |
+| `user_id` | `UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE` | Una comprobación de acceso pendiente por cuenta. |
+| `token_hash` | `CHAR(64) NOT NULL UNIQUE` | Hash del token aleatorio; no contiene el token original. |
+| `expires_at` | `TIMESTAMPTZ NOT NULL` | Límite de cinco minutos. |
+| `used_at` | `TIMESTAMPTZ` | Consumo único de la comprobación correcta. |
+| `attempts` | `INTEGER NOT NULL DEFAULT 0 CHECK (attempts BETWEEN 0 AND 5)` | Intentos consumidos en este desafío. |
+| `mfa_version` | `INTEGER NOT NULL` | Versión MFA que debe seguir vigente. |
+| `previous_session_hash` | `CHAR(64)` | Sesión anterior a revocar cuando se complete el acceso. |
+| `created_at` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Inicio de la comprobación. |
+
+### Tabla `mfa_recovery_codes`
+
+| Campo | Definición SQL | Propósito |
+|---|---|---|
+| `id` | `UUID PRIMARY KEY` | Identificador del código de respaldo. |
+| `user_id` | `UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE` | Cuenta propietaria del respaldo. |
+| `code_hash` | `CHAR(64) NOT NULL` | HMAC de un código aleatorio de 128 bits; el original se muestra una vez. |
+| `created_at` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Generación del conjunto de respaldos. |
 
 ### Tabla `service_points`
 
@@ -208,7 +243,7 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 |---|---|---|
 | `id` | `UUID PRIMARY KEY` | Operación de custodia. |
 | `tracking_number` | `VARCHAR(32) NOT NULL UNIQUE` | Guía privada, insuficiente para retirar. |
-| `public_reference_hash` | `CHAR(64) NOT NULL UNIQUE` | Hash de referencia pública aleatoria. |
+| `public_reference_hash` | `CHAR(64) NOT NULL UNIQUE` | Hash de código público de seguimiento aleatorio. |
 | `sender_id` | `UUID NOT NULL REFERENCES users(id)` | Emisor de la operación. |
 | `recipient_id` | `UUID NOT NULL REFERENCES users(id)` | Destinatario autorizado. |
 | `point_id` | `UUID NOT NULL REFERENCES service_points(id)` | Mismo punto para recepción y entrega. |

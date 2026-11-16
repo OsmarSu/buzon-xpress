@@ -27,9 +27,9 @@ P0 identifica lo necesario para una primera entrega consistente; P1 completa el 
 
 | ID | Prioridad | Comportamiento y criterio de aceptación | Caso |
 |---|---|---|---|
-| RF-01 | P0 | Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; una sesión revocada deja de autorizar peticiones. | CU-01 |
+| RF-01 | P0 | Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; permitir MFA TOTP con enrolamiento confirmado y códigos de recuperación de un solo uso. Una sesión revocada deja de autorizar peticiones. | CU-01 |
 | RF-02 | P0 | Aplicar permisos por participación, rol y punto; un usuario ajeno o un operador no asignado recibe rechazo. | CU-01 |
-| RF-03 | P0 | Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía y referencia pública diferentes. | CU-02 |
+| RF-03 | P0 | Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código público de seguimiento diferentes. | CU-02 |
 | RF-04 | P0 | Recibir un objeto admisible y asignar ubicación con tarifa, pago y evento en una transacción; no hay recepción sin capacidad. | CU-03 |
 | RF-05 | P0 | Mostrar inventario interno por ubicación y estado; una ubicación activa no puede asignarse a otra custodia. | CU-03 |
 | RF-06 | P0 | Separar consulta privada y seguimiento público; la respuesta pública no incluye nombres, teléfonos, ubicación interna ni credenciales. | CU-04 |
@@ -73,7 +73,7 @@ La credencial se conserva mediante un verificador HMAC con secreto de servidor, 
 |---|---|---|
 | RNF-01 | Usabilidad | Cuatro de cinco participantes completan las tareas críticas sin ayuda; registrar errores y limitaciones de la muestra. |
 | RNF-02 | Desempeño | P95 de consultas privadas menor o igual a 500 ms en servidor de prueba identificado, con 10 000 custodias sintéticas y 20 usuarios concurrentes. No incluye trabajo humano ni entrega de correo. |
-| RNF-03 | Seguridad | Cookies de sesión HttpOnly, Secure en HTTPS y SameSite, defensa CSRF en mutaciones, expiración, autorización y límites de intentos probados. |
+| RNF-03 | Seguridad | Cookies de sesión HttpOnly, Secure en HTTPS y SameSite, defensa CSRF en mutaciones, expiración, autorización y límites de intentos probados. Con MFA activo, la contraseña no crea sesión sin segundo factor; secretos TOTP cifrados, códigos de recuperación protegidos y rechazo de reuso. |
 | RNF-04 | Confiabilidad | En pruebas de falla de persistencia, ningún retiro o recepción queda parcialmente confirmado en la base de datos. |
 | RNF-05 | Recuperación | Metas propuestas RPO 24 horas y RTO 4 horas, sujetas a un ensayo real de copia y restauración. |
 | RNF-06 | Mantenibilidad | Casos de uso comprobables con repositorios en memoria; el dominio no importa FastAPI ni SQLAlchemy. |
@@ -118,3 +118,7 @@ US-03: como responsable del punto, quiero reconstruir una diferencia. Dada una i
 Los contratos se definen en [API y seguridad](07_contratos_api_y_seguridad.md), el modelo en [datos](03_modelado_datos_arquitectura.md) y las pantallas en [UI](02_modelado_diseno_ui.md). El [plan de validación](../validacion/01_plan_validacion.md) y la [matriz de trazabilidad](../gestion/03_matriz_trazabilidad.md) relacionan cada requisito con evidencia prevista.
 
 La aceptación del diseño exige consistencia entre esos artefactos. La aceptación de una futura implementación exige pruebas ejecutadas y un ensayo del servicio; producir estos documentos no equivale a aprobar el software.
+
+### Categorías de tamaño en recepción
+
+Los máximos incluyen el embalaje y se expresan como largo × ancho × alto: pequeño 30 × 20 × 15 cm; mediano 50 × 40 × 30 cm; grande 70 × 50 × 50 cm. Se declara la menor categoría compatible. El personal confirma las medidas y el espacio disponible en recepción. El modelo conserva la categoría; no registra tres dimensiones numéricas ni valida mediciones físicas automáticamente.

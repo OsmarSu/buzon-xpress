@@ -132,7 +132,7 @@ def suite():
                           (40,1020,'UI-09 · Incidencias','Revisión separada de solicitud y aprobación.'),
                           (820,1020,'UI-10/11 · Supervisión','Datos ficticios para explicar la estructura.')]:
         s.card(x,y,w,h,title,sub)
-    s.field(65,250,685,'Referencia pública','Referencia opaca de ejemplo')
+    s.field(65,250,685,'Código público de seguimiento','Código opaco de ejemplo')
     s.button(65,325,230,'Consultar estado',True)
     s.text(65,419,'RECIBIDA · Punto de ejemplo',22,bold=True)
     s.text(65,459,'Consulta horario y accede a tu cuenta para detalles.',16)

@@ -24,7 +24,7 @@
 <rect x="820" y="1020" width="740" height="405" rx="12" fill="#FFFFFF" stroke="#CBD2DF"/>
 <text x="842" y="1056" font-size="20" fill="#172033" class="bold">UI-10/11 · Supervisión</text>
 <text x="842" y="1086" font-size="14" fill="#555555">Datos ficticios para explicar la estructura.</text>
-<text x="65" y="250" font-size="14" fill="#444444" class="bold">Referencia pública</text>
+<text x="65" y="250" font-size="14" fill="#444444" class="bold">Código público de seguimiento</text>
 <rect x="65" y="260" width="685" height="42" rx="5" fill="#FAFAFA" stroke="#A9B2C1"/>
 <text x="77" y="287" font-size="14" fill="#555555">Referencia opaca de ejemplo</text>
 <rect x="65" y="325" width="230" height="44" rx="7" fill="#202020" stroke="#606060"/>

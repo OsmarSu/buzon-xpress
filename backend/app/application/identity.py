@@ -14,6 +14,7 @@ from app.ports.mail import IdentityMail, MailUnavailable
 
 
 SESSION_TTL = timedelta(hours=8)
+MOBILE_SESSION_PREFIX = "mob_"
 VERIFICATION_TTL = timedelta(minutes=30)
 RESET_TTL = timedelta(minutes=30)
 log = getLogger(__name__)
@@ -54,12 +55,21 @@ class IdentityService:
                 self.mail.verify_contact(values["email"], token)
         return user
 
-    def login(self, email: str, password: str, previous_token: str | None) -> tuple[RowMapping, str, datetime]:
+    def authenticate(self, email: str, password: str) -> RowMapping:
         user = self.store.find_active_user(email.casefold())
         valid = self.passwords.verify(password, user["password_hash"] if user is not None else self.dummy_hash)
         if user is None or not valid:
             raise IdentityError(401, "CREDENCIALES_INVALIDAS", "Correo o contraseña incorrectos.")
-        token = token_urlsafe(32)
+        return user
+
+    def login(self, email: str, password: str, previous_token: str | None) -> tuple[RowMapping, str, datetime]:
+        user = self.authenticate(email, password)
+        if user["mfa_enabled"]:
+            raise IdentityError(401, "MFA_REQUERIDA", "Completa el segundo factor para iniciar sesión.")
+        return self.issue_session(user, previous_token)
+
+    def issue_session(self, user: RowMapping, previous_token: str | None, *, token_prefix: str = "") -> tuple[RowMapping, str, datetime]:
+        token = token_prefix + token_urlsafe(32)
         now = datetime.now(UTC)
         expires_at = now + SESSION_TTL
         values = {"id": uuid4(), "user_id": user["id"], "token_hash": token_hash(token), "expires_at": expires_at}

@@ -11,6 +11,8 @@ from starlette.exceptions import HTTPException
 
 from app.adapters.api.admin import admin_router
 from app.adapters.api.auth import auth_router
+from app.adapters.api.mobile import mobile_router
+from app.adapters.api.limits import IdentityRateLimit
 from app.adapters.api.custody import custody_router
 from app.adapters.api.dto import Error, Health
 from app.adapters.api.in_person import in_person_router
@@ -44,7 +46,7 @@ def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = 
         finally:
             store.engine.dispose()
 
-    app = FastAPI(title="BUZON Xpress", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="BUZON Xpress", version="1.3.0", lifespan=lifespan)
     if settings.cors_origins:
         app.add_middleware(
             CORSMiddleware,
@@ -54,7 +56,9 @@ def create_app(settings: Settings | None = None, *, mail: IdentityMail | None = 
             allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key"],
             expose_headers=["X-Correlation-ID"],
         )
-    app.include_router(auth_router(service, settings), prefix=API_PATH)
+    auth_limits = IdentityRateLimit()
+    app.include_router(auth_router(service, settings, limits=auth_limits), prefix=API_PATH)
+    app.include_router(mobile_router(service, settings, auth_limits), prefix=API_PATH)
     for router in (in_person_router, custody_router, admin_router, recovery_router, notifications_router, pickup_router):
         app.include_router(router(operations, security), prefix=API_PATH)
 

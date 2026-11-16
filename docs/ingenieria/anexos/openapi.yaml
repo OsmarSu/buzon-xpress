@@ -1,13 +1,14 @@
 openapi: 3.1.0
 info:
   title: BUZON Xpress — API de custodia
-  version: 1.2.0
+  version: 1.3.0
   description: Servicio de custodia con recepción y entrega humanas. Los permisos de negocio se detallan en la especificación.
 servers:
 - url: /api/v1
   description: Ruta relativa de la aplicación.
 security:
 - sessionCookie: []
+- mobileBearer: []
 paths:
   /auth/csrf:
     get:
@@ -139,7 +140,7 @@ paths:
               $ref: '#/components/schemas/Register'
   /auth/login:
     post:
-      summary: Abrir sesión protegida mediante cookie.
+      summary: Comprobar contraseña y abrir sesión o exigir el segundo factor.
       operationId: post_auth_login
       responses:
         '200':
@@ -147,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Session'
+                $ref: '#/components/schemas/MfaLoginResult'
         '400':
           description: Error tipado; no contiene secretos.
           content:
@@ -668,8 +669,8 @@ paths:
   /points/{point_id}/quote:
     get:
       summary: Cotizar plazo y tamaño sin reservar espacio.
-      description: La cotización habitual es pública. Con custody_id se calcula una prórroga
-        según la tarifa histórica y se exige operador asignado al punto.
+      description: La cotización habitual es pública. Con custody_id se calcula una prórroga según la tarifa histórica
+        y se exige operador asignado al punto.
       operationId: get_points_point_id_quote
       responses:
         '200':
@@ -753,8 +754,7 @@ paths:
         schema: *id001
   /custodies:
     post:
-      summary: Registrar custodia sin reservar capacidad; referencia pública se muestra
-        al crear.
+      summary: Registrar custodia sin reservar capacidad; código público de seguimiento se muestra al crear.
       operationId: post_custodies
       responses:
         '201':
@@ -957,7 +957,7 @@ paths:
         schema: *id001
   /custodies/{custody_id}/public-reference:
     post:
-      summary: Rotar referencia pública con autorización del participante.
+      summary: Rotar código público de seguimiento con autorización del participante.
       operationId: post_custodies_custody_id_public_reference
       responses:
         '200':
@@ -2917,12 +2917,725 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security: []
+  /auth/mfa:
+    get:
+      summary: Consultar estado propio del segundo factor.
+      operationId: get_auth_mfa
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaStatus'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/mfa/setup:
+    post:
+      summary: Preparar TOTP cifrado tras reautenticación; vence en diez minutos.
+      operationId: post_auth_mfa_setup
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaSetup'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaPassword'
+  /auth/mfa/confirm:
+    post:
+      summary: Confirmar TOTP, activar MFA y entregar códigos de recuperación de un uso.
+      operationId: post_auth_mfa_confirm
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaRecovery'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaCode'
+  /auth/mfa/verify:
+    post:
+      summary: Completar el desafío de acceso con TOTP o código de recuperación.
+      operationId: post_auth_mfa_verify
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaVerify'
+  /auth/mfa/disable:
+    post:
+      summary: Desactivar MFA tras contraseña y segundo factor.
+      operationId: post_auth_mfa_disable
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaManage'
+  /auth/mfa/recovery-codes:
+    post:
+      summary: Reemplazar códigos de recuperación tras reautenticación completa.
+      operationId: post_auth_mfa_recovery_codes
+      responses:
+        '200':
+          description: Resultado del contrato propuesto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaRecovery'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaManage'
+  /mobile/auth/register:
+    post:
+      tags:
+      - Identidad móvil
+      summary: Register
+      operationId: register_api_v1_mobile_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      description: 'Solo cliente nativo: no admite Origin ni Cookie. No emite cookies.'
+  /mobile/auth/login:
+    post:
+      tags:
+      - Identidad móvil
+      summary: Login
+      operationId: login_api_v1_mobile_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/MobileSession'
+                - $ref: '#/components/schemas/MfaChallenge'
+                title: Response Login Api V1 Mobile Auth Login Post
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      description: 'Solo cliente nativo: no admite Origin ni Cookie. No emite cookies.'
+  /mobile/auth/mfa/verify:
+    post:
+      tags:
+      - Identidad móvil
+      summary: Verify
+      operationId: verify_api_v1_mobile_auth_mfa_verify_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileMfaVerify'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileSession'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      description: 'Solo cliente nativo: no admite Origin ni Cookie. No emite cookies.'
+  /mobile/auth/password-reset/request:
+    post:
+      tags:
+      - Identidad móvil
+      summary: Reset
+      operationId: reset_api_v1_mobile_auth_password_reset_request_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      description: 'Solo cliente nativo: no admite Origin ni Cookie. No emite cookies.'
+  /mobile/auth/logout:
+    post:
+      tags:
+      - Identidad móvil
+      summary: Logout
+      operationId: logout_api_v1_mobile_auth_logout_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Error tipado; no contiene secretos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - mobileBearer: []
+      description: 'Solo cliente nativo: no admite Origin ni Cookie. No emite cookies.'
 components:
   securitySchemes:
     sessionCookie:
       type: apiKey
       in: cookie
       name: buzon_session
+    mobileBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: Sesión nativa revocable; se guarda de forma protegida en el dispositivo.
   parameters:
     CsrfToken:
       name: X-CSRF-Token
@@ -2964,11 +3677,14 @@ components:
           - AUDITOR
         contact_verified:
           type: boolean
+        mfa_enabled:
+          type: boolean
       required:
       - id
       - full_name
       - role
       - contact_verified
+      - mfa_enabled
     Register:
       type: object
       additionalProperties: false
@@ -3008,6 +3724,144 @@ components:
       required:
       - user
       - expires_at
+    MfaChallenge:
+      additionalProperties: false
+      properties:
+        mfa_required:
+          const: true
+          default: true
+          title: Mfa Required
+          type: boolean
+        challenge_token:
+          title: Challenge Token
+          type: string
+        expires_at:
+          format: date-time
+          title: Expires At
+          type: string
+      required:
+      - challenge_token
+      - expires_at
+      type: object
+    MfaStatus:
+      additionalProperties: false
+      properties:
+        enabled:
+          title: Enabled
+          type: boolean
+        recovery_codes_remaining:
+          title: Recovery Codes Remaining
+          type: integer
+      required:
+      - enabled
+      - recovery_codes_remaining
+      type: object
+    MfaPassword:
+      additionalProperties: false
+      properties:
+        password:
+          format: password
+          maxLength: 128
+          minLength: 1
+          title: Password
+          type: string
+          writeOnly: true
+      required:
+      - password
+      type: object
+    MfaCode:
+      additionalProperties: false
+      properties:
+        code:
+          format: password
+          maxLength: 64
+          minLength: 6
+          title: Code
+          type: string
+          writeOnly: true
+      required:
+      - code
+      type: object
+    MfaVerify:
+      additionalProperties: false
+      properties:
+        code:
+          format: password
+          maxLength: 64
+          minLength: 6
+          title: Code
+          type: string
+          writeOnly: true
+        challenge_token:
+          format: password
+          maxLength: 43
+          minLength: 43
+          title: Challenge Token
+          type: string
+          writeOnly: true
+      required:
+      - code
+      - challenge_token
+      type: object
+    MfaManage:
+      additionalProperties: false
+      properties:
+        code:
+          format: password
+          maxLength: 64
+          minLength: 6
+          title: Code
+          type: string
+          writeOnly: true
+        password:
+          format: password
+          maxLength: 128
+          minLength: 1
+          title: Password
+          type: string
+          writeOnly: true
+      required:
+      - code
+      - password
+      type: object
+    MfaSetup:
+      additionalProperties: false
+      properties:
+        secret:
+          title: Secret
+          type: string
+        otpauth_uri:
+          title: Otpauth Uri
+          type: string
+        expires_at:
+          format: date-time
+          title: Expires At
+          type: string
+      required:
+      - secret
+      - otpauth_uri
+      - expires_at
+      type: object
+    MfaRecovery:
+      additionalProperties: false
+      properties:
+        enabled:
+          const: true
+          default: true
+          title: Enabled
+          type: boolean
+        recovery_codes:
+          items:
+            type: string
+          title: Recovery Codes
+          type: array
+      required:
+      - recovery_codes
+      type: object
+    MfaLoginResult:
+      oneOf:
+      - $ref: '#/components/schemas/Session'
+      - $ref: '#/components/schemas/MfaChallenge'
     Csrf:
       type: object
       additionalProperties: false
@@ -3448,18 +4302,32 @@ components:
         custody_id: *id001
         state:
           type: string
-          enum: [ABIERTA, EN_REVISION, RESUELTA]
+          enum:
+          - ABIERTA
+          - EN_REVISION
+          - RESUELTA
         is_blocking:
           type: boolean
         kind: *id003
         description: *id003
         opened_by: *id001
         resolved_by:
-          type: [string, 'null']
+          type:
+          - string
+          - 'null'
           format: uuid
         resolution_note:
-          type: [string, 'null']
-      required: [id, custody_id, state, is_blocking, kind, description, opened_by]
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+      - custody_id
+      - state
+      - is_blocking
+      - kind
+      - description
+      - opened_by
     RecoveryDetail:
       type: object
       additionalProperties: false
@@ -3468,18 +4336,36 @@ components:
         custody_id: *id001
         state:
           type: string
-          enum: [PENDIENTE, APROBADA, RECHAZADA, EJECUTADA]
+          enum:
+          - PENDIENTE
+          - APROBADA
+          - RECHAZADA
+          - EJECUTADA
         purpose:
           type: string
-          enum: [REEMITIR_CREDENCIAL, CAMBIAR_DESTINATARIO, AUTORIZAR_DEVOLUCION, RECONCILIAR_ENTREGA]
+          enum:
+          - REEMITIR_CREDENCIAL
+          - CAMBIAR_DESTINATARIO
+          - AUTORIZAR_DEVOLUCION
+          - RECONCILIAR_ENTREGA
         evidence: *id003
         requested_by: *id001
         decided_by:
-          type: [string, 'null']
+          type:
+          - string
+          - 'null'
           format: uuid
         decision_note:
-          type: [string, 'null']
-      required: [id, custody_id, state, purpose, evidence, requested_by]
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+      - custody_id
+      - state
+      - purpose
+      - evidence
+      - requested_by
     Notification:
       type: object
       additionalProperties: false
@@ -3659,3 +4545,48 @@ components:
       required:
       - status
       - database_checked
+    MobileSession:
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        expires_at:
+          type: string
+          format: date-time
+          title: Expires At
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          const: Bearer
+          title: Token Type
+          default: Bearer
+      additionalProperties: false
+      type: object
+      required:
+      - user
+      - expires_at
+      - access_token
+      title: MobileSession
+    MobileMfaVerify:
+      properties:
+        code:
+          type: string
+          maxLength: 64
+          minLength: 6
+          format: password
+          title: Code
+          writeOnly: true
+        challenge_token:
+          type: string
+          maxLength: 47
+          minLength: 47
+          format: password
+          title: Challenge Token
+          writeOnly: true
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - challenge_token
+      title: MobileMfaVerify
