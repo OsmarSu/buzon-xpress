@@ -18,7 +18,7 @@ export class BuzonClient {
     if (authorized && !this.token) throw new ApiError(401, "ACCESO_REQUERIDO", "Inicia sesión para continuar.");
     const requestToken = this.token;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 18000);
+    const timer = setTimeout(() => controller.abort(), 40000);
     const headers: Record<string, string> = { Accept: "application/json" };
     if (body !== undefined) headers["Content-Type"] = "application/json";
     if (authorized) headers.Authorization = "Bearer " + this.token;

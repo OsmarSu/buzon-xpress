@@ -51,7 +51,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [expires, setExpires] = useState<string | null>(null);
   const generation = useRef(0);
   const [client] = useState(() => new BuzonClient({
-    baseUrl: Platform.OS === "web" ? "" : (process.env.EXPO_PUBLIC_API_URL || "https://buzon-xpress.tail1a7cca.ts.net"),
+    baseUrl: Platform.OS === "web" ? "" : (process.env.EXPO_PUBLIC_API_URL || "https://buzonxpress.alwaysdata.net"),
     fetcher: (url, init) => fetch(url, init),
     uuid: () => Crypto.randomUUID(),
   }));

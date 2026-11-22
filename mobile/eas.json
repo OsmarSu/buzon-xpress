@@ -8,7 +8,7 @@
       "distribution": "internal",
       "environment": "preview",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://buzon-xpress.tail1a7cca.ts.net"
+        "EXPO_PUBLIC_API_URL": "https://buzonxpress.alwaysdata.net"
       },
       "android": {
         "buildType": "apk"
@@ -19,7 +19,7 @@
       "environment": "production",
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://buzon-xpress.tail1a7cca.ts.net"
+        "EXPO_PUBLIC_API_URL": "https://buzonxpress.alwaysdata.net"
       },
       "android": {
         "buildType": "app-bundle"

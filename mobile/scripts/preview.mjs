@@ -4,7 +4,7 @@ import { dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../dist/web");
-const api = new URL(process.env.BUZON_PREVIEW_API || "https://buzon-xpress.tail1a7cca.ts.net");
+const api = new URL(process.env.BUZON_PREVIEW_API || "https://buzonxpress.alwaysdata.net");
 if (api.protocol !== "https:" && api.hostname !== "127.0.0.1") throw new Error("Invalid development service origin.");
 const mime = { ".html": "text/html; charset=utf-8", ".js": "application/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".ttf": "font/ttf", ".woff": "font/woff", ".woff2": "font/woff2", ".json": "application/json" };
 const server = http.createServer(async (request, response) => {

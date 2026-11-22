@@ -77,9 +77,13 @@ El modo `BUZON_MAIL_PROVIDER=smtp` conserva un transporte SMTP de pruebas. Ejecu
 
 El usuario activa MFA desde «Mi cuenta» con su contraseña y una aplicación autenticadora compatible con TOTP. Debe confirmar el primer código y guardar los códigos de recuperación de un solo uso. El acceso de una cuenta con MFA no emite sesión hasta comprobar el segundo factor. La recuperación de contraseña conserva MFA.
 
-Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`, además de una clave Fernet estable y separada en `BUZON_MFA_ENCRYPTION_KEY` para cifrar los secretos TOTP. Conservar esa clave fuera del repositorio junto con el procedimiento de recuperación de la base. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye las códigos públicos de seguimiento de los logs de acceso.
+Para un entorno HTTPS configura tres secretos distintos mediante `BUZON_SESSION_SECRET`, `BUZON_CREDENTIAL_HMAC_KEY` y `BUZON_REQUEST_HMAC_KEY`, además de una clave Fernet estable y separada en `BUZON_MFA_ENCRYPTION_KEY` para cifrar los secretos TOTP. Conservar esa clave fuera del repositorio junto con el procedimiento de recuperación de la base. Los límites por origen y cuenta en memoria corresponden a un proceso. Para un piloto con varios procesos, aplica también límites compartidos en el proxy. Excluye los códigos públicos de seguimiento de los logs de acceso.
 
 Si publicas el frontend estático en un origen HTTPS separado, compílalo con `VITE_BUZON_API_ORIGIN` apuntando a la API. Incluye el origen exacto del frontend en `BUZON_CORS_ORIGINS` y en `BUZON_ALLOWED_ORIGINS`. El primer valor de `BUZON_ALLOWED_ORIGINS` es la dirección que se incluye en los correos. La sesión entre sitios usa cookies particionadas.
+
+### Servicio publicado
+
+La [web en Surge](https://buzon-xpress.surge.sh/) y Android 0.2.3 usan la [API en alwaysdata](https://buzonxpress.alwaysdata.net/api/v1/health). PostgreSQL se aloja en Supabase y las tareas de avisos y vencimientos se ejecutan en alwaysdata. El uso de estas versiones no requiere que la máquina de desarrollo esté encendida. Para publicar cambios en la web, compila con `VITE_BUZON_API_ORIGIN=https://buzonxpress.alwaysdata.net`.
 
 ### Verificar el diseño y consultar entregables
 
@@ -87,7 +91,7 @@ Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.s
 
 ## 3. Aplicación Android
 
-La versión móvil 0.2.2 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
+La versión móvil 0.2.3 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
 
 Desde WSL:
 
@@ -108,7 +112,7 @@ npx --yes eas-cli@latest login --device
 npx --yes eas-cli@latest build --platform android --profile preview
 ```
 
-El APK 0.2.2 (código 4) se generó el 15 de noviembre de 2026: [descargar actualización](https://expo.dev/artifacts/eas/oXSNGSp8j9w3mpAOU3wFhdJmHhVZK9fTqXeqHj2JSRI.apk) · [compilación en Expo](https://expo.dev/accounts/oswidev/projects/buzon-xpress/builds/ec07076a-8f0a-42c7-bdaa-09939357a87a). La copia local está en `mobile/dist/apk/buzon-xpress-0.2.2.apk`, fuera de Git. Tamaño: 106 973 802 bytes. Admite Android 7.0 / API 24 o posterior y declara destino API 36. Se verificaron el ZIP, identificador, versión, ausencia de depuración, módulo nativo del teclado, SVG y fuente Ionicons. Google Apksig 9.5.1 validó la firma v2 y el mismo certificado de 0.2.1, por lo que se instala como actualización. SHA-256 del APK: `88cbd9849c279091ef5439609133adef1a8944c9d4a67137e9ccc09f977a23ed`. El archivo de Expo tiene retención temporal; conservar la copia local.
+El APK 0.2.3 (código Android 5) usa la API en alwaysdata y amplía a 40 segundos el tiempo límite de la consulta para tolerar el arranque en frío. Se distribuye firmado en [GitHub Releases](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.3). El APK se conserva fuera del historial de Git.
 
 La cuenta debe tener cuota disponible en su plan. El perfil `production` prepara un AAB para Google Play; no publica automáticamente en la tienda. El APK incorpora el código de la app y no necesita Metro para abrirse, pero sí requiere conexión a la API publicada para consultar o modificar datos. La prueba en teléfono físico, TalkBack y los recorridos de instalación siguen pendientes antes de una distribución final.
 
