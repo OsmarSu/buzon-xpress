@@ -29,7 +29,7 @@ P0 identifica lo necesario para una primera entrega consistente; P1 completa el 
 |---|---|---|---|
 | RF-01 | P0 | Registrar cuentas, comprobar contacto, iniciar y cerrar sesión; permitir MFA TOTP con enrolamiento confirmado y códigos de recuperación de un solo uso. Una sesión revocada deja de autorizar peticiones. | CU-01 |
 | RF-02 | P0 | Aplicar permisos por participación, rol y punto; un usuario ajeno o un operador no asignado recibe rechazo. | CU-01 |
-| RF-03 | P0 | Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código público de seguimiento diferentes. | CU-02 |
+| RF-03 | P0 | Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código de paquete diferentes. | CU-02 |
 | RF-04 | P0 | Recibir un objeto admisible y asignar ubicación con tarifa, pago y evento en una transacción; no hay recepción sin capacidad. | CU-03 |
 | RF-05 | P0 | Mostrar inventario interno por ubicación y estado; una ubicación activa no puede asignarse a otra custodia. | CU-03 |
 | RF-06 | P0 | Separar consulta privada y seguimiento público; la respuesta pública no incluye nombres, teléfonos, ubicación interna ni credenciales. | CU-04 |

@@ -109,7 +109,7 @@ La revisión de contenido del 14 de noviembre retiró la etiqueta técnica de tr
 
 ## Primera fase de la interfaz Android
 
-La aplicación 0.2.2 abre en Consultar seguimiento. Sin sesión muestra esa consulta y el acceso en la cabecera; después de autenticar usa navegación inferior por Seguimiento, Custodias, Puntos, Avisos y Cuenta. El acceso y registro ocupan pantallas independientes sin ayudas emergentes. Las acciones privadas requieren sesión; tras acceder se retoma el área solicitada. El prerregistro explica la confirmación presencial de capacidad y precio. El código de retiro solo se presenta al destinatario autorizado, con vencimiento, y se oculta al cerrar el detalle o cambiar de aplicación. Cancelación, renovación del código público de seguimiento y reemisión requieren confirmación. La prueba en teléfono físico y con TalkBack sigue pendiente.
+La aplicación 0.2.2 abre en Consultar seguimiento. Sin sesión muestra esa consulta y el acceso en la cabecera; después de autenticar usa navegación inferior por Seguimiento, Custodias, Puntos, Avisos y Cuenta. El acceso y registro ocupan pantallas independientes sin ayudas emergentes. Las acciones privadas requieren sesión; tras acceder se retoma el área solicitada. El prerregistro explica la confirmación presencial de capacidad y precio. El código de retiro solo se presenta al destinatario autorizado, con vencimiento, y se oculta al cerrar el detalle o cambiar de aplicación. Cancelación, renovación del código de paquete y reemisión requieren confirmación. La prueba en teléfono físico y con TalkBack sigue pendiente.
 
 La previsualización de la primera fase móvil comprobó acceso con cuenta publicada, retorno al área solicitada, listado y detalle de custodias, cotización y validación de campos vacíos sin registrar nuevas operaciones de negocio. Esta evidencia corresponde al renderizado web de React Native y no reemplaza una ejecución física en Android.
 
@@ -119,10 +119,12 @@ Ante el reporte de iconos invisibles en el móvil, la revisión 0.2.1 cambió la
 
 ### Ajustes móviles 0.2.2
 
-La cabecera pública y privada muestra solo el nombre escrito. El pie web omite el apartado Fotografías del recorrido. El término visible es **Código público de seguimiento**, separado de la guía privada y del código de retiro. Los campos móviles comparten un contenedor que desplaza el control enfocado por encima del teclado, tanto en acceso y registro como en los formularios de cuenta y las ventanas de custodia. La revisión en previsualización no sustituye la confirmación del teclado físico Android.
+La cabecera pública y privada muestra solo el nombre escrito. El pie web omite el apartado Fotografías del recorrido. El término visible es **Código de Paquete**, separado de la guía privada y del código de retiro. Los campos móviles comparten un contenedor que desplaza el control enfocado por encima del teclado, tanto en acceso y registro como en los formularios de cuenta y las ventanas de custodia. La revisión en previsualización no sustituye la confirmación del teclado físico Android.
 
 Puntos permite buscar por nombre o zona, abrir dirección y horario, cotizar por tamaño y horas y continuar al prerregistro con esos datos. El destinatario y la descripción se completan después. El prerregistro exige contacto verificado y no reserva espacio. Las ubicaciones son ficticias; no se muestran distancias ni disponibilidad en tiempo real.
 
 Las categorías declaran máximos **con embalaje, en largo × ancho × alto**: pequeño **30 × 20 × 15 cm**, mediano **50 × 40 × 30 cm** y grande **70 × 50 × 50 cm**. Se elige el menor tamaño que admita el objeto; el personal comprueba la categoría y capacidad al recibirlo. Son límites de la política de recepción, no medidas capturadas o verificadas automáticamente por el servidor.
 
 La revisión 0.2.2 aprobó doce pruebas del cliente móvil y comprobó en la previsualización la cotización de 48 horas para tamaño mediano y el traslado de la selección de Miraflores al prerregistro, incluida su reapertura. La web publicada se revisó a 320, 390 y 1280 píxeles; los selectores muestran medidas completas. El APK final contiene el componente nativo del teclado y conserva el certificado de la entrega anterior. Estas verificaciones no sustituyen el recorrido en un teléfono Android.
+
+La web y Android 0.2.4 marcan con un asterisco los campos obligatorios. Operación y Auditoría consultan los puntos asignados a la sesión. Revisión abre directamente su área de incidencias y excepciones.

@@ -46,7 +46,7 @@ La configuración se valida en `backend/app/config.py`. En piloto se exigen tres
 
 Desarrollo: datos sintéticos y servicios locales disponibles. Pruebas: base separada y descartable identificada explícitamente; una prueba no puede aceptar por omisión la URL del punto piloto. Ensayo: versión identificada, personal informado y bultos de prueba. Piloto: solo después de validar requisitos y procedimiento.
 
-El [SQL de referencia](anexos/modelo_propuesto.sql) describe el esquema relacional. Las migraciones `0001_identity`, `0002_operations` y `0003_mfa` crean la estructura de la aplicación; `./infra/probar-sistema.sh` las aplica, revierte y reaplica en PostgreSQL 16 desechable. No usar este esquema para actualizar directamente la base antecedente. La primera cuenta administradora se habilita mediante el procedimiento documentado en el README, sin una contraseña universal.
+El [SQL de referencia](anexos/modelo_propuesto.sql) describe el esquema relacional. Las migraciones `0001_identity`, `0002_operations`, `0003_mfa` y `0004_reviewer` crean la estructura de la aplicación; `./infra/probar-sistema.sh` las aplica, revierte y reaplica en PostgreSQL 16 desechable. No usar este esquema para actualizar directamente la base antecedente. La primera cuenta administradora se habilita mediante el procedimiento documentado en el README, sin una contraseña universal.
 
 La cuenta de aplicación tiene permisos mínimos; la de migración se usa solo para cambios controlados. Los eventos son de adición y se protegen además con trigger. Documentar quién puede administrar o restaurar la base: la protección no impide que su propietario deshabilite controles.
 

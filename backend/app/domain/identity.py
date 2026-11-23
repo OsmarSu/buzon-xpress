@@ -6,6 +6,7 @@ class Role(StrEnum):
     OPERADOR = "OPERADOR"
     ADMIN = "ADMIN"
     AUDITOR = "AUDITOR"
+    REVISOR = "REVISOR"
 
 
 class IdentityError(Exception):

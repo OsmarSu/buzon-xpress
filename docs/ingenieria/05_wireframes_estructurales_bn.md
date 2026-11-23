@@ -29,7 +29,7 @@ Condiciones | Tamaños y plazos | Responsable de atención
 
 ## 3. UI-02: seguimiento público
 
-Entrada: código público de seguimiento opaco, distinto de guía y credencial. Salida: recibido / pendiente / finalizado, nombre y horario del punto y fecha general si corresponde. No muestra nombre, teléfono, descripción, ubicación interna, código o cronología privada.
+Entrada: código de paquete opaco, distinto de guía y credencial. Salida: recibido / pendiente / finalizado, nombre y horario del punto y fecha general si corresponde. No muestra nombre, teléfono, descripción, ubicación interna, código o cronología privada.
 
 Estados: código vacío, no encontrado, consulta limitada y servicio no disponible. “Acceder a mi cuenta” permite ver detalles si existe autorización.
 

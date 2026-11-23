@@ -3,7 +3,7 @@ import { useState, type ReactNode } from "react";
 import { ApiError, request } from "../../services/api";
 import { custodyApi, dateLabel, sizeLabel, sizes, type Location, type Point } from "../../services/custody";
 import { WorkspaceBadge, WorkspaceEmpty, WorkspaceHeading } from "../dashboard/Workspace";
-import { Field, formData, SizeGuide, SizeOptions, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, SizeGuide, SizeOptions, Status, useMutation, useTask, value, RequiredMark } from "../shared/forms";
 import { dailyScheduleFields, hoursFromForm, scheduleFields } from "../shared/hours";
 
 type Method = "POST" | "PUT" | "PATCH";
@@ -18,22 +18,14 @@ interface Reply {
 }
 
 function PointField({ points }: { points: Point[] }) {
-  const [selection, setSelection] = useState("");
-  const manual = !points.length || selection === "manual";
-
-  return <>
-    {points.length > 0 && <Field label="Punto de servicio" hint={"Elige el punto al que se aplicará esta operación."}>
-      <select name={manual ? undefined : "point_id"} value={selection} required
-        onChange={(event) => setSelection(event.target.value)}>
-        <option value="">Elige un punto</option>
-        {points.map((point) => <option key={point.id} value={point.id}>{point.name}</option>)}
-        <option value="manual">Introducir otro identificador</option>
-      </select>
-    </Field>}
-    {manual && <Field label="Identificador del punto" hint={"Copia el identificador completo del punto que quieres gestionar."} example={"Usa esta opción cuando el punto no aparezca en la lista. Necesitas un identificador de punto ya existente."}>
-      <input name="point_id" required maxLength={36} />
-    </Field>}
-  </>;
+  return <Field label="Punto de servicio" hint="Elige uno de los puntos asignados a tu cuenta.">
+    <select name="point_id" required defaultValue="">
+      <option value="">{points.length ? "Elige un punto" : "Sin puntos asignados"}</option>
+      {points.map((point) => <option key={point.id} value={point.id}>
+        {point.name}{point.is_active ? "" : " (inactivo)"}
+      </option>)}
+    </select>
+  </Field>;
 }
 
 function CommandForm({ heading, button, command, children, onSaved }: {
@@ -84,7 +76,7 @@ function PointFields() {
     <Field label="Nombre del punto" example={"BUZON Xpress Miraflores. Usa un nombre que permita reconocer el punto."} hint={"Nombre que se mostrará al público."}><input name="name" required maxLength={120} placeholder="Ej. BUZON Xpress Miraflores" /></Field>
     <Field label="Dirección" example={"Zona Miraflores, avenida principal, local 4. Añade una referencia útil para encontrar el punto."}><input name="address" required maxLength={255} placeholder="Zona, calle y referencia" /></Field>
     <fieldset className="workspace-hours">
-      <legend>Horario publicado</legend>
+      <legend>Horario publicado<RequiredMark /></legend>
       <p>Indica los intervalos de atención. Los días vacíos se omiten.</p>
       {scheduleFields.map(([field, label]) => <Field key={field} label={label} example="09:00–13:00 y 14:00–18:00. Deja vacío un día sin atención.">
         <input name={field} placeholder="09:00–17:00" maxLength={80} />
@@ -176,7 +168,7 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
         })}>
           <PointField points={points} />
           <Field label="Código interno de ubicación" hint={"Etiqueta que identifica un espacio dentro del punto."} example={"P-03 puede identificar el tercer espacio para objetos pequeños."}><input name="code" maxLength={24} required placeholder="Ej. P-03" /></Field>
-          <Field label="Tamaño" hint={"Categoría de objetos que admite esta ubicación."}><select name="size"><SizeOptions /></select></Field><SizeGuide />
+          <Field label="Tamaño" hint={"Categoría de objetos que admite esta ubicación."}><select name="size" required><SizeOptions /></select></Field><SizeGuide />
         </CommandForm>
 
         <CommandForm heading="Cambiar estado de una ubicación" button="Guardar estado" command={(data) => ({
@@ -185,7 +177,7 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
         })}>
           <Field label="Identificador de ubicación" hint={"Cópialo de Consultar identificadores y versiones de ubicaciones."} example={"Selecciona el punto en esa consulta y copia el identificador completo de la ubicación que vas a cambiar."}><input name="id" required maxLength={36} /></Field>
           <Field label="Versión consultada" hint={"Usa la versión actual que aparece junto a la ubicación."} example={"Si la consulta muestra versión 2, escribe 2. Vuelve a consultar si otra persona modificó la ubicación."}><input type="number" name="version" min={1} step={1} required /></Field>
-          <Field label="Nuevo estado" hint={"Estado que tendrá la ubicación cuando se guarde el cambio."}><select name="state">
+          <Field label="Nuevo estado" hint={"Estado que tendrá la ubicación cuando se guarde el cambio."}><select name="state" required>
             <option value="DISPONIBLE">Disponible</option><option value="BLOQUEADA">Bloqueada</option>
             <option value="FUERA_SERVICIO">Fuera de servicio</option>
           </select></Field>
@@ -205,8 +197,8 @@ export function Administration({ points, onPointChange }: { points: Point[]; onP
         })}>
           <PointField points={points} />
           <Field label="Identificador autorizado de la cuenta" hint={"La persona lo encuentra en Mi cuenta → Identificador de mi cuenta."} example={"Copia el identificador completo que te proporcione la persona autorizada."}><input name="user" maxLength={36} required /></Field>
-          <Field label="Rol" example={"Operador: atención del punto. Auditor: consulta de eventos e indicadores. Administrador: configuración y supervisión."}><select name="role">
-            <option value="OPERADOR">Operador</option><option value="ADMIN">Administrador</option><option value="AUDITOR">Auditor</option>
+          <Field label="Rol" example={"Operador: atención del punto. Revisor: resolución de incidencias y decisión de solicitudes. Auditor: consulta de eventos e indicadores. Administrador: configuración y supervisión."}><select name="role" required>
+            <option value="OPERADOR">Operador</option><option value="ADMIN">Administrador</option><option value="AUDITOR">Auditor</option><option value="REVISOR">Revisor</option>
           </select></Field>
           <label className="check"><input type="checkbox" name="active" defaultChecked /> Asignación activa</label>
         </CommandForm>

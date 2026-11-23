@@ -3,7 +3,7 @@ import { useState } from "react";
 import { request as apiRequest } from "../../services/api";
 import { custodyPath, type Authorization, type Custody, type Handover } from "../../services/custody";
 import { WorkspaceBadge, WorkspaceHeading } from "../dashboard/Workspace";
-import { Field, formData, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, Status, useMutation, useTask, value, RequiredMark } from "../shared/forms";
 import { AuthorizedHandover, Receipt } from "./Handover";
 
 interface Incident {
@@ -87,7 +87,7 @@ export function CustodyExceptions({ custody }: { custody: Custody }) {
         });
       }}>
         <Field label="Propósito" hint={"Selecciona qué necesita resolver la recuperación asistida."}>
-          <select value={purpose} disabled={recoveryTask.busy}
+          <select required value={purpose} disabled={recoveryTask.busy}
             onChange={(event) => setPurpose(event.target.value as keyof typeof reasons)}>
             {Object.entries(reasons).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
           </select>
@@ -139,7 +139,7 @@ export function Returns({ custody, onAuthorized, onReturned }: {
       });
     }}>
       <Field label="Identificador de solicitud aprobada" hint={"Copia el identificador del expediente cuya devolución fue aprobada."}><input name="recovery" required maxLength={36} /></Field>
-      <label className="check"><input type="checkbox" required /> Comprobación visual del emisor completada</label>
+      <label className="check"><input type="checkbox" required /> Comprobación visual del emisor completada<RequiredMark /></label>
       <button type="submit" disabled={task.busy}>Preparar devolución</button>
     </form>
     <Status {...task} />
@@ -197,7 +197,7 @@ function ResolveIncident() {
       });
     }}>
       <Field label="Fundamento de la resolución" example={"Diferencia revisada junto al objeto y al registro original; se documentó el resultado de la comprobación."}><textarea name="reason" required maxLength={1000} /></Field>
-      <label className="check workspace-confirmation"><input type="checkbox" required /> Comprobé el inventario y la diferencia</label>
+      <label className="check workspace-confirmation"><input type="checkbox" required /> Comprobé el inventario y la diferencia<RequiredMark /></label>
       <button type="submit" disabled={task.busy}>Resolver incidencia</button>
     </form>}
     <Status {...task} />
@@ -247,7 +247,7 @@ function DecideRecovery({ actorId }: { actorId: string }) {
         </select>
       </Field>
       <Field label="Justificación de la decisión" example={"Explica qué evidencia respalda la aprobación o el rechazo de esta solicitud."}><textarea name="note" required maxLength={1000} /></Field>
-      <label className="check workspace-confirmation"><input type="checkbox" required /> Revisé la evidencia del expediente</label>
+      <label className="check workspace-confirmation"><input type="checkbox" required /> Revisé la evidencia del expediente<RequiredMark /></label>
       <button type="submit" disabled={task.busy}>Registrar decisión</button>
     </form>}
     <Status {...task} />

@@ -668,3 +668,8 @@
     transition: none;
   }
 }
+
+.required-mark {
+  color: #a51d38;
+  font-weight: 700;
+}

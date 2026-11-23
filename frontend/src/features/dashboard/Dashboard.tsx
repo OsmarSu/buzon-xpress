@@ -44,32 +44,46 @@ const panels: Record<Panel, {
 
 const roles: Record<Role, string> = {
   USUARIO: "Cuenta personal", OPERADOR: "Operador del punto",
-  ADMIN: "Administración", AUDITOR: "Auditoría",
+  ADMIN: "Administración", AUDITOR: "Auditoría", REVISOR: "Revisión",
 };
 
 const defaultPanel: Record<Role, Panel> = {
-  USUARIO: "custodies", OPERADOR: "operations", ADMIN: "admin", AUDITOR: "audit",
+  USUARIO: "custodies", OPERADOR: "operations", ADMIN: "admin", AUDITOR: "audit", REVISOR: "review",
 };
 
 const groups: { label: string; panels: Panel[]; roles?: Role[] }[] = [
   { label: "Mi actividad", panels: ["custodies", "notices"] },
   { label: "Atención", panels: ["operations"], roles: ["OPERADOR"] },
   { label: "Gestión del servicio", panels: ["review", "admin"], roles: ["ADMIN"] },
+  { label: "Revisión", panels: ["review"], roles: ["REVISOR"] },
   { label: "Supervisión", panels: ["audit"], roles: ["ADMIN", "AUDITOR"] },
 ];
 
 export function Dashboard({ user, initialCustody }: { user: User; initialCustody: string | null }) {
   const [points, setPoints] = useState<Point[]>([]);
+  const [assigned, setAssigned] = useState<Point[] | null>(null);
   const [panel, setPanel] = useState<Panel>(initialCustody ? "custodies" : defaultPanel[user.role]);
   const [custody, setCustody] = useState(initialCustody);
   const task = useTask();
+  const staffTask = useTask();
+  const scopedPanel = panel === "operations" || panel === "admin" || panel === "audit";
   const heading = useRef<HTMLHeadingElement>(null);
   const focusPanel = useRef(false);
 
   function loadPoints() {
     void task.run(async () => setPoints(await custodyApi.points()));
   }
-  useEffect(loadPoints, []);
+
+  function loadAssigned() {
+    void staffTask.run(async () => {
+      setAssigned(await custodyApi.assignedPoints());
+    });
+  }
+
+  useEffect(() => {
+    if (scopedPanel) loadAssigned();
+    if (panel === "custodies") loadPoints();
+  }, [panel]);
 
   useEffect(() => {
     if (focusPanel.current) {
@@ -125,15 +139,17 @@ export function Dashboard({ user, initialCustody }: { user: User; initialCustody
         </div>
         <span className="workspace-hero-icon"><WorkspaceGlyph name={current.icon} /></span>
       </header>
-      {(task.error || task.busy) && <div className="workspace-feedback">
-        <Status {...task} />
-        {task.error && <button type="button" className="secondary" onClick={loadPoints}>Volver a consultar los puntos</button>}
+      {(scopedPanel ? staffTask.error || staffTask.busy : panel === "custodies" && (task.error || task.busy)) && <div className="workspace-feedback">
+        <Status {...(scopedPanel ? staffTask : task)} />
+        {(scopedPanel ? staffTask.error : task.error) && <button type="button" className="secondary"
+          onClick={scopedPanel ? loadAssigned : loadPoints}>Volver a consultar los puntos</button>}
       </div>}
+      {scopedPanel && assigned?.length === 0 && <p className="status">Tu cuenta no tiene puntos de trabajo asignados.</p>}
       {panel === "custodies" ? <Participant points={points} openId={custody} setOpenId={setCustody} verified={user.contact_verified} />
         : panel === "notices" ? <Notifications onOpen={openCustody} />
-        : panel === "operations" ? <Operations points={points} />
         : panel === "review" ? <ReviewExceptions actorId={user.id} />
-        : panel === "admin" ? <Administration points={points} onPointChange={loadPoints} /> : <Audit points={points} />}
+        : assigned && (panel === "operations" ? <Operations points={assigned} />
+          : panel === "admin" ? <Administration points={assigned} onPointChange={loadAssigned} /> : <Audit points={assigned} />)}
     </div>
   </div>;
 }

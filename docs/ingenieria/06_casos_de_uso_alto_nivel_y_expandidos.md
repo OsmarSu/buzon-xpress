@@ -15,22 +15,22 @@ Los escenarios usan la estructura de actor, meta, alcance, condiciones y extensi
 | CU-07 | Confirmar una entrega real. | Operador | RF-09, RF-18 |
 | CU-08 | Recibir avisos del servicio. | Participante | RF-11 |
 | CU-09 | Consultar tarifa y registrar una prórroga. | Visitante / operador asignado | RF-12, RF-13 |
-| CU-10 | Tramitar incidencias, excepciones y devoluciones. | Participantes / operador / administrador | RF-10, RF-14 |
+| CU-10 | Tramitar incidencias, excepciones y devoluciones. | Participantes / operador / administrador / revisor | RF-10, RF-14 |
 | CU-11 | Mantener el punto y su capacidad. | Administrador | RF-16 |
 | CU-12 | Supervisar operaciones y evidencia. | Administrador / auditor | RF-15, RF-17 |
 
-El diagrama representa metas observables de roles externos. Emisor y destinatario son roles de una custodia concreta. La misma persona puede desempeñar uno u otro en distintas operaciones. Visitante representa la interacción pública y persona con cuenta cubre el acceso de usuarios y personal. Operador, administrador y auditor ejercen funciones según su asignación al punto.
+El diagrama representa metas observables de roles externos. Emisor y destinatario son roles de una custodia concreta. La misma persona puede desempeñar uno u otro en distintas operaciones. Visitante representa la interacción pública y persona con cuenta cubre el acceso de usuarios y personal. Operador, administrador, auditor y revisor ejercen funciones según su asignación al punto.
 
 Los módulos internos y sus dependencias están en la [vista de componentes](../diagramas/c4_componentes.svg). El [diagrama de secuencia](01_modelado_analisis_pressman.md#6-secuencia-de-retiro-asistido) muestra el orden del retiro.
 
 | Caso en el diagrama | Alcance |
 |---|---|
-| CU-04a | Seguimiento público mediante referencia opaca. Muestra estado general, punto y horario. |
+| CU-04a | Seguimiento público mediante Código de Paquete. Muestra estado general, punto y horario. |
 | CU-04b | Consulta privada para el emisor, el destinatario o el operador, administrador o auditor asignado al punto. |
 | CU-09a | Cualquier visitante puede consultar puntos y pedir una cotización inicial. |
 | CU-09b | El operador asignado cotiza la extensión según la tarifa histórica y registra el pago y el nuevo plazo. |
 | CU-10a | Los participantes pueden abrir incidencias propias y solicitar reemisión o devolución. El operador y el administrador asignados pueden registrar incidencias y solicitar los expedientes autorizados. |
-| CU-10b | El administrador del punto revisa el expediente, decide una excepción solicitada por otra persona o resuelve una incidencia. Una incidencia bloqueante requiere un administrador distinto de quien la abrió. |
+| CU-10b | El administrador o revisor asignado al punto revisa el expediente, decide una excepción solicitada por otra persona o resuelve una incidencia. Una incidencia bloqueante requiere un revisor o administrador distinto de quien la abrió. |
 | CU-10c | El operador asignado prepara una devolución aprobada y confirma la entrega física al emisor. |
 
 Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación de las figuras, asociaciones, óvalos y límite del sistema sigue las secciones 18.1.3 y 18.1.4 de [OMG UML 2.5.1](https://www.omg.org/spec/UML/2.5.1/).
@@ -62,7 +62,7 @@ Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación
 2. El servidor comprueba la relación y evita exponer un directorio de cuentas.
 3. La pantalla explica que la capacidad se confirma al recibir y muestra condiciones.
 4. El emisor confirma los datos.
-5. El servidor crea custodia `REGISTRADA`, guía privada, código público de seguimiento independiente y evento.
+5. El servidor crea custodia `REGISTRADA`, guía privada, código de paquete independiente y evento.
 6. El emisor recibe constancia del registro y puede consultar o cancelar antes de recepción.
 
 **Garantía de éxito:** existe una operación pendiente sin asignación de espacio. **Garantía mínima:** un error no inventa una guía ni muestra recepción exitosa.
@@ -88,7 +88,7 @@ Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación
 
 ## 5. CU-04 — Conocer el estado permitido
 
-**Actor y alcance:** el visitante consulta el seguimiento público. El emisor, el destinatario y el personal asignado consultan el detalle privado dentro de su alcance. **Precondiciones:** sesión autorizada para el detalle privado o código público de seguimiento aleatorio para el seguimiento. **Disparador:** consultar estado.
+**Actor y alcance:** el visitante consulta el seguimiento público. El emisor, el destinatario y el personal asignado consultan el detalle privado dentro de su alcance. **Precondiciones:** sesión autorizada para el detalle privado o código de paquete aleatorio para el seguimiento. **Disparador:** consultar estado.
 
 **Escenario principal:**
 
@@ -187,13 +187,13 @@ Los sufijos conservan la trazabilidad de los doce casos expandidos. La notación
 
 ## 11. CU-10 — Resolver diferencias y devoluciones
 
-**Actor y alcance:** el participante o el personal autorizado registra la solicitud. El administrador asignado decide la excepción y el operador ejecuta la devolución aprobada. **Precondiciones:** custodia identificada y hechos registrados. **Disparador:** pérdida de acceso, diferencia, cambio o devolución.
+**Actor y alcance:** el participante o el personal autorizado registra la solicitud. El administrador o revisor asignado decide la excepción y el operador ejecuta la devolución aprobada. **Precondiciones:** custodia identificada y hechos registrados. **Disparador:** pérdida de acceso, diferencia, cambio o devolución.
 
 **Escenario principal:**
 
 1. Un participante o un miembro del personal autorizado abre una incidencia. El bloqueo protege la custodia si existe riesgo de duplicación o destinatario incierto.
 2. El solicitante autorizado registra el propósito y la evidencia mínima de la excepción.
-3. Un administrador asignado, distinto del solicitante, revisa participantes, estado físico declarado y eventos.
+3. Un administrador o revisor asignado, distinto del solicitante, revisa participantes, estado físico declarado y eventos.
 4. Aprueba o rechaza con fundamento; la persona solicitante no se autoaprueba.
 5. La acción aprobada revoca secretos anteriores y aplica el cambio correspondiente con auditoría.
 6. Para devolver, se genera autorización al operador, se entrega físicamente al emisor comprobado y se confirma comprobante `DEVOLUCION` y estado `DEVUELTA`.

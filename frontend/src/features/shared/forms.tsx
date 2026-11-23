@@ -83,15 +83,21 @@ function FieldHelp({ id, label, hint, example }: {
   </span>;
 }
 
-export function Field({ label, children, hint, example }: {
-  label: string; children: ReactNode; hint?: string; example?: string;
+export function RequiredMark() {
+  return <span className="required-mark" aria-hidden="true" title="Obligatorio"> *</span>;
+}
+
+export function Field({ label, children, hint, example, required }: {
+  label: string; children: ReactNode; hint?: string; example?: string; required?: boolean;
 }) {
   const id = useId();
   const helpId = id + "-help";
-  const control = isValidElement<{ id?: string; "aria-describedby"?: string }>(children)
+  const control = isValidElement<{ id?: string; required?: boolean; "aria-describedby"?: string }>(children)
     && typeof children.type === "string" && ["input", "select", "textarea"].includes(children.type)
     ? children : null;
   const controlId = control?.props.id ?? id;
+  const mandatory = required ?? control?.props.required;
+  const caption = <>{label}{mandatory && <RequiredMark />}</>;
   const descriptions = [control?.props["aria-describedby"], hint || example ? helpId : undefined]
     .filter(Boolean).join(" ");
   const help = (hint || example) && <FieldHelp id={helpId} label={label} hint={hint} example={example} />;
@@ -99,12 +105,12 @@ export function Field({ label, children, hint, example }: {
   return <div className="field">
     {control ? <>
       <div className="field-label-row">
-        <label htmlFor={controlId}>{label}</label>
+        <label htmlFor={controlId}>{caption}</label>
         {help}
       </div>
-      {cloneElement(control, { id: controlId, "aria-describedby": descriptions || undefined })}
+      {cloneElement(control, { id: controlId, required: mandatory, "aria-describedby": descriptions || undefined })}
     </> : <>
-      <label className="field-control"><span>{label}</span>{children}</label>
+      <label className="field-control"><span>{caption}</span>{children}</label>
       {help && <div className="field-label-row">{help}</div>}
     </>}
   </div>;
@@ -141,15 +147,17 @@ export function Amount() {
 }
 
 export function PaymentFields() {
+  const [method, setMethod] = useState("EFECTIVO");
+  const manual = method === "REFERENCIA_MANUAL";
   return <>
     <Field label="Medio de cobro" hint="Registra cómo se realizó el cobro en el punto." example="Selecciona Efectivo si recibiste dinero en mano. Referencia manual permite registrar el comprobante de un cobro realizado por otro medio.">
-      <select name="payment_method">
+      <select name="payment_method" required value={method} onChange={(event) => setMethod(event.target.value)}>
         <option value="EFECTIVO">Efectivo</option>
         <option value="REFERENCIA_MANUAL">Referencia manual</option>
       </select>
     </Field>
-    <Field label="Referencia del cobro (si corresponde)" hint="Es obligatoria para el medio Referencia manual." example="Copia el número del comprobante recibido, por ejemplo REC-2026-015.">
-      <input name="payment_reference" maxLength={120} placeholder="Número de comprobante" />
+    <Field label={manual ? "Referencia del cobro" : "Referencia del cobro (opcional)"} hint="Es obligatoria para el medio Referencia manual." example="Copia el número del comprobante recibido, por ejemplo REC-2026-015.">
+      <input name="payment_reference" required={manual} maxLength={120} placeholder="Número de comprobante" />
     </Field>
   </>;
 }

@@ -61,6 +61,18 @@ class CustodyOperations:
             ).mappings()
             return [{key: row[key] for key in POINT_FIELDS} for row in rows]
 
+    def assigned_points(self, actor: RowMapping) -> list[dict]:
+        if actor["role"] not in STAFF_ROLES:
+            return []
+        query = select(self.points).join(
+            self.assignments, self.assignments.c.point_id == self.points.c.id,
+        ).where(self.assignments.c.user_id == actor["id"], self.assignments.c.is_active)
+        if actor["role"] == Role.OPERADOR:
+            query = query.where(self.points.c.is_active)
+        with self.store.engine.connect() as conn:
+            rows = conn.execute(query.order_by(self.points.c.name, self.points.c.id)).mappings()
+            return [{key: row[key] for key in POINT_FIELDS} for row in rows]
+
     def quote(self, point_id: UUID, category: str, hours: int) -> dict:
         with self.store.engine.connect() as conn:
             self.active_point(conn, point_id)
@@ -155,7 +167,7 @@ class CustodyOperations:
                 .where(orders.c.public_reference_hash == public_reference_hash(reference))
             ).mappings().one_or_none()
         if row is None:
-            raise IdentityError(404, "REFERENCIA_NO_ENCONTRADA", "No se encontró el código público de seguimiento.")
+            raise IdentityError(404, "REFERENCIA_NO_ENCONTRADA", "No se encontró el código de paquete.")
         state = row["state"]
         if state == "REGISTRADA":
             public = "PENDIENTE"

@@ -28,10 +28,10 @@ export function CustodySummary({ custody, point }: { custody: Custody; point?: P
 
 function PublicReference({ reference, onDismiss }: { reference: string; onDismiss: () => void }) {
   return <div className="receipt">
-    <strong>Nuevo código público de seguimiento</strong>
+    <strong>Nuevo Código de Paquete</strong>
     <p>Compártelo para consultar el estado, el punto y su horario. La guía privada identifica el registro; el código de retiro se utiliza para recoger el objeto.</p>
     <p><code>{reference}</code></p>
-    <button type="button" className="secondary" onClick={onDismiss}>Ocultar código de seguimiento</button>
+    <button type="button" className="secondary" onClick={onDismiss}>Ocultar código de paquete</button>
   </div>;
 }
 
@@ -75,7 +75,7 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
         <WorkspaceGlyph name="pin" /><p>{selectedPoint.address}</p>
       </div>}
       <Field label="Tamaño declarado" hint={"El operador comprobará la categoría al recibir el objeto."}>
-        <select value={size} disabled={task.busy}
+        <select required value={size} disabled={task.busy}
           onChange={(event) => { setSize(event.target.value as Size); setQuote(undefined); }}><SizeOptions /></select>
       </Field>
       <SizeGuide />
@@ -171,14 +171,14 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
     </details>}
 
     <details className="workspace-action-group" open={reference ? true : undefined}>
-      <summary>Renovar código público de seguimiento</summary>
+      <summary>Renovar Código de Paquete</summary>
       <p>Esta acción invalida el enlace público anterior.</p>
       {confirmRotation ? <div className="actions"><button type="button" disabled={task.busy} onClick={() => void task.run(async () => {
         setReference((await custodyApi.rotate(custody.id)).public_reference);
         setConfirmRotation(false);
-      })}>Confirmar nuevo código de seguimiento</button>
+      })}>Confirmar nuevo código de paquete</button>
         <button type="button" className="secondary" disabled={task.busy}
-          onClick={() => setConfirmRotation(false)}>Conservar código de seguimiento</button>
+          onClick={() => setConfirmRotation(false)}>Conservar código de paquete</button>
       </div> : <button type="button" className="secondary" disabled={task.busy} onClick={() => setConfirmRotation(true)}>
           Preparar renovación
         </button>}

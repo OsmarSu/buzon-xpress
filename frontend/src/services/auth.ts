@@ -1,6 +1,6 @@
 import { mutate, request } from "./api";
 
-export type Role = "USUARIO" | "OPERADOR" | "ADMIN" | "AUDITOR";
+export type Role = "USUARIO" | "OPERADOR" | "ADMIN" | "AUDITOR" | "REVISOR";
 
 export interface User {
   id: string;

@@ -42,6 +42,8 @@ class Scenario:
                 ("admin1", "ADMIN", self.point), ("admin2", "ADMIN", self.point),
                 ("operator", "OPERADOR", self.point), ("operator2", "OPERADOR", self.point),
                 ("outsider", "ADMIN", self.other_point),
+                ("reviewer", "REVISOR", self.point), ("other_reviewer", "REVISOR", self.other_point),
+                ("auditor", "AUDITOR", self.point),
             ):
                 self._account(conn, label, role, point)
             conn.execute(self.store.table("storage_locations").insert().values(
@@ -403,7 +405,7 @@ def test_every_documented_operation_is_registered(scenario):
     documented = {(API + path, method) for path, entry in expected.items() for method in entry if method in methods}
     registered = {(path, method) for path, entry in live.items() for method in entry if method in methods}
     assert documented == registered
-    assert len(registered) == 54
+    assert len(registered) == 55
 
 
 @pytest.mark.skipif(environ.get("BUZON_PRUEBA_CARGA") != "1", reason="Ensayo explícito de 10 000 custodias.")
@@ -465,3 +467,48 @@ def test_staff_promotion_revokes_preexisting_session(scenario):
     })
     assert revoked.status_code == 200
     assert s.get("operator", "/inventory", point_id=s.point).status_code == 403
+
+
+def test_staff_point_selectors_exclude_points_outside_scope(scenario):
+    s = scenario
+    for role in ("operator", "auditor", "admin1"):
+        points = s.get(role, "/points/assigned").raise_for_status().json()
+        assert [point["id"] for point in points] == [str(s.point)]
+    assert s.get("sender", "/points/assigned").raise_for_status().json() == []
+    assert s.get("operator", "/inventory", point_id=s.other_point).status_code == 403
+    assert s.get("auditor", "/audit/events", point_id=s.other_point).status_code == 403
+    points = s.store.table("service_points")
+    with s.engine.begin() as conn:
+        conn.execute(points.update().where(points.c.id == s.point).values(is_active=False))
+    assert s.get("operator", "/points/assigned").raise_for_status().json() == []
+    assert s.get("auditor", "/points/assigned").raise_for_status().json()[0]["is_active"] is False
+
+
+def test_reviewer_can_resolve_assigned_cases_without_administration(scenario):
+    s = scenario
+    assert s.get("reviewer", "/auth/me").raise_for_status().json()["role"] == "REVISOR"
+    request = s.change("operator", "/recovery-requests", {
+        "custody_id": str(s.order),
+        "purpose": "AUTORIZAR_DEVOLUCION",
+        "evidence": "Constancia de devolución para revisión.",
+    }).raise_for_status().json()
+    route = f"/recovery-requests/{request['id']}"
+    assert s.get("reviewer", route).status_code == 200
+    assert s.get("other_reviewer", route).status_code == 403
+    assert s.change("reviewer", route + "/decision", {
+        "decision": "RECHAZAR", "note": "No se presentó suficiente evidencia.",
+    }).raise_for_status().json()["state"] == "RECHAZADA"
+    issue = s.change("operator", f"/custodies/{s.order}/incidents", {
+        "kind": "OBSERVACION", "description": "Observación asentada en el punto.", "is_blocking": False,
+    }).raise_for_status().json()
+    issue_route = f"/incidents/{issue['id']}"
+    assert s.get("other_reviewer", issue_route).status_code == 403
+    assert s.get("reviewer", issue_route).status_code == 200
+    assert s.change("reviewer", issue_route + "/resolve", {
+        "reason": "Se verificó la condición y se aclaró la observación.",
+    }).raise_for_status().json()["state"] == "RESUELTA"
+    assert s.get("reviewer", "/audit/events", point_id=s.point).status_code == 403
+    assert s.get("reviewer", "/inventory", point_id=s.point).status_code == 403
+    assert s.change("reviewer", "/admin/locations", {
+        "point_id": str(s.point), "code": "A-99", "size_category": "PEQUENO",
+    }).status_code == 403

@@ -62,6 +62,10 @@ def custody_router(store: OperationsStore, security: ApiSecurity) -> APIRouter:
     def points():
         return operations.points_list()
 
+    @router.get("/points/assigned")
+    def assigned_points(request: Request):
+        return operations.assigned_points(security.actor(request))
+
     @router.get("/points/{point_id}/quote")
     def quote(
         request: Request, point_id: UUID, size_category: SizeCategory,

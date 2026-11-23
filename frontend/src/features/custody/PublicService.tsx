@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { custodyApi, type Point, type Quote, type Size } from "../../services/custody";
-import { Field, formData, Schedule, SizeGuide, SizeOptions, Status, useTask, value } from "../shared/forms";
+import { Field, formData, Schedule, SizeGuide, SizeOptions, Status, useTask, value, RequiredMark } from "../shared/forms";
 
 const trackingLabels = {
   PENDIENTE: "Pendiente de recepción",
@@ -23,7 +23,7 @@ export function PublicTracking({ initialReference }: { initialReference: string 
     <div className="public-section-intro" data-reveal>
       <p className="public-eyebrow">04 / Siempre informado</p>
       <h2 id="tracking-heading" ref={trackingHeading} tabIndex={-1}>Seguimiento</h2>
-      <p id="tracking-hint">Usa el código público de seguimiento que te compartieron al registrar la custodia para consultar su estado, punto y horario.</p>
+      <p id="tracking-hint">Usa el código de paquete que te compartieron al registrar la custodia para consultar su estado, punto y horario.</p>
     </div>
     <div className="public-tracking-panel" data-reveal>
       <form aria-busy={tracking.busy} onSubmit={(event) => {
@@ -31,7 +31,7 @@ export function PublicTracking({ initialReference }: { initialReference: string 
         setResult(undefined);
         void tracking.run(async () => setResult(await custodyApi.tracking(reference)));
       }}>
-        <Field label="Código público de seguimiento" hint={"Pega el código público de seguimiento que te compartieron para consultar el estado."} example={"El emisor puede compartir el código público de seguimiento de su registro. Copia el código completo, sin espacios adicionales."}>
+        <Field label="Código de Paquete" hint={"Pega el código de paquete que te compartieron para consultar el estado."} example={"El emisor puede compartir el código de paquete de su registro. Copia el código completo, sin espacios adicionales."}>
           <input name="reference" defaultValue={initialReference ?? ""} autoComplete="off"
             spellCheck={false} placeholder="Pega aquí el código completo" aria-describedby="tracking-hint" required maxLength={180} />
         </Field>
@@ -112,7 +112,7 @@ export function PublicPoints() {
           void quoteTask.run(async () => setQuote(await custodyApi.quote(point, size, hours)));
         }}>
           <div className="field">
-            <label htmlFor="public-quote-point">Punto de servicio</label>
+            <label htmlFor="public-quote-point">Punto de servicio<RequiredMark /></label>
             <select id="public-quote-point" name="point" required disabled={quoteTask.busy}
               defaultValue={points.length === 1 ? points[0].id : ""}>
               <option value="" disabled>Selecciona un punto</option>
@@ -121,8 +121,8 @@ export function PublicPoints() {
           </div>
           <div className="public-quote-fields">
             <div className="field">
-              <label htmlFor="public-quote-size">Tamaño</label>
-              <select id="public-quote-size" name="size" defaultValue="PEQUENO" disabled={quoteTask.busy}><SizeOptions /></select>
+              <label htmlFor="public-quote-size">Tamaño<RequiredMark /></label>
+              <select id="public-quote-size" name="size" required defaultValue="PEQUENO" disabled={quoteTask.busy}><SizeOptions /></select>
               <SizeGuide />
             </div>
             <Field label="Plazo en horas" example={"24 equivale a un día; 48, a dos días. La estimación se calcula con horas enteras."}>

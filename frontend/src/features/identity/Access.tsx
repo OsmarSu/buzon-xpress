@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ApiError } from "../../services/api";
 import { auth, isMfaChallenge, type MfaChallenge, type User } from "../../services/auth";
 import { Dashboard } from "../dashboard/Dashboard";
-import { Field, formData, Status, useTask, value } from "../shared/forms";
+import { Field, formData, Status, useTask, value, RequiredMark } from "../shared/forms";
 
 import { PublicHome } from "./PublicHome";
 import { Brand, PublicHeader, SiteFooter } from "./SiteChrome";
@@ -37,6 +37,7 @@ interface Links {
 const roleLabels = {
   ADMIN: "Administración",
   AUDITOR: "Auditoría",
+  REVISOR: "Revisión",
   OPERADOR: "Operación del punto",
   USUARIO: "Cuenta personal",
 };
@@ -128,7 +129,7 @@ function PasswordField({ label, name, register = false, hint }: {
   const id = useId();
   const [visible, setVisible] = useState(false);
   return <div className="field">
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id}>{label}<RequiredMark /></label>
     <div className="access-password">
       <input id={id} name={name} type={visible ? "text" : "password"}
         autoComplete={register ? "new-password" : "current-password"} aria-describedby={hint}

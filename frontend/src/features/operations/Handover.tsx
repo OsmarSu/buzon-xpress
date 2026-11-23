@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { custodyPath, dateLabel, type Authorization, type Custody, type Handover } from "../../services/custody";
 import { WorkspaceBadge, WorkspaceGlyph } from "../dashboard/Workspace";
-import { Field, formData, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, Status, useMutation, useTask, value, RequiredMark } from "../shared/forms";
 
 export function Receipt({ handover }: { handover: Handover }) {
   return <div className="receipt workspace-handover-receipt" role="status">
@@ -62,7 +62,7 @@ export function AuthorizedHandover({ authorization, kind, onConfirmed, onAborted
       <label className="check workspace-confirmation">
         <input type="checkbox" required checked={delivered} disabled={pending || task.busy}
           onChange={(event) => setDelivered(event.target.checked)} />
-        {isReturn ? "Confirmo que ya devolví físicamente el objeto al emisor" : "Confirmo que ya entregué físicamente el objeto"}
+        {isReturn ? "Confirmo que ya devolví físicamente el objeto al emisor" : "Confirmo que ya entregué físicamente el objeto"}<RequiredMark />
       </label>
       <button type="submit" className="workspace-quiet-action" disabled={task.busy || !delivered}>
         <WorkspaceGlyph name="check" />

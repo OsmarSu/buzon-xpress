@@ -89,6 +89,7 @@ export function custodyPath(id: string, operation?: string) {
 
 export const custodyApi = {
   points: () => request<Point[]>("/points"),
+  assignedPoints: () => request<Point[]>("/points/assigned"),
   quote: (pointId: string, size: Size, hours: number, custodyId?: string) =>
     request<Quote>("/points/" + encodeURIComponent(pointId) + "/quote?" + new URLSearchParams({
       size_category: size,

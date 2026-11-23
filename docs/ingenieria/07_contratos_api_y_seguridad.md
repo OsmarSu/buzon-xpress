@@ -1,6 +1,6 @@
 # Contratos API y controles de seguridad
 
-El contrato 1.2 documenta la API de desarrollo. [OpenAPI 3.1.0](anexos/openapi.yaml) enumera operaciones, peticiones, respuestas y seguridad. Referentes: T01 y S01–S03 de la [bibliografía](../metodologia/02_bibliografia_verificada.md).
+El contrato 1.3 documenta la API de desarrollo. [OpenAPI 3.1.0](anexos/openapi.yaml) enumera operaciones, peticiones, respuestas y seguridad. Referentes: T01 y S01–S03 de la [bibliografía](../metodologia/02_bibliografia_verificada.md).
 
 ## 1. Convenciones
 
@@ -8,7 +8,7 @@ Prefijo `/api/v1`. JSON UTF-8; identificadores UUID; fechas ISO 8601 con zona UT
 
 El servidor obtiene actor desde cookie de sesión protegida. Las mutaciones incluyen `X-CSRF-Token`; el navegador lo obtiene mediante `/auth/csrf`, ligado a su contexto. Se valida origen y contexto también en acceso y registro. La autenticación web no reside en `localStorage`.
 
-El código público de seguimiento se muestra al crear la custodia y solo se conserva su hash. Si se pierde, un participante puede renovarlo mediante la operación privada correspondiente; el código anterior deja de funcionar. Una repetición idempotente de creación devuelve la custodia existente sin volver a mostrar un código que ya no se conserva en texto.
+El código de paquete se muestra al crear la custodia y solo se conserva su hash. Si se pierde, un participante puede renovarlo mediante la operación privada correspondiente; el código anterior deja de funcionar. Una repetición idempotente de creación devuelve la custodia existente sin volver a mostrar un código que ya no se conserva en texto.
 
 ## 2. Contratos principales
 
@@ -21,6 +21,7 @@ El código público de seguimiento se muestra al crear la custodia y solo se con
 | `POST /auth/mfa/verify` | Completa un desafío breve de acceso con TOTP o código de recuperación; la contraseña por sí sola no abre sesión cuando MFA está activo. |
 | `POST /auth/mfa/disable`, `/recovery-codes` | Reautenticación y segundo factor; revoca otras sesiones y desafíos previos. |
 | `GET /points`, `/points/{point_id}/quote` | Horarios y cotización por tamaño/plazo. Una cotización no reserva capacidad. |
+| `GET /points/assigned` | Puntos asignados a la sesión para operación, administración o auditoría. Operación solo ofrece puntos activos. |
 | `POST /custodies` | Cuenta activa y comprobada; participantes y punto válidos. |
 | `GET /custodies`, `/custodies/{custody_id}` | Participantes o personal dentro de su alcance. |
 | `POST /custodies/{custody_id}/cancel` | Emisor; únicamente mientras esté registrada y sin recepción. |
@@ -37,7 +38,7 @@ El código público de seguimiento se muestra al crear la custodia y solo se con
 | `/admin/points`, `/admin/locations`, `/admin/staff-assignments`, `/admin/tariffs` | Administración con auditoría; deshabilitar no elimina inventario. |
 | `GET /notifications`, `POST /notifications/{notification_id}/read` | Bandeja propia, sin códigos. |
 | `GET /audit/events`, `/reports` | Auditor o administrador con alcance y periodo. |
-| `GET /public-tracking/{reference}` | Información mínima por código público de seguimiento aleatorio independiente de la guía. |
+| `GET /public-tracking/{reference}` | Información mínima por código de paquete aleatorio independiente de la guía. |
 
 El YAML especifica las rutas de comprobación presencial, consulta y resolución de incidencias, consulta de expedientes y cambio de estado de ubicaciones. El detalle de expedientes requiere un administrador asignado al punto. La matriz funcional enlaza los caminos principales; las operaciones auxiliares conservan los mismos permisos.
 
@@ -78,7 +79,7 @@ El cuerpo tiene código estable, mensaje y correlación. No se devuelven trazas,
 
 | Amenaza | Control diseñado | Evidencia prevista |
 |---|---|---|
-| Consulta por teléfono revela objeto y PIN. | Código público de seguimiento separado, datos mínimos y tasa limitada. | T-06, T-30. |
+| Consulta por teléfono revela objeto y PIN. | Código de Paquete separado, datos mínimos y tasa limitada. | T-06, T-30. |
 | Cambiar identificador accede a custodia ajena. | Autorización por participación y punto en servidor. | T-02. |
 | Fuerza bruta de código. | HMAC, vigencia, contador persistido y límites por cuenta y origen. | T-07, T-08. |
 | Dos operadores entregan el mismo bulto. | Autorización retenida, estado en curso y comprobante único. | T-09, T-18, T-28. |
@@ -97,3 +98,5 @@ La aplicación móvil utiliza las mismas cuentas y permisos. `/mobile/auth/login
 Los endpoints de identidad nativa no reciben `Origin` ni `Cookie` y no escriben cookies. Las peticiones privadas llevan `Authorization: Bearer` y vuelven a comprobar la sesión y autorización; esa credencial explícita sustituye el antifalsificador del transporte web. Las cookies del sitio conservan su comprobación de origen y CSRF. Los límites de acceso por cuenta y dirección se comparten entre ambos transportes.
 
 La previsualización local de `mobile/` usa un proxy en loopback y mantiene su token solo en memoria. No se habilita otro origen web en producción. La primera fase no incorpora inicio con Google, notificaciones push, persistencia de códigos de retiro ni funciones operativas sin conexión.
+
+El rol `REVISOR` consulta y resuelve incidencias y decide solicitudes de excepción del punto asignado. Las decisiones sobre solicitudes propias y la resolución de incidencias bloqueantes abiertas por la misma persona se rechazan.

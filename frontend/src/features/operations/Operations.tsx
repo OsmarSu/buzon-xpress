@@ -6,7 +6,7 @@ import { CustodySummary } from "../custody/Participant";
 import { WorkspaceBadge, WorkspaceEmpty, WorkspaceGlyph, WorkspaceHeading } from "../dashboard/Workspace";
 import { CustodyExceptions, Returns } from "./Exceptions";
 import { AuthorizedHandover, Receipt } from "./Handover";
-import { Field, formData, payment, PaymentFields, Status, useMutation, useTask, value } from "../shared/forms";
+import { Field, formData, payment, PaymentFields, Status, useMutation, useTask, value, RequiredMark } from "../shared/forms";
 
 const physicalCheck = "COMPROBACION_VISUAL_COMPLETADA";
 
@@ -17,7 +17,7 @@ const locationStates: Record<Location["state"], string> = {
 function QuoteFields({ quote }: { quote: Quote }) {
   return <>
     <p role="status" className="receipt">Tarifa calculada de <strong>{quote.amount} BOB</strong> por {quote.duration_hours} horas.</p>
-    <label className="check"><input type="checkbox" required /> Acepto el importe indicado</label>
+    <label className="check"><input type="checkbox" required /> Acepto el importe indicado<RequiredMark /></label>
     <PaymentFields />
   </>;
 }
@@ -58,7 +58,7 @@ function Reception({ custody, inventory, onReceive }: {
         </select>
       </Field>
       <Field label="Plazo inicial en horas" example={"24 equivale a un día; 48, a dos días. Usa horas enteras."}>
-        <input type="number" min={1} step={1} value={hours} disabled={task.busy}
+        <input type="number" min={1} step={1} required value={hours} disabled={task.busy}
           onChange={(event) => { setHours(event.target.value); setQuote(undefined); }} />
       </Field>
       <button type="button" className="secondary" disabled={task.busy || !Number.isInteger(Number(hours)) || Number(hours) < 1}
@@ -96,7 +96,7 @@ function Extension({ custody, onUpdate }: { custody: Custody; onUpdate: (next: C
       });
     }} aria-busy={task.busy}>
       <Field label="Horas adicionales" example={"12 agrega doce horas al plazo vigente. Revisa la cotización antes de registrar la prórroga."}>
-        <input type="number" min={1} step={1} value={hours} disabled={task.busy}
+        <input type="number" min={1} step={1} required value={hours} disabled={task.busy}
           onChange={(event) => { setHours(event.target.value); setQuote(undefined); }} />
       </Field>
       <button type="button" className="secondary" disabled={task.busy || !Number.isInteger(Number(hours)) || Number(hours) < 1}
@@ -157,7 +157,7 @@ function Pickup({ custody, onUpdate, onInventoryChange, onRefresh }: {
       <Field label="Código de retiro de seis dígitos" hint={"Lo proporciona el destinatario desde su cuenta al recoger el objeto."}>
         <input type="password" name="code" inputMode="numeric" autoComplete="off" pattern="[0-9]{6}" required maxLength={6} />
       </Field>
-      <label className="check"><input type="checkbox" required /> Comprobación visual del destinatario completada</label>
+      <label className="check"><input type="checkbox" required /> Comprobación visual del destinatario completada<RequiredMark /></label>
       <button type="submit" disabled={task.busy}>Verificar autorización</button>
     </form>
     <Status {...task} message={message} />
@@ -235,7 +235,7 @@ export function Operations({ points }: { points: Point[] }) {
           });
         }}>
           <Field label="Buscar por" hint={"Elige el tipo de dato que vas a pegar en el campo siguiente."}>
-            <select name="mode"><option value="tracking">Guía privada</option><option value="id">Identificador de custodia</option></select>
+            <select name="mode" required><option value="tracking">Guía privada</option><option value="id">Identificador de custodia</option></select>
           </Field>
           <Field label="Guía o identificador" example={"Con Guía privada, pega el valor que comienza por BZX-. Con Identificador de custodia, copia el identificador completo de su detalle."}><input name="query" required autoComplete="off" maxLength={128} /></Field>
           <button type="submit" disabled={custodyTask.busy}>Consultar custodia del punto</button>

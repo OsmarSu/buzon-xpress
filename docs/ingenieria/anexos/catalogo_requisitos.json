@@ -53,7 +53,7 @@
     {
       "id": "RF-03",
       "priority": "P0",
-      "statement": "Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código público de seguimiento diferentes.",
+      "statement": "Registrar una custodia con emisor, destinatario activo, punto, descripción y tamaño; genera una guía privada y un código de paquete diferentes.",
       "use_case": "CU-02",
       "tables": [
         "custody_orders",

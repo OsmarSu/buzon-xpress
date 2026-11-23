@@ -42,6 +42,7 @@
 <path class="association" data-actor="operador" data-case="CU-10a" d="M 1357 404 L 1293 412 L 1228 975 H 712.04"/>
 <path class="association" data-actor="admin" data-case="CU-10a" d="M 1357 814 L 1293 810 L 1228 991 H 712.04"/>
 <path class="association" data-actor="operador" data-case="CU-10c" d="M 1357 404 L 1293 416 L 1228 731 H 1168.00"/>
+<path class="association" data-actor="revisor" data-case="CU-10b" d="M 1357 614 L 1300 614 L 1240 825 H 1161.78"/>
 <path class="association" data-actor="admin" data-case="CU-10b" d="M 1357 814 L 1293 814 L 1228 835 H 1168.00"/>
 <path class="association" data-actor="admin" data-case="CU-11" d="M 1357 814 L 1293 818 L 1228 939 H 1168.00"/>
 <path class="association" data-actor="admin" data-case="CU-12" d="M 1357 814 L 1293 822 L 1228 1033 H 1161.78"/>
@@ -67,6 +68,7 @@
 <g transform="translate(134 570)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Emisor</text></g>
 <g transform="translate(134 790)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Destinatario</text></g>
 <g transform="translate(1380 410)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Operador</text><text class="actor-label" y="71">del punto</text></g>
+<g transform="translate(1380 620)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Revisor</text></g>
 <g transform="translate(1380 820)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Administrador</text><text class="actor-label" y="71">del punto</text></g>
 <g transform="translate(1380 1045)"><circle class="figure" cy="-25" r="9"/><path class="figure" d="M0 -16V12 M-23 -6H23 M0 12L-15 32 M0 12L15 32"/><text class="actor-label" y="49">Auditor</text></g>
 <path class="association" d="M306 1141H354"/><text class="sub" x="367" y="1147">Asociación entre un actor y un caso de uso</text>

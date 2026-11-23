@@ -141,7 +141,7 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 | `full_name` | `VARCHAR(160) NOT NULL` | Nombre declarado del participante. |
 | `phone` | `VARCHAR(24)` | Contacto normalizado opcional. |
 | `password_hash` | `TEXT NOT NULL` | Verificador adaptativo; nunca contraseña plana. |
-| `role` | `VARCHAR(16) NOT NULL CHECK (role IN ('USUARIO','OPERADOR','ADMIN','AUDITOR'))` | Permiso global. |
+| `role` | `VARCHAR(16) NOT NULL CHECK (role IN ('USUARIO','OPERADOR','ADMIN','AUDITOR','REVISOR'))` | Permiso global. |
 | `contact_verified_at` | `TIMESTAMPTZ` | Comprobación por correo o presencial. |
 | `contact_verification_hash` | `CHAR(64)` | Hash de enlace de verificación pendiente. |
 | `verification_expires_at` | `TIMESTAMPTZ` | Vigencia del enlace de comprobación. |
@@ -209,7 +209,7 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 | Campo | Definición SQL | Propósito |
 |---|---|---|
 | `id` | `UUID PRIMARY KEY` | Asignación de personal. |
-| `user_id` | `UUID NOT NULL REFERENCES users(id)` | Operador, administrador o auditor. |
+| `user_id` | `UUID NOT NULL REFERENCES users(id)` | Operador, administrador, auditor o revisor. |
 | `point_id` | `UUID NOT NULL REFERENCES service_points(id)` | Alcance permitido. |
 | `is_active` | `BOOLEAN NOT NULL DEFAULT TRUE` | Vigencia operativa. |
 | `created_at` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Alta. |
@@ -243,7 +243,7 @@ El diccionario siguiente se genera desde el SQL de referencia. Cada fila conserv
 |---|---|---|
 | `id` | `UUID PRIMARY KEY` | Operación de custodia. |
 | `tracking_number` | `VARCHAR(32) NOT NULL UNIQUE` | Guía privada, insuficiente para retirar. |
-| `public_reference_hash` | `CHAR(64) NOT NULL UNIQUE` | Hash de código público de seguimiento aleatorio. |
+| `public_reference_hash` | `CHAR(64) NOT NULL UNIQUE` | Hash de código de paquete aleatorio. |
 | `sender_id` | `UUID NOT NULL REFERENCES users(id)` | Emisor de la operación. |
 | `recipient_id` | `UUID NOT NULL REFERENCES users(id)` | Destinatario autorizado. |
 | `point_id` | `UUID NOT NULL REFERENCES service_points(id)` | Mismo punto para recepción y entrega. |

@@ -35,7 +35,7 @@ class LocationState(Payload):
 class StaffWrite(Payload):
     point_id: UUID
     user_id: UUID
-    role: Literal["OPERADOR", "ADMIN", "AUDITOR"]
+    role: Literal["OPERADOR", "ADMIN", "AUDITOR", "REVISOR"]
     is_active: bool
 
 

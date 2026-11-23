@@ -666,6 +666,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security: []
+  /points/assigned:
+    get:
+      summary: Listar los puntos asignados a la cuenta para operar, administrar o auditar.
+      description: Incluye solo asignaciones vigentes. Para operación incluye solo puntos activos.
+      operationId: get_points_assigned
+      responses:
+        '200':
+          description: Puntos autorizados para la cuenta.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Point'
+        '401':
+          description: Se requiere sesión vigente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /points/{point_id}/quote:
     get:
       summary: Cotizar plazo y tamaño sin reservar espacio.
@@ -754,7 +774,7 @@ paths:
         schema: *id001
   /custodies:
     post:
-      summary: Registrar custodia sin reservar capacidad; código público de seguimiento se muestra al crear.
+      summary: Registrar custodia sin reservar capacidad; código de paquete se muestra al crear.
       operationId: post_custodies
       responses:
         '201':
@@ -957,7 +977,7 @@ paths:
         schema: *id001
   /custodies/{custody_id}/public-reference:
     post:
-      summary: Rotar código público de seguimiento con autorización del participante.
+      summary: Rotar código de paquete con autorización del participante.
       operationId: post_custodies_custody_id_public_reference
       responses:
         '200':
@@ -3675,6 +3695,7 @@ components:
           - OPERADOR
           - ADMIN
           - AUDITOR
+          - REVISOR
         contact_verified:
           type: boolean
         mfa_enabled:
@@ -4462,6 +4483,7 @@ components:
           - OPERADOR
           - ADMIN
           - AUDITOR
+          - REVISOR
         is_active:
           type: boolean
       required:

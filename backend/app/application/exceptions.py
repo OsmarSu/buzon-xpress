@@ -8,7 +8,7 @@ from app.adapters.storage.operations import OperationsStore
 from app.application.operations_access import find, projected, require_scope
 from app.domain.identity import IdentityError, Role
 
-MANAGERS = frozenset({Role.ADMIN})
+MANAGERS = frozenset({Role.ADMIN, Role.REVISOR})
 OPERATORS = frozenset({Role.OPERADOR})
 PERSONNEL = frozenset({Role.OPERADOR, Role.ADMIN})
 IN_FLIGHT = ("RETIRO_EN_CURSO", "DEVOLUCION_EN_CURSO")
