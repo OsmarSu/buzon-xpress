@@ -1,4 +1,4 @@
-export type Role = "USUARIO" | "OPERADOR" | "ADMIN" | "AUDITOR";
+export type Role = "USUARIO" | "OPERADOR" | "ADMIN" | "AUDITOR" | "REVISOR";
 export interface User { id: string; full_name: string; role: Role; contact_verified: boolean; mfa_enabled: boolean }
 export interface MobileSession { user: User; access_token: string; expires_at: string; token_type: "Bearer" }
 export interface MfaChallenge { mfa_required: true; challenge_token: string; expires_at: string }

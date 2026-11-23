@@ -2,7 +2,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Keyboard, Pressable, Text, View } from "react-native";
 import { useSession } from "../auth/SessionProvider";
-import { Button, Chips, Empty, Feedback, Field, Page, useAction } from "../components/ui";
+import { Button, Chips, Empty, Feedback, Field, RequiredMark, Page, useAction } from "../components/ui";
 import { NavigationIcon } from "../components/NavigationIcon";
 import { OpeningHours } from "../components/OpeningHours";
 import { c, s } from "../components/theme";
@@ -38,10 +38,10 @@ export function PointsScreen() {
     </View>
     <View style={s.card}>
       <Text accessibilityRole="header" style={s.h2}>Calcula el importe</Text>
-      <Text style={s.label}>Tamaño del objeto</Text>
+      <Text style={s.label}>Tamaño del objeto<RequiredMark /></Text>
       <Chips options={sizes} value={size} disabled={price.busy} onChange={value => { setSize(value); setQuote(null); price.setError(""); }} />
       <Text style={s.small}>{sizeMeasurementNote}</Text>
-      <Field label="Plazo en horas" editable={!price.busy} value={hours} onChangeText={value => { setHours(value); setQuote(null); price.setError(""); }}
+      <Field required label="Plazo en horas" editable={!price.busy} value={hours} onChangeText={value => { setHours(value); setQuote(null); price.setError(""); }}
         keyboardType="number-pad" maxLength={6} returnKeyType="done" />
       <Button title="Calcular importe" secondary busy={price.busy} onPress={() => void price.run(async () => {
         setQuote(null); setQuote(await client.quote(point.id, size, validHours()));

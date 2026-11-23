@@ -5,7 +5,7 @@ import { Alert, AppState, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSession } from "../auth/SessionProvider";
-import { Badge, Button, Chips, Empty, Feedback, Field, Page, useAction } from "../components/ui";
+import { Badge, Button, Chips, Empty, Feedback, Field, RequiredMark, Page, useAction } from "../components/ui";
 import { c, s } from "../components/theme";
 import { dateLabel, sizeMeasurementNote, sizes, type Credential, type Custody, type Point, type Quote, type Registered, type Size } from "../api/types";
 
@@ -118,7 +118,7 @@ export function CustodiesScreen({ openId, onCloseLink, draft, onConsumeDraft }: 
     </Page>
     <Sheet visible={creating} title="Registrar un objeto" onClose={() => { if (!action.busy) setCreating(false); }}>
       <Page><Feedback {...listTask} /><Text style={s.muted}>El registro no reserva espacio. El personal confirma capacidad, ubicación e importe al recibir el objeto.</Text>
-        <View style={s.card}><Text accessibilityRole="header" style={s.h2}>1. Elige el punto</Text>
+        <View style={s.card}><Text accessibilityRole="header" style={s.h2}>1. Elige el punto<RequiredMark /></Text>
           {points.map(point => <Pressable key={point.id} accessibilityRole="radio" accessibilityState={{ checked: pointId === point.id }}
             onPress={() => { setPointId(point.id); setQuote(null); }} style={{ padding: 14, borderWidth: 1, borderColor: pointId === point.id ? c.blue : c.border, borderRadius: 13, backgroundColor: pointId === point.id ? c.pale : "white", gap: 5 }}>
             <Text style={s.label}>{point.name}</Text><Text style={s.small}>{point.address}</Text>
@@ -126,11 +126,11 @@ export function CustodiesScreen({ openId, onCloseLink, draft, onConsumeDraft }: 
           {!listTask.busy && !points.length && <Text style={s.muted}>No hay puntos disponibles. Vuelve a consultar antes de registrar.</Text>}
         </View>
         <View style={s.card}><Text accessibilityRole="header" style={s.h2}>2. Datos del objeto</Text>
-          <Field label="Correo o teléfono del destinatario" placeholder="Contacto exacto de su cuenta" value={recipient} onChangeText={setRecipient} autoCapitalize="none" autoCorrect={false} maxLength={254} />
+          <Field required label="Correo o teléfono del destinatario" placeholder="Contacto exacto de su cuenta" value={recipient} onChangeText={setRecipient} autoCapitalize="none" autoCorrect={false} maxLength={254} />
           <Text style={s.small}>El destinatario debe estar registrado y tener su contacto comprobado.</Text>
-          <Text style={s.label}>Tamaño declarado</Text><Chips options={sizes} value={size} onChange={v => { setSize(v); setQuote(null); }} />
+          <Text style={s.label}>Tamaño declarado<RequiredMark /></Text><Chips options={sizes} value={size} onChange={v => { setSize(v); setQuote(null); }} />
           <Text style={s.small}>{sizeMeasurementNote}</Text>
-          <Field label="Descripción externa" placeholder="Tipo de objeto, embalaje y condición visible" value={description} onChangeText={setDescription} multiline maxLength={255} />
+          <Field required label="Descripción externa" placeholder="Tipo de objeto, embalaje y condición visible" value={description} onChangeText={setDescription} multiline maxLength={255} />
         </View>
         <View style={s.card}><Text accessibilityRole="header" style={s.h2}>3. Consulta el importe</Text>
           <Field label="Horas para cotizar" keyboardType="number-pad" value={hours} onChangeText={v => { setHours(v); setQuote(null); }} maxLength={6} />
@@ -176,15 +176,15 @@ export function CustodiesScreen({ openId, onCloseLink, draft, onConsumeDraft }: 
               [{ text: "Cancelar", style: "cancel" }, { text: "Reemplazar", onPress: () => void action.run(async () => obtainCredential(selected.id, true)) }],
             )} />}
           </View>}
-          <View style={s.card}><Text accessibilityRole="header" style={s.h2}>Seguimiento compartido</Text><Text style={s.muted}>El código público de seguimiento permite consultar el estado, el punto y su horario.</Text>
+          <View style={s.card}><Text accessibilityRole="header" style={s.h2}>Código de Paquete</Text><Text style={s.muted}>El código de paquete permite consultar el estado, el punto y su horario.</Text>
             {reference && <Text selectable style={[s.small, { color: c.navy, backgroundColor: c.pale, padding: 15, borderRadius: 12 }]}>{reference}</Text>}
-            <Button title="Renovar código público de seguimiento" secondary busy={action.busy} onPress={() => Alert.alert("Renovar código público de seguimiento", "El código anterior dejará de funcionar.", [
+            <Button title="Renovar código de paquete" secondary busy={action.busy} onPress={() => Alert.alert("Renovar código de paquete", "El código anterior dejará de funcionar.", [
               { text: "Cancelar", style: "cancel" }, { text: "Renovar", onPress: () => void action.run(async () => { const result = await client.rotate(selected.id); setReference(result.public_reference); }) },
             ])} />
           </View>
           {selected.state === "REGISTRADA" && <View style={s.card}><Text accessibilityRole="header" style={s.h2}>Cancelar el registro</Text>
             <Text style={s.muted}>Si registraste este objeto, puedes cancelar antes de que el punto lo reciba.</Text>
-            <Field label="Motivo de cancelación" placeholder="Explica por qué ya no se necesita la custodia" value={cancelReason} onChangeText={setCancelReason} maxLength={255} multiline />
+            <Field required label="Motivo de cancelación" placeholder="Explica por qué ya no se necesita la custodia" value={cancelReason} onChangeText={setCancelReason} maxLength={255} multiline />
             <Button title="Solicitar cancelación" secondary busy={action.busy} onPress={() => {
               if (cancelReason.trim().length < 3) { action.setError("Escribe un motivo de al menos tres caracteres."); return; }
               Alert.alert("Cancelar registro", "Esta acción cancela la custodia pendiente de recepción.", [

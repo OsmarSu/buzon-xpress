@@ -16,17 +16,20 @@ export function Button({ title, onPress, busy = false, secondary = false, danger
     <Text style={[styles.buttonText, secondary && { color: c.navy }]}>{title}</Text>
   </Pressable>;
 }
-export function Field({ label, ...props }: TextInputProps & { label: string }) {
-  return <View style={{ gap: 7 }}><Text style={s.label}>{label}</Text>
-    <TextInput accessibilityLabel={label} placeholderTextColor="#718097" {...props}
+export function RequiredMark() {
+  return <Text accessibilityLabel="Obligatorio" style={{ color: c.red }}> *</Text>;
+}
+export function Field({ label, required = false, ...props }: TextInputProps & { label: string; required?: boolean }) {
+  return <View style={{ gap: 7 }}><Text style={s.label}>{label}{required && <RequiredMark />}</Text>
+    <TextInput accessibilityLabel={required ? label + ", obligatorio" : label} placeholderTextColor="#718097" {...props}
       style={[styles.input, props.multiline && { minHeight: 100, textAlignVertical: "top" }, props.style]} /></View>;
 }
 export function Password({ label = "Contraseña", value, onChangeText, isNew = false }: {
   label?: string; value: string; onChangeText: (value: string) => void; isNew?: boolean;
 }) {
   const [show, setShow] = useState(false);
-  return <View style={{ gap: 7 }}><Text style={s.label}>{label}</Text><View style={styles.passwordRow}>
-    <TextInput accessibilityLabel={label} value={value} onChangeText={onChangeText} secureTextEntry={!show}
+  return <View style={{ gap: 7 }}><Text style={s.label}>{label}<RequiredMark /></Text><View style={styles.passwordRow}>
+    <TextInput accessibilityLabel={label + ", obligatorio"} value={value} onChangeText={onChangeText} secureTextEntry={!show}
       autoCapitalize="none" autoCorrect={false} autoComplete={isNew ? "new-password" : "current-password"}
       style={[styles.input, { flex: 1, borderWidth: 0 }]} maxLength={128} />
     <Pressable accessibilityRole="button" accessibilityLabel={show ? "Ocultar " + label : "Mostrar " + label}

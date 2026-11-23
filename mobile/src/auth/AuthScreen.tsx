@@ -60,7 +60,7 @@ export function AuthScreen({ initialMode, onClose, onSuccess }: { initialMode: A
     <View style={s.card}>
       <Feedback {...task} />
       {challenge ? <>
-        <Field label={recovery ? "Código de recuperación" : "Código de la aplicación"} value={code} onChangeText={setCode}
+        <Field required label={recovery ? "Código de recuperación" : "Código de la aplicación"} value={code} onChangeText={setCode}
           keyboardType={recovery ? "default" : "number-pad"} maxLength={recovery ? 64 : 6} autoCapitalize="none" autoCorrect={false} autoComplete="one-time-code" />
         <Text style={s.small}>{recovery ? "Cada código de recuperación se utiliza una sola vez." : "Abre tu aplicación autenticadora y usa el código vigente de seis dígitos."}</Text>
         <Button title="Verificar y entrar" busy={task.busy} onPress={() => void task.run(submit)} />
@@ -68,10 +68,10 @@ export function AuthScreen({ initialMode, onClose, onSuccess }: { initialMode: A
         <Button title="Volver a iniciar sesión" secondary disabled={task.busy} onPress={() => change("login")} />
       </> : <>
         {mode === "register" && <>
-          <Field label="Nombre completo" placeholder="Tu nombre y apellido" value={name} onChangeText={setName} autoComplete="name" maxLength={160} />
+          <Field required label="Nombre completo" placeholder="Tu nombre y apellido" value={name} onChangeText={setName} autoComplete="name" maxLength={160} />
           <Field label="Teléfono (opcional)" placeholder="Número de contacto" value={phone} onChangeText={setPhone} keyboardType="phone-pad" autoComplete="tel" maxLength={24} />
         </>}
-        <Field label="Correo electrónico" placeholder="nombre@correo.com" value={email} onChangeText={setEmail}
+        <Field required label="Correo electrónico" placeholder="nombre@correo.com" value={email} onChangeText={setEmail}
           autoCapitalize="none" autoCorrect={false} keyboardType="email-address" autoComplete="email" maxLength={254} />
         {mode !== "reset" && <Password value={password} onChangeText={setPassword} isNew={mode === "register"} />}
         {mode === "register" && <>

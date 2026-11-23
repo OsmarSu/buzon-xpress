@@ -14,7 +14,7 @@ export function AccountScreen() {
   return <Page><Text style={s.eyebrow}>TU ESPACIO PERSONAL</Text><Text accessibilityRole="header" style={s.title}>Mi cuenta</Text>
     <View style={s.card}><View style={[s.row, { alignItems: "flex-start" }]}>
       <View style={{ backgroundColor: c.pale, borderRadius: 18, padding: 15 }}><Ionicons accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden={true} name="person-outline" size={30} color={c.blue} /></View>
-      <View style={s.flex}><Text accessibilityRole="header" style={s.h2}>{user.full_name}</Text><Text style={s.muted}>{({ USUARIO: "Cuenta personal", OPERADOR: "Operador", ADMIN: "Administración", AUDITOR: "Auditoría" })[user.role]}</Text></View>
+      <View style={s.flex}><Text accessibilityRole="header" style={s.h2}>{user.full_name}</Text><Text style={s.muted}>{({ USUARIO: "Cuenta personal", OPERADOR: "Operador", ADMIN: "Administración", AUDITOR: "Auditoría", REVISOR: "Revisión" })[user.role]}</Text></View>
     </View><Text style={{ color: user.contact_verified ? c.good : c.muted, fontWeight: "600" }}>{user.contact_verified ? "Contacto comprobado" : "Contacto pendiente de verificación"}</Text>
       {!user.contact_verified && <><Text style={s.muted}>Abre el enlace recibido por correo para verificar tu contacto y habilitar el registro de objetos.</Text>
         <Button title="Ya verifiqué mi correo" secondary busy={task.busy} onPress={() => void task.run(refresh)} /></>}
