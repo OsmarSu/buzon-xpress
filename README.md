@@ -83,7 +83,7 @@ Si publicas el frontend estático en un origen HTTPS separado, compílalo con `V
 
 ### Servicio publicado
 
-La [web en Surge](https://buzon-xpress.surge.sh/) y Android 0.2.3 usan la [API en alwaysdata](https://buzonxpress.alwaysdata.net/api/v1/health). PostgreSQL se aloja en Supabase y las tareas de avisos y vencimientos se ejecutan en alwaysdata. El uso de estas versiones no requiere que la máquina de desarrollo esté encendida. Para publicar cambios en la web, compila con `VITE_BUZON_API_ORIGIN=https://buzonxpress.alwaysdata.net`.
+La [web en Surge](https://buzon-xpress.surge.sh/) y Android desde 0.2.3 usan la [API en alwaysdata](https://buzonxpress.alwaysdata.net/api/v1/health). PostgreSQL se aloja en Supabase y las tareas de avisos y vencimientos se ejecutan en alwaysdata. El uso de estas versiones no requiere que la máquina de desarrollo esté encendida. Para publicar cambios en la web, compila con `VITE_BUZON_API_ORIGIN=https://buzonxpress.alwaysdata.net`.
 
 ### Verificar el diseño y consultar entregables
 
@@ -91,7 +91,7 @@ Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.s
 
 ## 3. Aplicación Android
 
-La versión móvil 0.2.3 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
+La versión móvil 0.2.4 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
 
 Desde WSL:
 
@@ -113,6 +113,8 @@ npx --yes eas-cli@latest build --platform android --profile preview
 ```
 
 El APK 0.2.3 (código Android 5) usa la API en alwaysdata y amplía a 40 segundos el tiempo límite de la consulta para tolerar el arranque en frío. Se distribuye firmado en [GitHub Releases](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.3). El APK se conserva fuera del historial de Git.
+
+El [APK 0.2.4](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.4) incluye Código de Paquete y asteriscos en los campos obligatorios. Usa el código Android 6 y conserva la firma para instalarse como actualización.
 
 La cuenta debe tener cuota disponible en su plan. El perfil `production` prepara un AAB para Google Play; no publica automáticamente en la tienda. El APK incorpora el código de la app y no necesita Metro para abrirse, pero sí requiere conexión a la API publicada para consultar o modificar datos. La prueba en teléfono físico, TalkBack y los recorridos de instalación siguen pendientes antes de una distribución final.
 

@@ -87,7 +87,7 @@ Antes de un piloto quedan pendientes la aceptación con participantes, confirmar
 
 ## 8. Distribución Android de la primera fase
 
-La app 0.2.3 en `mobile/` comparte la API publicada y sus permisos. El perfil `preview` de `eas.json` solicita un APK firmado de distribución interna; `production` solicita un AAB y no realiza una publicación en tienda. Los comandos vigentes están en el [README](../../README.md). La cuenta de Expo y su cuota se consultan antes de iniciar nuevas compilaciones; no se contrataron servicios de pago.
+La app 0.2.4 en `mobile/` comparte la API publicada y sus permisos. El perfil `preview` de `eas.json` solicita un APK firmado de distribución interna; `production` solicita un AAB y no realiza una publicación en tienda. Los comandos vigentes están en el [README](../../README.md). La cuenta de Expo y su cuota se consultan antes de iniciar nuevas compilaciones; no se contrataron servicios de pago.
 
 La carga de código se limita con `.easignore` en la raíz del repositorio y se verifica con `eas build:inspect --platform android --profile preview --stage archive`. El archivo inspeccionado incluye solo la app y sus pruebas. La contraseña de Gmail, credenciales de la base, sesiones del servidor y configuración de producción no forman parte del paquete. Expo conserva la firma Android en la cuenta propietaria; los secretos de acceso no se añaden a Git.
 
@@ -99,7 +99,7 @@ La actualización 0.2.2 aumenta el código Android a 4 e incorpora react-native-
 
 ## Alojamiento de PostgreSQL y FastAPI
 
-La web de Surge y la app 0.2.3 consumen la API de alwaysdata en `https://buzonxpress.alwaysdata.net/api/v1`. Supabase aloja PostgreSQL. FastAPI conserva identidad, MFA y permisos. El backend se conecta con un rol limitado a las tablas de la aplicación, el Session pooler en el puerto 5432 y `sslmode=verify-full` con el certificado raíz de Supabase. Las credenciales y las claves de sesión, HMAC y MFA se guardan fuera del repositorio.
+La web de Surge y la app a partir de 0.2.3 consumen la API de alwaysdata en `https://buzonxpress.alwaysdata.net/api/v1`. Supabase aloja PostgreSQL. FastAPI conserva identidad, MFA y permisos. El backend se conecta con un rol limitado a las tablas de la aplicación, el Session pooler en el puerto 5432 y `sslmode=verify-full` con el certificado raíz de Supabase. Las credenciales y las claves de sesión, HMAC y MFA se guardan fuera del repositorio.
 
 El sitio de alwaysdata usa el tipo Programa de usuario, Python 3.13 y Uvicorn en la dirección y puerto asignados. Las dependencias se instalan desde una exportación con hashes de `backend/uv.lock`. El trabajo programado ejecuta `python -m app.jobs.maintenance` cada cinco minutos. Las verificaciones de despliegue incluyen `/api/v1/health`, CORS desde Surge, acceso web y Android y autenticación con Gmail. El `Dockerfile` de `backend/` permite ensayar la API y las tareas en contenedor, aparte del alojamiento compartido.
 
