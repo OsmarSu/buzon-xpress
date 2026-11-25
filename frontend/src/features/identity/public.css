@@ -973,6 +973,54 @@ html {
   width: min(43%, 30rem);
 }
 
+.public-app-download {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin-top: 1.25rem;
+  padding: .8rem clamp(1rem, 2.6vw, 2rem);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.public-app-download h3 {
+  margin: 0 0 .3rem;
+  color: var(--ink);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1.25;
+}
+
+.public-app-download p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.public-app-download-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: .65rem 1rem;
+  border-radius: .55rem;
+  background: var(--brand-dark);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.public-app-download-link:hover {
+  background: #102342;
+}
+
+.public-app-download-qr {
+  display: block;
+  width: 9.1875rem;
+  height: auto;
+}
+
 .public-next-section {
   display: flex;
   align-items: center;
@@ -1360,6 +1408,16 @@ html {
 }
 
 @media (max-width: 48rem) {
+  .public-app-download {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .85rem;
+    padding: 1rem;
+  }
+
+  .public-app-download-qr {
+    display: none;
+  }
+
   .public-chapter {
     min-height: auto;
     padding-block: 3.5rem;

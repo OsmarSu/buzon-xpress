@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 
+import androidQr from "../../assets/buzon-xpress-android-qr.png";
 import logo from "../../assets/buzon-xpress-logo.jpeg";
 import vision from "../../assets/buzon-xpress-vision.jpeg";
 import registrationPhoto from "../../assets/servicio-registro.jpg";
@@ -7,6 +8,8 @@ import receptionPhoto from "../../assets/servicio-recepcion.jpg";
 import pickupPhoto from "../../assets/servicio-retiro.jpg";
 import { PublicPoints, PublicTracking } from "../custody/PublicService";
 import { PublicHeader, SiteFooter } from "./SiteChrome";
+
+const androidApk = "https://github.com/OsmarSu/buzon-xpress/releases/download/v0.2.5/buzon-xpress-0.2.5-arm64.apk";
 
 function ServiceArt() {
   return <svg className="public-hero-art" viewBox="0 0 400 356" aria-hidden="true" focusable="false" fill="none">
@@ -67,6 +70,15 @@ function PublicIntro({ signedIn }: { signedIn: boolean }) {
     </div>
         <ServiceArt />
       </div>
+      <section className="public-app-download" aria-labelledby="app-download-heading">
+        <div>
+          <h3 id="app-download-heading">Descarga la app para Android</h3>
+          <p>Android ARM de 64 bits · 45 MB</p>
+        </div>
+        <a className="public-app-download-link" href={androidApk}>Descargar APK</a>
+        <img className="public-app-download-qr" src={androidQr} width="490" height="490"
+          alt="QR para descargar BUZON Xpress para Android" />
+      </section>
       <a href="#como-funciona" className="public-next-section">Descubre el servicio <span aria-hidden="true">↓</span></a>
     </div>
   </section>;
