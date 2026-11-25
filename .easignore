@@ -6,12 +6,14 @@
 !/mobile/assets
 /mobile/assets/*
 !/mobile/assets/logo.jpeg
+!/mobile/assets/logo-mision.png
 !/mobile/assets/app-icon.png
 !/mobile/scripts
 !/mobile/tests
 !/mobile/package.json
 !/mobile/package-lock.json
 !/mobile/app.json
+!/mobile/app.config.ts
 !/mobile/eas.json
 !/mobile/tsconfig.json
 !/mobile/eslint.config.js

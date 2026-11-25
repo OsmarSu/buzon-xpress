@@ -5,6 +5,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SessionProvider, useSession } from "../auth/SessionProvider";
 import { BrandHeader } from "../components/BrandHeader";
+import { StartupSplash } from "../components/StartupSplash";
 import { c, s } from "../components/theme";
 
 function RootNavigation() {
@@ -19,5 +20,14 @@ function RootNavigation() {
   </SafeAreaView>;
 }
 export default function RootLayout() {
-  return <SafeAreaProvider><KeyboardProvider statusBarTranslucent navigationBarTranslucent preserveEdgeToEdge preload={false}><SessionProvider><RootNavigation /></SessionProvider></KeyboardProvider></SafeAreaProvider>;
+  return <SafeAreaProvider>
+    <KeyboardProvider statusBarTranslucent navigationBarTranslucent preserveEdgeToEdge preload={false}>
+      <SessionProvider>
+        <View style={{ flex: 1 }}>
+          <RootNavigation />
+          <StartupSplash />
+        </View>
+      </SessionProvider>
+    </KeyboardProvider>
+  </SafeAreaProvider>;
 }

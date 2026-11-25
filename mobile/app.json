@@ -2,13 +2,13 @@
   "expo": {
     "name": "BUZON Xpress",
     "slug": "buzon-xpress",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "orientation": "portrait",
     "scheme": "buzonxpress",
     "userInterfaceStyle": "light",
     "android": {
       "package": "bo.buzonxpress.app",
-      "versionCode": 6,
+      "versionCode": 7,
       "allowBackup": false,
       "softwareKeyboardLayoutMode": "resize",
       "permissions": [],
@@ -27,6 +27,15 @@
       }
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo-mision.png",
+          "imageWidth": 180,
+          "backgroundColor": "#ffffff",
+          "resizeMode": "contain"
+        }
+      ],
       "expo-secure-store",
       "expo-router",
       [

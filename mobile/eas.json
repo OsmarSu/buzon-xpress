@@ -15,6 +15,12 @@
       },
       "node": "24.22.2"
     },
+    "preview-arm64": {
+      "extends": "preview",
+      "env": {
+        "BUZON_ANDROID_ARM64": "1"
+      }
+    },
     "production": {
       "environment": "production",
       "autoIncrement": true,
