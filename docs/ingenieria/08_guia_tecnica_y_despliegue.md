@@ -87,7 +87,7 @@ Antes de un piloto quedan pendientes la aceptación con participantes, confirmar
 
 ## 8. Distribución Android de la primera fase
 
-La app 0.2.4 en `mobile/` comparte la API publicada y sus permisos. El perfil `preview` de `eas.json` solicita un APK firmado de distribución interna; `production` solicita un AAB y no realiza una publicación en tienda. Los comandos vigentes están en el [README](../../README.md). La cuenta de Expo y su cuota se consultan antes de iniciar nuevas compilaciones; no se contrataron servicios de pago.
+La app 0.2.5 en `mobile/` comparte la API publicada y sus permisos. El perfil `preview` de `eas.json` solicita un APK universal firmado de distribución interna. `preview-arm64` genera un APK firmado para ARM de 64 bits. `production` solicita un AAB y no realiza una publicación en tienda. Los comandos vigentes están en el [README](../../README.md). La cuenta de Expo y su cuota se consultan antes de iniciar nuevas compilaciones; no se contrataron servicios de pago.
 
 La carga de código se limita con `.easignore` en la raíz del repositorio y se verifica con `eas build:inspect --platform android --profile preview --stage archive`. El archivo inspeccionado incluye solo la app y sus pruebas. La contraseña de Gmail, credenciales de la base, sesiones del servidor y configuración de producción no forman parte del paquete. Expo conserva la firma Android en la cuenta propietaria; los secretos de acceso no se añaden a Git.
 

@@ -91,7 +91,7 @@ Prepara el [entorno documental](herramientas/README.md) y ejecuta `./verificar.s
 
 ## 3. Aplicación Android
 
-La versión móvil 0.2.4 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
+La versión móvil 0.2.5 vive en `mobile/` y usa Expo SDK 57 con React Native, TypeScript y Expo Router. Comparte la base publicada y los permisos del servidor. Incluye acceso, segundo factor si está activado, registro y recuperación, custodias, prerregistro, cotización, seguimiento público, avisos, cuenta y código temporal del destinatario. La gestión del segundo factor y las funciones del personal se mantienen en la web durante esta primera fase.
 
 Desde WSL:
 
@@ -105,16 +105,18 @@ npm start -- --tunnel --go
 
 Abre el enlace o escanea el código del servidor con una versión de [Expo Go compatible con SDK 57 para Android](https://expo.dev/go). La conexión requiere que el servidor de desarrollo y los servicios publicados estén activos. No hace falta iniciar un emulador ni usar la GPU para este recorrido.
 
-La exportación Android genera el paquete de JavaScript y recursos; **no es un APK instalable**. El perfil `preview` de `mobile/eas.json` genera el APK firmado con Expo Build. El proyecto está vinculado a [@oswidev/buzon-xpress](https://expo.dev/accounts/oswidev/projects/buzon-xpress). Para volver a compilar desde `mobile/`:
+La exportación Android genera el paquete de JavaScript y recursos; **no es un APK instalable**. El perfil `preview` de `mobile/eas.json` genera el APK universal firmado y `preview-arm64` genera el APK optimizado para teléfonos ARM de 64 bits. El proyecto está vinculado a [@oswidev/buzon-xpress](https://expo.dev/accounts/oswidev/projects/buzon-xpress). Para volver a compilar desde `mobile/`:
 
 ```bash
 npx --yes eas-cli@latest login --device
-npx --yes eas-cli@latest build --platform android --profile preview
+npx --yes eas-cli@latest build --platform android --profile preview-arm64
 ```
 
 El APK 0.2.3 (código Android 5) usa la API en alwaysdata y amplía a 40 segundos el tiempo límite de la consulta para tolerar el arranque en frío. Se distribuye firmado en [GitHub Releases](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.3). El APK se conserva fuera del historial de Git.
 
 El [APK 0.2.4](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.4) incluye Código de Paquete y asteriscos en los campos obligatorios. Usa el código Android 6 y conserva la firma para instalarse como actualización.
+
+El [APK 0.2.5 para ARM64](https://github.com/OsmarSu/buzon-xpress/releases/tag/v0.2.5) pesa 45 MB. Presenta el logo de Misión al abrir y lo desvanece hacia la vista inicial. Usa el código Android 7 y la misma firma de la entrega anterior.
 
 La cuenta debe tener cuota disponible en su plan. El perfil `production` prepara un AAB para Google Play; no publica automáticamente en la tienda. El APK incorpora el código de la app y no necesita Metro para abrirse, pero sí requiere conexión a la API publicada para consultar o modificar datos. La prueba en teléfono físico, TalkBack y los recorridos de instalación siguen pendientes antes de una distribución final.
 
