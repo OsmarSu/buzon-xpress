@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
+import systemLogo from "../../assets/buzon-xpress-icono.jpeg";
 import { ApiError } from "../../services/api";
 import { auth, isMfaChallenge, type MfaChallenge, type User } from "../../services/auth";
 import { Dashboard } from "../dashboard/Dashboard";
@@ -394,6 +395,7 @@ export function Access({ verificationToken, resetToken, initialReference, initia
   return <AccountPage mode={mode}>
     <section className="public-auth-card access-form-card" aria-labelledby="access-heading">
       <div className="access-form-intro">
+        {mode !== "request-reset" && <img className="access-brand-mark" src={systemLogo} width="330" height="218" alt="" />}
         <p className="public-eyebrow">{mode === "register" ? "Empieza con BUZON Xpress" : mode === "login" ? "Bienvenido de nuevo" : "Recupera tu acceso"}</p>
         <h1 id="access-heading" tabIndex={-1} ref={heading}>{access.title}</h1>
         <p>{access.detail}</p>

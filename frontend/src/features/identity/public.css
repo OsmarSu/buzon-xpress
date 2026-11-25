@@ -61,14 +61,6 @@
   white-space: nowrap;
 }
 
-.buzon-brand-mark {
-  display: block;
-  flex: none;
-  width: 2.95rem;
-  height: auto;
-  border-radius: .3rem;
-}
-
 .buzon-wordmark-copy {
   display: grid;
   gap: .18rem;
@@ -577,18 +569,9 @@
   color: #e0ecff;
 }
 
-.public-footer .buzon-wordmark,
 .public-footer a,
 .public-footer-inner h2 {
   color: #fff;
-}
-
-.public-footer .buzon-wordmark-accent {
-  color: #ffbac4;
-}
-
-.public-footer .buzon-wordmark-copy small {
-  color: #cfdef5;
 }
 
 .public-footer-inner {
@@ -603,11 +586,6 @@
   font-size: 1rem;
 }
 
-.public-footer-inner .public-brand-link {
-  display: inline-flex;
-  margin-bottom: .7rem;
-}
-
 .public-footer-inner p {
   margin: 0 0 .55rem;
   font-size: .89rem;
@@ -618,7 +596,7 @@
   margin-bottom: 0;
 }
 
-.public-footer-inner a:not(.public-brand-link) {
+.public-footer-inner a {
   display: inline-block;
   padding-block: .3rem;
   font-size: .88rem;

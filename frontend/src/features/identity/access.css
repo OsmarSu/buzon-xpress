@@ -162,6 +162,14 @@
   margin-bottom: .7rem;
 }
 
+.access-brand-mark {
+  display: block;
+  width: 4.25rem;
+  height: auto;
+  margin-bottom: .85rem;
+  border-radius: .45rem;
+}
+
 .access-form-intro > p:last-child {
   margin: .75rem 0 .25rem;
   color: var(--muted);

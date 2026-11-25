@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import logo from "../../assets/buzon-xpress-icono.jpeg";
-
-export function Brand({ mark = false }: { mark?: boolean }) {
+export function Brand() {
   return <span className="buzon-wordmark">
-    {mark && <img className="buzon-brand-mark" src={logo} width="330" height="218" alt="" />}
     <span className="buzon-wordmark-copy">
       <span>BUZON <span className="buzon-wordmark-accent">Xpress</span></span>
       <small>Custodia temporal</small>
@@ -128,7 +125,6 @@ export function SiteFooter() {
       </div>
       <div className="public-footer-inner">
         <div>
-          <a className="public-brand-link" href="/#inicio" aria-label="BUZON Xpress, inicio"><Brand mark /></a>
           <h3>Un punto de encuentro</h3>
           <p>Coordinamos el intercambio de objetos mediante custodia temporal en puntos atendidos.</p>
           <a href="/#conocenos">Nuestra misión y visión <span aria-hidden="true">→</span></a>
