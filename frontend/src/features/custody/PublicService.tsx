@@ -29,6 +29,10 @@ export function PublicTracking({ initialReference }: { initialReference: string 
       <form aria-busy={tracking.busy} onSubmit={(event) => {
         const reference = value(formData(event), "reference");
         setResult(undefined);
+        if (/^BZX-[0-9a-f]{24}$/i.test(reference)) {
+          tracking.setError("Ingresaste la Guía privada. Copia el Código de Paquete de la custodia para consultar su estado.");
+          return;
+        }
         void tracking.run(async () => setResult(await custodyApi.tracking(reference)));
       }}>
         <Field label="Código de Paquete" hint={"Pega el código de paquete que te compartieron para consultar el estado."} example={"El emisor puede compartir el código de paquete de su registro. Copia el código completo, sin espacios adicionales."}>

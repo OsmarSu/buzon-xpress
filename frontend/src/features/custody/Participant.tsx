@@ -27,11 +27,26 @@ export function CustodySummary({ custody, point }: { custody: Custody; point?: P
 }
 
 function PublicReference({ reference, onDismiss }: { reference: string; onDismiss: () => void }) {
+  const [copyMessage, setCopyMessage] = useState("");
+
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(reference);
+      setCopyMessage("Código de Paquete copiado.");
+    } catch {
+      setCopyMessage("Selecciona el Código de Paquete y cópialo manualmente.");
+    }
+  }
+
   return <div className="receipt">
     <strong>Nuevo Código de Paquete</strong>
-    <p>Compártelo para consultar el estado, el punto y su horario. La guía privada identifica el registro; el código de retiro se utiliza para recoger el objeto.</p>
+    <p>Compártelo para consultar el estado, el punto y su horario.</p>
     <p><code>{reference}</code></p>
-    <button type="button" className="secondary" onClick={onDismiss}>Ocultar código de paquete</button>
+    <div className="actions">
+      <button type="button" onClick={() => void copyCode()}>Copiar Código de Paquete</button>
+      <button type="button" className="secondary" onClick={onDismiss}>Ocultar código de paquete</button>
+    </div>
+    {copyMessage && <p role="status">{copyMessage}</p>}
   </div>;
 }
 
@@ -100,7 +115,7 @@ function RegisterCustody({ points, onCreated }: { points: Point[]; onCreated: (c
     </form> : <WorkspaceEmpty icon="pin" title="No hay puntos para el registro"
       description="Vuelve a consultar los puntos cuando se publique un horario de atención." />}
     <Status {...task} message={created ? "Objeto registrado. Preséntalo al operador dentro del horario de atención." : undefined} />
-    {created?.public_reference && <PublicReference reference={created.public_reference}
+    {created?.public_reference && <PublicReference key={created.public_reference} reference={created.public_reference}
       onDismiss={() => setCreated({ ...created, public_reference: undefined })} />}
   </section>;
 }
@@ -182,7 +197,7 @@ function ParticipantActions({ custody, onUpdate }: { custody: Custody; onUpdate:
       </div> : <button type="button" className="secondary" disabled={task.busy} onClick={() => setConfirmRotation(true)}>
           Preparar renovación
         </button>}
-      {reference && <PublicReference reference={reference} onDismiss={() => setReference(undefined)} />}
+      {reference && <PublicReference key={reference} reference={reference} onDismiss={() => setReference(undefined)} />}
     </details>
     <Status {...task} message={notice} />
   </>;
