@@ -9,7 +9,7 @@ import pickupPhoto from "../../assets/servicio-retiro.jpg";
 import { PublicPoints, PublicTracking } from "../custody/PublicService";
 import { PublicHeader, SiteFooter } from "./SiteChrome";
 
-const androidApk = "https://github.com/OsmarSu/buzon-xpress/releases/download/v0.2.5/buzon-xpress-0.2.5-arm64.apk";
+const androidApk = "https://github.com/OsmarSu/buzon-xpress/releases/download/v0.2.6/buzon-xpress-0.2.6-arm64.apk";
 
 function ServiceArt() {
   return <svg className="public-hero-art" viewBox="0 0 400 356" aria-hidden="true" focusable="false" fill="none">
