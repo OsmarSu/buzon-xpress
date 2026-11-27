@@ -2,13 +2,13 @@
   "expo": {
     "name": "BUZON Xpress",
     "slug": "buzon-xpress",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "orientation": "portrait",
     "scheme": "buzonxpress",
     "userInterfaceStyle": "light",
     "android": {
       "package": "bo.buzonxpress.app",
-      "versionCode": 7,
+      "versionCode": 8,
       "allowBackup": false,
       "softwareKeyboardLayoutMode": "resize",
       "permissions": [],

@@ -40,6 +40,8 @@ export function StartupSplash() {
 
   return <Animated.View
     style={[styles.overlay, { opacity }]}
+    needsOffscreenAlphaCompositing
+    renderToHardwareTextureAndroid
     importantForAccessibility="no-hide-descendants"
     accessibilityElementsHidden
   >
